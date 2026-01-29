@@ -218,16 +218,17 @@ def main():
     parser.add_argument("-w", "--workers", type=int, default=multiprocessing.cpu_count(), help="Number of parallel workders to use (default: 1)")
 
     # Disallow verbose and progress together
-    group = parser.add_argument_group()
-    group.add_argument("-v", "--verbose", action="store_true", help="Verbose output (used for debugging)")
-    group.add_argument("-p", "--progress", action="store_true", help="Show progress bar")
+    group1 = parser.add_mutually_exclusive_group()
+    group1.add_argument("-v", "--verbose", action="store_true", help="Verbose output (used for debugging)")
+    group1.add_argument("-p", "--progress", action="store_true", help="Show progress bar")
 
     parser.add_argument("-d", "--dry-run", action="store_true", help="Print SQL statements without executing (only valid with --verbose)")
     args = parser.parse_args()
 
     if args.dry_run:
-        if not args.verbose:
-            parser.error("--dry-run must be used with --verbose")
+        args.workers = 1
+        args.verbose = True
+        args.progress = False
 
     # Suppress huggingface_hub logger
     logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
