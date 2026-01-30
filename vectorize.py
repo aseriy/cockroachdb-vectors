@@ -15,6 +15,8 @@ from psycopg2.extras import execute_values
 from urllib.parse import urlparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
+from datetime import datetime
+
 
 
 _MODEL_CACHE = {}
@@ -131,11 +133,14 @@ def fetch_null_vector_ids(conn, table_name, output_column, primary_key, limit, v
 def vectorize_batch(
                     db_url, model_path, table_name,
                     input_column, output_column, primary_key, ids,
-                    dry_run, verbose, pbar=None, batch_index=0, warnings=None
+                    dry_run, verbose, batch_index=0
                     ):
     
     if not ids:
         return 0
+
+    warnings = []
+    errors = []
 
     conn = get_connection(db_url)
     conn.autocommit = False
@@ -181,26 +186,19 @@ def vectorize_batch(
                 break
             except Exception as e:
                 conn.rollback()
+                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 if attempt < max_retries:
-                    if warnings is not None:
-                        from datetime import datetime
-                        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        warnings.append(f"[{timestamp}] [WARN] (batch {batch_index}) Retry {attempt}/{max_retries} after failure: {e}")
-                    elif pbar is None:
-                        print(f"[WARN] Retry {attempt}/{max_retries} after failure: {e}", flush=True)
+                    warnings.append(f"[{timestamp}] [WARN] (batch {batch_index}) Retry {attempt}/{max_retries} after failure: {e}")
                     time.sleep(0.5 * attempt + random.uniform(0, 0.3))
                 else:
-                    print(f"[ERROR] Failed after {max_retries} retries: {e}")
-
-    if pbar is not None:
-        pbar.update(len(batch))
+                    errors.append(f"[{timestamp}] [ERROR] Failed after {max_retries} retries: {e}")
 
     conn.close()
-    return len(batch)
-    
+    return len(batch), errors, warnings
+
+
 
 def main():
-    warnings = []
     parser = argparse.ArgumentParser(description="Vectorize rows in CockroachDB using SentenceTransformers.")
     parser.add_argument("-u", "--url", required=True, help="CockroachDB connection URL")
     parser.add_argument("-t", "--table", required=True, help="Target table name")
@@ -215,7 +213,7 @@ def main():
                         help="Max idle time before exit, in MINUTES (0 = no idle limit)")
     parser.add_argument("--min-idle", type=float, default=15.0,
                         help="Initial idle backoff between empty scans, in SECONDS")
-    parser.add_argument("-w", "--workers", type=int, default=multiprocessing.cpu_count(), help="Number of parallel workders to use (default: 1)")
+    parser.add_argument("-w", "--workers", type=int, default=1, help="Number of parallel workders to use (default: 1)")
 
     # Disallow verbose and progress together
     group1 = parser.add_mutually_exclusive_group()
@@ -236,6 +234,9 @@ def main():
     with silence_everything():
         huggingface_path = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
 
+    #
+    # TODO: Implement a DB connection pool
+    #
 
     batch_counter = 0
     conn = get_connection(args.url)
@@ -244,23 +245,32 @@ def main():
     primary_key = get_primary_key_column(conn, args.table)
     ensure_vector_column(conn, huggingface_path, args.table, args.output, args.dry_run, show_info=not args.progress)
 
-    total_rows = get_null_vector_row_count(conn, args.table, args.output, primary_key)
-
-    max_workers = os.cpu_count() or 4
-
     pbar = None
     if args.progress:
+        total_rows = args.batch_size * args.num_batches
+        if args.follow:
+            total_rows = get_null_vector_row_count(conn, args.table, args.output, primary_key)
+
         pbar = tqdm(
-                    total=total_rows if args.num_batches is None else min(total_rows,
-                    args.num_batches * args.batch_size),
+                    total=total_rows,
                     desc="Vectorizing",
                     unit="rows",
                     smoothing=0.01
                 )
 
-    executor = ProcessPoolExecutor(max_workers=args.workers)
+        def _on_done(fut):
+            try:
+                processed, _, _ = fut.result()
+            except Exception:
+                return
+            if processed:
+                pbar.update(processed)
+
+
+    executor = ProcessPoolExecutor(max_workers=min(args.workers, multiprocessing.cpu_count()))
     futures = []
     warnings = []
+    errors = []
 
     # Backoff state
     idle_wait = max(0.001, float(args.min_idle))   # seconds
@@ -281,29 +291,44 @@ def main():
         # Fetch one page of IDs (no wait on start or after successful work)
         ids = fetch_null_vector_ids(conn, args.table, args.output, primary_key, args.batch_size)
 
-        if ids:
+        chunk_size = int(0.5 + len(ids) / args.workers)
+        futures = []
+
+        # Run one batch (via pool for per-process model reuse)
+        if args.verbose:
+            print(f"[INFO] Run {run_counter}, Batch {batch_in_run} starting ({len(ids)} rows)")
+
+        for i in range(0, len(ids), chunk_size):
+            id_chunk = ids[i : i + chunk_size]
+
             # Got work → reset backoff
             idle_wait = max(0.001, float(args.min_idle))
             idle_spent = 0.0
 
-            # Run one batch (via pool for per-process model reuse)
-            if args.verbose:
-                print(f"[INFO] Run {run_counter}, Batch {batch_in_run} starting ({len(ids)} rows)")
             fut = executor.submit(
                 vectorize_batch,
                 args.url, huggingface_path, args.table,
-                args.input, args.output, primary_key, ids,
-                args.dry_run, args.verbose, pbar, batch_in_run, warnings
+                args.input, args.output, primary_key, id_chunk,
+                args.dry_run, args.verbose, batch_in_run
             )
-            fut.result()
-            batch_counter += 1
-            batch_in_run += 1
-            if args.follow and batch_in_run > args.num_batches:
-                if args.verbose:
-                    print(f"[INFO] Run {run_counter} complete ({args.num_batches} batches).")
-                run_counter += 1
-                batch_in_run = 1
-            continue
+            if args.progress:
+                fut.add_done_callback(_on_done)
+            
+            futures.append(fut)
+            
+        for fut in as_completed(futures):
+            worker_count, worker_errors, worker_warnings = fut.result()
+            errors.extend(worker_errors)
+            warnings.extend(worker_warnings)
+
+        batch_counter += 1
+        batch_in_run += 1
+        if args.follow and batch_in_run > args.num_batches:
+            if args.verbose:
+                print(f"[INFO] Run {run_counter} complete ({args.num_batches} batches).")
+            run_counter += 1
+            batch_in_run = 1
+        continue
 
         # No work returned → back off or exit if max idle reached
         if idle_budget > 0.0 and idle_spent >= idle_budget:
@@ -328,7 +353,7 @@ def main():
     if args.verbose:
         print("[INFO] Vectorization complete.")
 
-    if args.progress and warnings:
+    if args.progress and (warnings or errors):
         from datetime import datetime
         print("\n[WARNINGS SUMMARY]", flush=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -338,6 +363,14 @@ def main():
                 print(w)
                 f.write(w + "\n")
         print(f"Total warnings: {len(warnings)}")
+        print("\n[ERROR SUMMARY]", flush=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_filename = f"errors_{timestamp}.log"
+        with open(log_filename, "w") as f:
+            for w in errors:
+                print(w)
+                f.write(w + "\n")
+        print(f"Total errors: {len(errors)}")
 
 
 if __name__ == "__main__":
