@@ -246,26 +246,6 @@ def main():
     ensure_vector_column(conn, huggingface_path, args.table, args.output, args.dry_run, show_info=not args.progress)
 
     pbar = None
-    if args.progress:
-        total_rows = args.batch_size * args.num_batches
-        if args.follow:
-            total_rows = get_null_vector_row_count(conn, args.table, args.output, primary_key)
-
-        pbar = tqdm(
-                    total=total_rows,
-                    desc="Vectorizing",
-                    unit="rows",
-                    smoothing=0.01
-                )
-
-        def _on_done(fut):
-            try:
-                processed, _, _ = fut.result()
-            except Exception:
-                return
-            if processed:
-                pbar.update(processed)
-
 
     executor = ProcessPoolExecutor(max_workers=min(args.workers, multiprocessing.cpu_count()))
     futures = []
@@ -287,6 +267,27 @@ def main():
         # Stop after N batches per run (default 1) unless following
         if (not args.follow) and batch_in_run > args.num_batches:
             break
+
+        if args.progress and batch_in_run == 1:
+            total_rows = args.batch_size * args.num_batches
+            if args.follow:
+                total_rows = get_null_vector_row_count(conn, args.table, args.output, primary_key)
+
+            pbar = tqdm(
+                        total=total_rows,
+                        desc="Vectorizing",
+                        unit="rows",
+                        smoothing=0.01
+                    )
+
+            def _on_done(fut):
+                try:
+                    processed, _, _ = fut.result()
+                except Exception:
+                    return
+                if processed:
+                    pbar.update(processed)
+
 
         # Fetch one page of IDs (no wait on start or after successful work)
         ids = fetch_null_vector_ids(conn, args.table, args.output, primary_key, args.batch_size)
@@ -326,8 +327,14 @@ def main():
         if args.follow and batch_in_run > args.num_batches:
             if args.verbose:
                 print(f"[INFO] Run {run_counter} complete ({args.num_batches} batches).")
+
+            if args.progress and pbar is not None:
+                pbar.close()
+                pbar = None
+
             run_counter += 1
             batch_in_run = 1
+
         continue
 
         # No work returned → back off or exit if max idle reached
@@ -347,6 +354,7 @@ def main():
 
     if args.verbose:
         print("Done in", time.time() - start, "seconds")
+
 
 
 
