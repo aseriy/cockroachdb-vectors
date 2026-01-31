@@ -11,6 +11,7 @@ from tqdm import tqdm
 from sentence_transformers import SentenceTransformer
 from huggingface_hub import snapshot_download
 import psycopg2
+from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
 from urllib.parse import urlparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -20,6 +21,7 @@ from datetime import datetime
 
 
 _MODEL_CACHE = {}
+_WORKER_POOL = None
 
 def get_model(model_path: str) -> SentenceTransformer:
     m = _MODEL_CACHE.get(model_path)
@@ -43,16 +45,49 @@ def silence_everything():
             sys.stderr = old_stderr
 
 
-def get_connection(db_url):
-    parsed_url = urlparse(db_url)
-    return psycopg2.connect(
-        dbname=parsed_url.path[1:],
-        user=parsed_url.username,
-        password=parsed_url.password,
-        host=parsed_url.hostname,
-        port=parsed_url.port or 26257,
-        sslmode=parsed_url.query.split('sslmode=')[1] if parsed_url.query and 'sslmode=' in parsed_url.query else 'require'
+def main_get_conn(pool):
+    conn = pool.getconn()
+    conn.autocommit = True
+    return conn
+
+
+def worker_init(db_url):
+    global _WORKER_POOL
+    if _WORKER_POOL is None:
+        _WORKER_POOL = SimpleConnectionPool(
+            minconn=1,
+            maxconn=2,
+            **build_conn_kwargs(db_url)
+        )
+
+
+def worker_get_conn(db_url):
+    global _WORKER_POOL
+    conn = _WORKER_POOL.getconn()
+    conn.autocommit = True
+    return conn
+
+
+def worker_put_conn(conn):
+    global _WORKER_POOL
+    _WORKER_POOL.putconn(conn)
+
+
+def build_conn_kwargs(db_url):
+    parsed = urlparse(db_url)
+    return dict(
+        dbname=parsed.path[1:],
+        user=parsed.username,
+        password=parsed.password,
+        host=parsed.hostname,
+        port=parsed.port or 26257,
+        sslmode=(
+            parsed.query.split("sslmode=")[1]
+            if parsed.query and "sslmode=" in parsed.query
+            else "require"
+        )
     )
+
 
 def estimate_total_lines(path):
     count = 0
@@ -64,7 +99,10 @@ def estimate_total_lines(path):
         return None
     return count
 
-def ensure_vector_column(conn, model_path, table_name, output_column, dry_run, show_info=True):
+def ensure_vector_column(pool, model_path, table_name, output_column, dry_run, show_info=True):
+    conn = main_get_conn(pool)
+
+    existing = None
     with conn.cursor() as cur:
         cur.execute(f"""
             SELECT a.attname, t.typname
@@ -77,13 +115,18 @@ def ensure_vector_column(conn, model_path, table_name, output_column, dry_run, s
         """, (table_name, output_column))
         existing = cur.fetchone()
 
-        if existing:
-            if 'vector' not in existing[1]:
-                raise RuntimeError(f"Column {output_column} exists but is not of VECTOR type.")
-            if show_info:
-                print(f"[INFO] Column {output_column} already exists")
-            return
+    pool.putconn(conn)
 
+    if existing:
+        if 'vector' not in existing[1]:
+            raise RuntimeError(f"Column {output_column} exists but is not of VECTOR type.")
+        if show_info:
+            print(f"[INFO] Column {output_column} already exists")
+        return
+
+    conn = pool.getconn()
+
+    with conn.cursor() as cur:
         vector_dim = SentenceTransformer(model_path).get_sentence_embedding_dimension()
         sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{output_column}" VECTOR({vector_dim})'
         if dry_run:
@@ -91,7 +134,15 @@ def ensure_vector_column(conn, model_path, table_name, output_column, dry_run, s
         else:
             cur.execute(sql)
 
-def get_primary_key_column(conn, table_name):
+    pool.putconn(conn)
+
+
+
+def get_primary_key_column(pool, table_name):
+    conn = main_get_conn(pool)
+
+    pk_result = None
+
     with conn.cursor() as cur:
         cur.execute(f"""
             SELECT a.attname
@@ -100,28 +151,46 @@ def get_primary_key_column(conn, table_name):
             WHERE  i.indrelid = %s::regclass AND i.indisprimary
         """, (table_name,))
         pk_result = cur.fetchone()
-        if not pk_result:
-            raise RuntimeError(f"No primary key found for table '{table_name}'")
-        return pk_result[0]
 
-def get_null_vector_row_count(conn, table_name, output_column, primary_key):
+    pool.putconn(conn)
+
+    if not pk_result:
+        raise RuntimeError(f"No primary key found for table '{table_name}'")
+
+    return pk_result[0]
+
+def get_null_vector_row_count(pool, table_name, output_column, primary_key):
+    count = 0
+    conn = main_get_conn(pool)
     with conn.cursor() as cur:
         cur.execute(f'SELECT COUNT("{primary_key}") FROM "{table_name}" WHERE "{output_column}" IS NULL')
-        return cur.fetchone()[0]
+        count = cur.fetchone()[0]
 
-def fetch_null_vector_ids(conn, table_name, output_column, primary_key, limit, verbose=False):
+    pool.putconn(conn)
+    return count
+
+
+def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, verbose=False):
     max_retries = 10
+    ids = None
     for attempt in range(1, max_retries + 1):
         try:
+            conn = main_get_conn(pool)
             with conn.cursor() as cur:
                 cur.execute(f'SELECT "{primary_key}" FROM "{table_name}" WHERE "{output_column}" IS NULL LIMIT %s', (limit,))
-                return [row[0] for row in cur.fetchall()]
+                ids = [row[0] for row in cur.fetchall()]
+
+            pool.putconn(conn)
+
         except Exception as e:
             if attempt < max_retries:
                 print(f"[WARN] Retry {attempt}/{max_retries} on fetch_null_vector_ids: {e}", flush=True)
                 time.sleep(0.5 * attempt + random.uniform(0, 0.3))
             else:
                 raise
+
+    return ids
+
 
 
 # Vectorizes a batch of rows by primary key.
@@ -142,8 +211,7 @@ def vectorize_batch(
     warnings = []
     errors = []
 
-    conn = get_connection(db_url)
-    conn.autocommit = False
+    conn = worker_get_conn(db_url)
 
     with conn.cursor() as cur:
         placeholders = ','.join(['%s'] * len(ids))
@@ -156,7 +224,7 @@ def vectorize_batch(
         batch = cur.fetchall()
 
     if not batch:
-        conn.close()
+        worker_put_conn(conn)
         return 0
 
     texts = [row_text for row_text, _ in batch]
@@ -193,7 +261,7 @@ def vectorize_batch(
                 else:
                     errors.append(f"[{timestamp}] [ERROR] Failed after {max_retries} retries: {e}")
 
-    conn.close()
+    worker_put_conn(conn)
     return len(batch), errors, warnings
 
 
@@ -234,20 +302,31 @@ def main():
     with silence_everything():
         huggingface_path = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
 
-    #
-    # TODO: Implement a DB connection pool
-    #
+
+    executor = ProcessPoolExecutor(
+        max_workers=min(args.workers, multiprocessing.cpu_count()),
+        initializer=worker_init, initargs=(args.url,)
+    )
+    
+    conn_pool = SimpleConnectionPool(minconn=0, maxconn=5, **build_conn_kwargs(args.url))
+
 
     batch_counter = 0
-    conn = get_connection(args.url)
-    conn.autocommit = True
+    # conn = get_connection(args.url)
+    # conn.autocommit = True
 
-    primary_key = get_primary_key_column(conn, args.table)
-    ensure_vector_column(conn, huggingface_path, args.table, args.output, args.dry_run, show_info=not args.progress)
+    primary_key = get_primary_key_column(conn_pool, args.table)
+    ensure_vector_column(
+        conn_pool,
+        huggingface_path,
+        args.table,
+        args.output,
+        args.dry_run,
+        show_info=not args.progress
+    )
 
     pbar = None
 
-    executor = ProcessPoolExecutor(max_workers=min(args.workers, multiprocessing.cpu_count()))
     futures = []
     warnings = []
     errors = []
@@ -271,7 +350,7 @@ def main():
         if args.progress and batch_in_run == 1:
             total_rows = args.batch_size * args.num_batches
             if args.follow:
-                total_rows = get_null_vector_row_count(conn, args.table, args.output, primary_key)
+                total_rows = get_null_vector_row_count(conn_pool, args.table, args.output, primary_key)
 
             pbar = tqdm(
                         total=total_rows,
@@ -290,7 +369,7 @@ def main():
 
 
         # Fetch one page of IDs (no wait on start or after successful work)
-        ids = fetch_null_vector_ids(conn, args.table, args.output, primary_key, args.batch_size)
+        ids = fetch_null_vector_ids(conn_pool, args.table, args.output, primary_key, args.batch_size)
 
         chunk_size = int(0.5 + len(ids) / args.workers)
         futures = []
