@@ -1,0 +1,5 @@
+# models/__init__.py
+
+from .sentence_transformer import get_model, embedding_dim
+
+__all__ = ["get_model", "embedding_dim"]

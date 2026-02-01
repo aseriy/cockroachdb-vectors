@@ -6,10 +6,7 @@ import time
 import random
 import argparse
 import logging
-import contextlib
 from tqdm import tqdm
-from sentence_transformers import SentenceTransformer
-from huggingface_hub import snapshot_download
 import psycopg2
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
@@ -17,33 +14,10 @@ from urllib.parse import urlparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
+from models.sentence_transformer import get_model, embedding_dim
 
 
-
-_MODEL_CACHE = {}
 _WORKER_POOL = None
-
-def get_model(model_path: str) -> SentenceTransformer:
-    m = _MODEL_CACHE.get(model_path)
-    if m is None:
-        m = SentenceTransformer(model_path)   # loads once per process
-        _MODEL_CACHE[model_path] = m
-    return m
-
-
-@contextlib.contextmanager
-def silence_everything():
-    with open(os.devnull, "w") as fnull:
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-        sys.stdout = fnull
-        sys.stderr = fnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
-            sys.stderr = old_stderr
-
 
 def main_get_conn(pool):
     conn = pool.getconn()
@@ -99,7 +73,7 @@ def estimate_total_lines(path):
         return None
     return count
 
-def ensure_vector_column(pool, model_path, table_name, output_column, dry_run, show_info=True):
+def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=True):
     conn = main_get_conn(pool)
 
     existing = None
@@ -127,7 +101,8 @@ def ensure_vector_column(pool, model_path, table_name, output_column, dry_run, s
     conn = pool.getconn()
 
     with conn.cursor() as cur:
-        vector_dim = SentenceTransformer(model_path).get_sentence_embedding_dimension()
+        # vector_dim = SentenceTransformer(model_path).get_sentence_embedding_dimension()
+        vector_dim = embedding_dim()
         sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{output_column}" VECTOR({vector_dim})'
         if dry_run:
             print(f"[DRY RUN] Would execute: {sql}")
@@ -200,7 +175,7 @@ def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, v
 # - Reports status to tqdm or stdout depending on mode.
 
 def vectorize_batch(
-                    db_url, model_path, table_name,
+                    db_url, table_name,
                     input_column, output_column, primary_key, ids,
                     dry_run, verbose, batch_index=0
                     ):
@@ -229,7 +204,7 @@ def vectorize_batch(
 
     texts = [row_text for row_text, _ in batch]
     row_ids = [row_id for _, row_id in batch]
-    model = get_model(model_path)
+    model = get_model()
     embeddings = model.encode(texts, batch_size=128, show_progress_bar=False)
 
     if verbose:
@@ -296,13 +271,6 @@ def main():
         args.verbose = True
         args.progress = False
 
-    # Suppress huggingface_hub logger
-    logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
-
-    with silence_everything():
-        huggingface_path = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
-
-
     executor = ProcessPoolExecutor(
         max_workers=min(args.workers, multiprocessing.cpu_count()),
         initializer=worker_init, initargs=(args.url,)
@@ -312,13 +280,10 @@ def main():
 
 
     batch_counter = 0
-    # conn = get_connection(args.url)
-    # conn.autocommit = True
 
     primary_key = get_primary_key_column(conn_pool, args.table)
     ensure_vector_column(
         conn_pool,
-        huggingface_path,
         args.table,
         args.output,
         args.dry_run,
@@ -387,7 +352,7 @@ def main():
 
             fut = executor.submit(
                 vectorize_batch,
-                args.url, huggingface_path, args.table,
+                args.url, args.table,
                 args.input, args.output, primary_key, id_chunk,
                 args.dry_run, args.verbose, batch_in_run
             )
