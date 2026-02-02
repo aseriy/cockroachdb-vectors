@@ -14,6 +14,9 @@ from urllib.parse import urlparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
+import importlib
+model = importlib.import_module("models.sentence_transformer")
+
 from models.sentence_transformer import embedding_dim, embedding_encode
 
 
@@ -101,7 +104,7 @@ def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=Tru
     conn = pool.getconn()
 
     with conn.cursor() as cur:
-        vector_dim = embedding_dim()
+        vector_dim = model.embedding_dim()
         sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{output_column}" VECTOR({vector_dim})'
         if dry_run:
             print(f"[DRY RUN] Would execute: {sql}")
@@ -201,7 +204,7 @@ def vectorize_batch(
         worker_put_conn(conn)
         return 0
 
-    values = embedding_encode(batch_index, batch, verbose)
+    values = model.embedding_encode(batch_index, batch, verbose)
     
     #TODO: move to the model modle
     # texts = [row_text for _, row_text in batch]

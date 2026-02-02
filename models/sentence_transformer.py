@@ -5,6 +5,19 @@ import contextlib
 import os, sys
 
 
+def embedding_name():
+    return "hf:sentence-transformers/all-MiniLM-L6-v2"
+
+
+def embedding_desc():
+    return (
+        "General-purpose English sentence embedding model "
+        "based on MiniLM. Optimized for semantic similarity, "
+        "clustering, and retrieval tasks. Produces 384-dimensional "
+        "float vectors. Not multilingual."
+    )
+
+
 _MODEL_CACHE = {}
 huggingface_path = None
 
@@ -34,7 +47,6 @@ m = _MODEL_CACHE.get(huggingface_path)
 if m is None:
     m = SentenceTransformer(huggingface_path)   # loads once per process
     _MODEL_CACHE[huggingface_path] = m
-
 
 
 
