@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
-from models.sentence_transformer import get_model, embedding_dim
+from models.sentence_transformer import embedding_dim, embedding_encode
 
 
 _WORKER_POOL = None
@@ -101,7 +101,6 @@ def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=Tru
     conn = pool.getconn()
 
     with conn.cursor() as cur:
-        # vector_dim = SentenceTransformer(model_path).get_sentence_embedding_dimension()
         vector_dim = embedding_dim()
         sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{output_column}" VECTOR({vector_dim})'
         if dry_run:
@@ -192,7 +191,7 @@ def vectorize_batch(
         placeholders = ','.join(['%s'] * len(ids))
         cur.execute(
             f'''
-                SELECT "{input_column}", "{primary_key}"
+                SELECT "{primary_key}", "{input_column}"
                 FROM "{table_name}"
                 WHERE "{primary_key}" IN ({placeholders})
             ''', ids)
@@ -202,22 +201,28 @@ def vectorize_batch(
         worker_put_conn(conn)
         return 0
 
-    texts = [row_text for row_text, _ in batch]
-    row_ids = [row_id for _, row_id in batch]
-    model = get_model()
-    embeddings = model.encode(texts, batch_size=128, show_progress_bar=False)
+    values = embedding_encode(batch_index, batch, verbose)
+    
+    #TODO: move to the model modle
+    # texts = [row_text for _, row_text in batch]
+    # row_ids = [row_id for row_id, _ in batch]
+    # model = get_model()
+    # embeddings = model.encode(texts, batch_size=128, show_progress_bar=False)
 
-    if verbose:
-        for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
-            input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
-            print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector for row id {row_id}: '{input_column_text}'")
+    # if verbose:
+    #     for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
+    #         input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
+    #         print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector for row id {row_id}: '{input_column_text}'")
+
+    # values = [(row_id, embedding.tolist()) for row_id, embedding in zip(row_ids, embeddings)]
+    # TODO: end
+
 
     if not dry_run:
         max_retries = 10
         for attempt in range(1, max_retries + 1):
             try:
                 with conn.cursor() as cur:
-                    values = [(row_id, embedding.tolist()) for row_id, embedding in zip(row_ids, embeddings)]
                     sql = f'''
                         UPDATE "{table_name}" AS t
                         SET "{output_column}" = v.embedding
