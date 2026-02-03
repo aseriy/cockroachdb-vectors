@@ -121,12 +121,22 @@ def get_primary_key_column(pool, table_name):
     pk_result = None
 
     with conn.cursor() as cur:
-        cur.execute(f"""
-            SELECT a.attname
-            FROM   pg_index i
-            JOIN   pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
-            WHERE  i.indrelid = %s::regclass AND i.indisprimary
-        """, (table_name,))
+        cur.execute(
+            """
+            SELECT
+                a.attname AS column_name,
+                t.typname AS column_type
+            FROM pg_index i
+            JOIN pg_attribute a
+              ON a.attrelid = i.indrelid
+             AND a.attnum = ANY(i.indkey)
+            JOIN pg_type t
+              ON a.atttypid = t.oid
+            WHERE i.indrelid = %s::regclass
+              AND i.indisprimary
+            """,
+            (table_name,)
+        )
         pk_result = cur.fetchone()
 
     pool.putconn(conn)
@@ -134,7 +144,10 @@ def get_primary_key_column(pool, table_name):
     if not pk_result:
         raise RuntimeError(f"No primary key found for table '{table_name}'")
 
-    return pk_result[0]
+    pk_name, pk_type = pk_result
+    return pk_name, pk_type
+
+
 
 def get_null_vector_row_count(pool, table_name, output_column, primary_key):
     count = 0
@@ -178,7 +191,9 @@ def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, v
 
 def vectorize_batch(
                     db_url, table_name,
-                    input_column, output_column, primary_key, ids,
+                    input_column, output_column,
+                    primary_key, primary_key_type,
+                    ids,
                     dry_run, verbose, batch_index=0
                     ):
     
@@ -206,21 +221,6 @@ def vectorize_batch(
 
     values = model.embedding_encode(batch_index, batch, verbose)
     
-    #TODO: move to the model modle
-    # texts = [row_text for _, row_text in batch]
-    # row_ids = [row_id for row_id, _ in batch]
-    # model = get_model()
-    # embeddings = model.encode(texts, batch_size=128, show_progress_bar=False)
-
-    # if verbose:
-    #     for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
-    #         input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
-    #         print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector for row id {row_id}: '{input_column_text}'")
-
-    # values = [(row_id, embedding.tolist()) for row_id, embedding in zip(row_ids, embeddings)]
-    # TODO: end
-
-
     if not dry_run:
         max_retries = 10
         for attempt in range(1, max_retries + 1):
@@ -230,7 +230,7 @@ def vectorize_batch(
                         UPDATE "{table_name}" AS t
                         SET "{output_column}" = v.embedding
                         FROM (VALUES %s) AS v("{primary_key}", embedding)
-                        WHERE t."{primary_key}"::STRING = v."{primary_key}"
+                        WHERE t."{primary_key}" = v."{primary_key}"::"{primary_key_type}"
                     '''
                     execute_values(cur, sql, values, template="(%s, %s)")
                 conn.commit()
@@ -289,7 +289,7 @@ def main():
 
     batch_counter = 0
 
-    primary_key = get_primary_key_column(conn_pool, args.table)
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, args.table)
     ensure_vector_column(
         conn_pool,
         args.table,
@@ -361,7 +361,9 @@ def main():
             fut = executor.submit(
                 vectorize_batch,
                 args.url, args.table,
-                args.input, args.output, primary_key, id_chunk,
+                args.input, args.output,
+                primary_key, primary_key_type,
+                id_chunk,
                 args.dry_run, args.verbose, batch_in_run
             )
             if args.progress:
@@ -413,7 +415,7 @@ def main():
     if args.verbose:
         print("[INFO] Vectorization complete.")
 
-    if args.progress and (warnings or errors):
+    if (args.progress or args.verbose) and (warnings or errors):
         from datetime import datetime
         print("\n[WARNINGS SUMMARY]", flush=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
