@@ -101,7 +101,7 @@ def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=Tru
             print(f"[INFO] Column {output_column} already exists")
         return
 
-    conn = pool.getconn()
+    conn = main_get_conn(pool)
 
     with conn.cursor() as cur:
         vector_dim = model.embedding_dim()
@@ -183,28 +183,19 @@ def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, v
 
 
 
-# Vectorizes a batch of rows by primary key.
-# - Establishes a new DB connection per batch.
-# - Encodes using SentenceTransformer in parallel.
-# - Retries on failure with exponential backoff.
-# - Reports status to tqdm or stdout depending on mode.
-
-def vectorize_batch(
-                    db_url, table_name,
-                    input_column, output_column,
-                    primary_key, primary_key_type,
-                    ids,
-                    dry_run, verbose, batch_index=0
-                    ):
+def batch_encode(
+                db_url,
+                table_name, input_column,
+                primary_key, ids,
+                dry_run, verbose, batch_index=0
+                ):
     
     if not ids:
-        return 0
+        return None
 
-    warnings = []
-    errors = []
+    batch = None
 
     conn = worker_get_conn(db_url)
-
     with conn.cursor() as cur:
         placeholders = ','.join(['%s'] * len(ids))
         cur.execute(
@@ -214,13 +205,29 @@ def vectorize_batch(
                 WHERE "{primary_key}" IN ({placeholders})
             ''', ids)
         batch = cur.fetchall()
+    
+    worker_put_conn(conn)
 
     if not batch:
-        worker_put_conn(conn)
-        return 0
+        return None
 
     values = model.embedding_encode(batch_index, batch, verbose)
+    return values
     
+
+
+def batch_update(
+                pool, table_name, output_column,
+                primary_key, primary_key_type,
+                values,
+                dry_run, verbose, batch_index=0
+                ):
+
+    warnings = []
+    errors = []
+
+    conn = main_get_conn(pool)
+
     if not dry_run:
         max_retries = 10
         for attempt in range(1, max_retries + 1):
@@ -244,8 +251,8 @@ def vectorize_batch(
                 else:
                     errors.append(f"[{timestamp}] [ERROR] Failed after {max_retries} retries: {e}")
 
-    worker_put_conn(conn)
-    return len(batch), errors, warnings
+    pool.putconn(conn)
+    return len(values), errors, warnings
 
 
 
@@ -284,7 +291,7 @@ def main():
         initializer=worker_init, initargs=(args.url,)
     )
     
-    conn_pool = SimpleConnectionPool(minconn=0, maxconn=5, **build_conn_kwargs(args.url))
+    conn_pool = SimpleConnectionPool(minconn=0, maxconn=args.workers, **build_conn_kwargs(args.url))
 
 
     batch_counter = 0
@@ -332,13 +339,13 @@ def main():
                         smoothing=0.01
                     )
 
-            def _on_done(fut):
+            def _on_done_encode(fut):
                 try:
-                    processed, _, _ = fut.result()
+                    embeddings = fut.result()
                 except Exception:
                     return
-                if processed:
-                    pbar.update(processed)
+                if embeddings:
+                    pbar.update(len(embeddings))
 
 
         # Fetch one page of IDs (no wait on start or after successful work)
@@ -351,6 +358,8 @@ def main():
         if args.verbose:
             print(f"[INFO] Run {run_counter}, Batch {batch_in_run} starting ({len(ids)} rows)")
 
+        embeddings = []
+
         for i in range(0, len(ids), chunk_size):
             id_chunk = ids[i : i + chunk_size]
 
@@ -359,22 +368,33 @@ def main():
             idle_spent = 0.0
 
             fut = executor.submit(
-                vectorize_batch,
-                args.url, args.table,
-                args.input, args.output,
-                primary_key, primary_key_type,
-                id_chunk,
+                batch_encode,
+                args.url,
+                args.table, args.input,
+                primary_key, id_chunk,
                 args.dry_run, args.verbose, batch_in_run
             )
+
             if args.progress:
-                fut.add_done_callback(_on_done)
+                fut.add_done_callback(_on_done_encode)
             
             futures.append(fut)
             
         for fut in as_completed(futures):
-            worker_count, worker_errors, worker_warnings = fut.result()
-            errors.extend(worker_errors)
-            warnings.extend(worker_warnings)
+            embeddings.extend(fut.result())
+
+        # for e in embeddings:
+        #     print(json.dumps(e, indent=2))
+
+        worker_count, worker_errors, worker_warnings = batch_update(
+                conn_pool, args.table, args.output,
+                primary_key, primary_key_type,
+                embeddings,
+                args.dry_run, args.verbose, batch_in_run
+            )
+        errors.extend(worker_errors)
+        warnings.extend(worker_warnings)
+
 
         batch_counter += 1
         batch_in_run += 1
@@ -408,8 +428,6 @@ def main():
 
     if args.verbose:
         print("Done in", time.time() - start, "seconds")
-
-
 
 
     if args.verbose:
