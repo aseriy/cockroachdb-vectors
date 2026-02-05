@@ -1,13 +1,7 @@
-import os
-import sys
-import gzip
-import json
 import time
 import random
 import argparse
-import logging
 from tqdm import tqdm
-import psycopg2
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
 from urllib.parse import urlparse
@@ -16,8 +10,6 @@ import multiprocessing
 from datetime import datetime
 import importlib
 model = importlib.import_module("models.sentence_transformer")
-
-from models.sentence_transformer import embedding_dim, embedding_encode
 
 
 _WORKER_POOL = None
@@ -66,15 +58,6 @@ def build_conn_kwargs(db_url):
     )
 
 
-def estimate_total_lines(path):
-    count = 0
-    try:
-        with gzip.open(path, 'rt', encoding='utf-8') as f:
-            for _ in f:
-                count += 1
-    except Exception:
-        return None
-    return count
 
 def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=True):
     conn = main_get_conn(pool)
