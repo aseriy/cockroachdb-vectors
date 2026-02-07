@@ -1,5 +1,10 @@
 # models/__init__.py
 
-from .sentence_transformer import embedding_name, embedding_desc, embedding_dim, embedding_encode
+from .hf_st_all_minilm_l6 import embedding_label, embedding_description, embedding_dim, embedding_encode
 
-__all__ = ["embedding_name", "embedding_desc", "embedding_dim", "embedding_encode"]
+__all__ = [
+    "embedding_label",
+    "embedding_description",
+    "embedding_dim",
+    "embedding_encode"
+]

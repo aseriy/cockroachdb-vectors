@@ -1,6 +1,5 @@
 import time
 import random
-import argparse
 from tqdm import tqdm
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
@@ -9,7 +8,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
 import importlib
-model = importlib.import_module("models.sentence_transformer")
+model = importlib.import_module("models.hf_st_all_minilm_l6")
 
 
 _WORKER_POOL = None
@@ -240,39 +239,6 @@ def batch_update(
 
 
 def run_encode(args):
-    # parser = argparse.ArgumentParser(description="Vectorize rows in CockroachDB using SentenceTransformers.")
-    # parser.add_argument("-u", "--url", required=True, help="CockroachDB connection URL")
-    # parser.add_argument("-t", "--table", required=True, help="Target table name")
-    # parser.add_argument("-i", "--input", required=True, help="Column containing input text")
-    # parser.add_argument("-o", "--output", required=True, help="Column to store the vector")
-    # parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Rows to process per batch")
-    # parser.add_argument("-n", "--num-batches", type=int, default=1,
-    #                     help="Number of batches to process before exiting (default: 1)")
-    # parser.add_argument("-F", "--follow", action="store_true",
-    #                     help="Keep running: keep vectorizing new NULL rows indefinitely")
-    # parser.add_argument("--max-idle", type=float, default=60.0,
-    #                     help="Max idle time before exit, in MINUTES (0 = no idle limit)")
-    # parser.add_argument("--min-idle", type=float, default=15.0,
-    #                     help="Initial idle backoff between empty scans, in SECONDS")
-    # parser.add_argument("-w", "--workers", type=int, default=1, help="Number of parallel workders to use (default: 1)")
-
-    # # Disallow verbose and progress together
-    # group1 = parser.add_mutually_exclusive_group()
-    # group1.add_argument("-v", "--verbose", action="store_true", help="Verbose output (used for debugging)")
-    # group1.add_argument("-p", "--progress", action="store_true", help="Show progress bar")
-
-    # parser.add_argument("-d", "--dry-run", action="store_true", help="Print SQL statements without executing (only valid with --verbose)")
-    # args = parser.parse_args()
-
-    # if args.dry_run:
-    #     args.workers = 1
-    #     args.verbose = True
-    #     args.progress = False
-
-    # print(args)
-    # exit(0)
-
-
     executor = ProcessPoolExecutor(
         max_workers=min(args['workers'], multiprocessing.cpu_count()),
         initializer=worker_init, initargs=(args['url'],)
@@ -440,6 +406,3 @@ def run_encode(args):
                 f.write(w + "\n")
         print(f"Total errors: {len(errors)}")
 
-
-# if __name__ == "__main__":
-#     main()

@@ -1,6 +1,6 @@
 import click
 import json
-from operations import run_encode
+from operations import run_encode, run_model_list, run_model_desc
 
 
 class OperationGroup(click.Group):
@@ -105,9 +105,28 @@ def search(url, table, verbose):
     pass
 
 
-@cli.command()
+@cli.group()
 def model():
     pass
+
+
+@model.command()
+def list():
+    args = {}
+    run_model_list(args)
+
+
+
+@model.command()
+@click.argument("model", required=True)
+def desc(model: str):
+    args = {
+        "model": model
+    }
+    run_model_desc(args)
+
+
+
 
 
 if __name__ == "__main__":

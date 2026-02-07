@@ -3,19 +3,23 @@ from huggingface_hub import snapshot_download
 import logging
 import contextlib
 import os, sys
+import textwrap
 
 
-def embedding_name():
-    return "hf:sentence-transformers/all-MiniLM-L6-v2"
+def embedding_label():
+    return "Hugging Face Sentence Transformer all-MiniLM-L6-v2"
 
 
-def embedding_desc():
-    return (
-        "General-purpose English sentence embedding model "
-        "based on MiniLM. Optimized for semantic similarity, "
-        "clustering, and retrieval tasks. Produces 384-dimensional "
-        "float vectors. Not multilingual."
-    )
+def embedding_description():
+    return textwrap.dedent(
+        """
+        General-purpose English sentence embedding model
+        based on MiniLM. Optimized for semantic similarity,
+        clustering, and retrieval tasks. Produces 384-dimensional
+        float vectors. Not multilingual.
+        https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+        """
+    ).strip()
 
 
 _MODEL_CACHE = {}
