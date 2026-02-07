@@ -4,6 +4,11 @@ import importlib
 
 
 
+def is_valid_model(name: str):
+    models_available = [mod.name for mod in pkgutil.iter_modules(models.__path__)]
+    return name in models_available
+
+
 def run_model_list(args):
     for mod in pkgutil.iter_modules(models.__path__):
         module = importlib.import_module(f"models.{mod.name}")
@@ -14,8 +19,7 @@ def run_model_list(args):
 def run_model_desc(args):
     name = args['model']
 
-    modules_available = [mod.name for mod in pkgutil.iter_modules(models.__path__)]
-    if name not in modules_available:
+    if not is_valid_model(name):
         print(f"No model {args['model']} found...")
         return
 

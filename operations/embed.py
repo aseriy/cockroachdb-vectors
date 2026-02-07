@@ -8,10 +8,11 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
 import importlib
-model = importlib.import_module("models.hf_st_all_minilm_l6")
+from .model import is_valid_model
 
 
 _WORKER_POOL = None
+model = None
 
 def main_get_conn(pool):
     conn = pool.getconn()
@@ -165,7 +166,7 @@ def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, v
 
 
 
-def batch_encode(
+def batch_embed(
                 db_url,
                 table_name, input_column,
                 primary_key, ids,
@@ -238,7 +239,13 @@ def batch_update(
 
 
 
-def run_encode(args):
+def run_embed(args):
+    if not is_valid_model(args['model']):
+        raise RuntimeError(f"Invalid embedding model {args['model']}")
+
+    global model
+    model = importlib.import_module(f"models.{args['model']}")
+
     executor = ProcessPoolExecutor(
         max_workers=min(args['workers'], multiprocessing.cpu_count()),
         initializer=worker_init, initargs=(args['url'],)
@@ -293,7 +300,7 @@ def run_encode(args):
                         smoothing=0.01
                     )
 
-            def _on_done_encode(fut):
+            def _on_done_embed(fut):
                 try:
                     embeddings = fut.result()
                 except Exception:
@@ -322,7 +329,7 @@ def run_encode(args):
             idle_spent = 0.0
 
             fut = executor.submit(
-                batch_encode,
+                batch_embed,
                 args['url'],
                 args['table'], args['input'],
                 primary_key, id_chunk,
@@ -330,7 +337,7 @@ def run_encode(args):
             )
 
             if args['progress']:
-                fut.add_done_callback(_on_done_encode)
+                fut.add_done_callback(_on_done_embed)
             
             futures.append(fut)
             

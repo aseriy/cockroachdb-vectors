@@ -1,6 +1,6 @@
 import click
 import json
-from operations import run_encode, run_model_list, run_model_desc
+from operations import run_embed, run_model_list, run_model_desc
 
 
 class OperationGroup(click.Group):
@@ -32,12 +32,13 @@ def cli():
 def shared_db_options(f):
     f = click.option("-u", "--url", required=True, help="CockroachDB connection URL")(f)
     f = click.option("-t", "--table", required=True, help="Target table name")(f)
+    f = click.option("-m", "--model", required=True, help="Embedding model. See 'model list' for available models")(f)
     f = click.option("-v", "--verbose", is_flag=True, help="Verbose output (used for debugging)")(f)
     return f
 
 
 
-@cli.command(help="Vectorize rows in CockroachDB using SentenceTransformers.")
+@cli.command(short_help="Vectorize rows in CockroachDB using a specified encoding model.")
 @shared_db_options
 @click.option("-i", "--input", "input_col", required=True, help="Column containing input text")
 @click.option("-o", "--output", "output_col", required=True, help="Column to store the vector")
@@ -55,12 +56,12 @@ def shared_db_options(f):
 @click.option("-p", "--progress", is_flag=True, help="Show progress bar")
 @click.option("-d", "--dry-run", "dry_run", is_flag=True,
               help="Print SQL statements without executing (only valid with --verbose)")
-def encode(
+def embed(
     url,
     table,
-    verbose,
     input_col,
     output_col,
+    model,
     batch_size,
     num_batches,
     follow,
@@ -69,6 +70,7 @@ def encode(
     workers,
     progress,
     dry_run,
+    verbose
 ):
 
     if verbose and progress:
@@ -84,40 +86,41 @@ def encode(
         "table": table,
         "input": input_col,
         "output": output_col,
+        "model": model,
         "batch_size": batch_size,
         "num_batches": num_batches,
         "follow": follow,
         "max_idle": max_idle,
         "min_idle": min_idle,
         "workers": workers,
-        "verbose": verbose,
         "progress": progress,
         "dry_run": dry_run,
+        "verbose": verbose
     }
 
-    print(json.dumps(args, indent=2))
-    run_encode(args)
+    # print(json.dumps(args, indent=2))
+    run_embed(args)
 
 
-@cli.command()
+@cli.command(short_help="Run similarity search")
 @shared_db_options
 def search(url, table, verbose):
     pass
 
 
-@cli.group()
+@cli.group(short_help="Explore available vector embedding models.")
 def model():
     pass
 
 
-@model.command()
+@model.command(short_help="List available vector embedding models.")
 def list():
     args = {}
     run_model_list(args)
 
 
 
-@model.command()
+@model.command(short_help="Describe spefic model.")
 @click.argument("model", required=True)
 def desc(model: str):
     args = {

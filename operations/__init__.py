@@ -1,10 +1,11 @@
 # operations/__init__.py
 
-from .encode import run_encode
-from .model import run_model_list, run_model_desc
+from .embed import run_embed
+from .model import is_valid_model, run_model_list, run_model_desc
 
 __all__ = [
-    "run_encode",
+    "run_embed",
+    "is_valid_model",
     "run_model_list",
     "run_model_desc"
 ]
