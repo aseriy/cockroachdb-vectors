@@ -60,7 +60,14 @@ def embedding_dim():
 
 
 
-def embedding_encode(batch_index, batch, verbose = False) -> list[list[float]]:
+def embedding_encode(input_text: str, verbose = False):
+    model = _MODEL_CACHE.get(huggingface_path)
+    embeddings = model.encode([input_text], batch_size=128, show_progress_bar=False)
+    return embeddings[0].tolist()
+
+
+
+def embedding_encode_batch(batch_index, batch, verbose = False) -> list[list[float]]:
     texts = [row_text for _, row_text in batch]
     row_ids = [row_id for row_id, _ in batch]
     model = _MODEL_CACHE.get(huggingface_path)

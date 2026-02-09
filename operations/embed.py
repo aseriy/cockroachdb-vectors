@@ -1,23 +1,19 @@
 import time
 import random
 from tqdm import tqdm
+import atexit
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
-from urllib.parse import urlparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
 import importlib
 from .model import is_valid_model
+from .common import build_conn_kwargs, main_get_conn, get_primary_key_column
 
 
 _WORKER_POOL = None
 model = None
-
-def main_get_conn(pool):
-    conn = pool.getconn()
-    conn.autocommit = True
-    return conn
 
 
 def worker_init(db_url):
@@ -28,6 +24,7 @@ def worker_init(db_url):
             maxconn=2,
             **build_conn_kwargs(db_url)
         )
+        atexit.register(_WORKER_POOL.closeall)
 
 
 def worker_get_conn(db_url):
@@ -40,22 +37,6 @@ def worker_get_conn(db_url):
 def worker_put_conn(conn):
     global _WORKER_POOL
     _WORKER_POOL.putconn(conn)
-
-
-def build_conn_kwargs(db_url):
-    parsed = urlparse(db_url)
-    return dict(
-        dbname=parsed.path[1:],
-        user=parsed.username,
-        password=parsed.password,
-        host=parsed.hostname,
-        port=parsed.port or 26257,
-        sslmode=(
-            parsed.query.split("sslmode=")[1]
-            if parsed.query and "sslmode=" in parsed.query
-            else "require"
-        )
-    )
 
 
 
@@ -95,40 +76,6 @@ def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=Tru
             cur.execute(sql)
 
     pool.putconn(conn)
-
-
-
-def get_primary_key_column(pool, table_name):
-    conn = main_get_conn(pool)
-
-    pk_result = None
-
-    with conn.cursor() as cur:
-        cur.execute(
-            """
-            SELECT
-                a.attname AS column_name,
-                t.typname AS column_type
-            FROM pg_index i
-            JOIN pg_attribute a
-              ON a.attrelid = i.indrelid
-             AND a.attnum = ANY(i.indkey)
-            JOIN pg_type t
-              ON a.atttypid = t.oid
-            WHERE i.indrelid = %s::regclass
-              AND i.indisprimary
-            """,
-            (table_name,)
-        )
-        pk_result = cur.fetchone()
-
-    pool.putconn(conn)
-
-    if not pk_result:
-        raise RuntimeError(f"No primary key found for table '{table_name}'")
-
-    pk_name, pk_type = pk_result
-    return pk_name, pk_type
 
 
 
@@ -194,7 +141,7 @@ def batch_embed(
     if not batch:
         return None
 
-    values = model.embedding_encode(batch_index, batch, verbose)
+    values = model.embedding_encode_batch(batch_index, batch, verbose)
     return values
     
 
@@ -252,7 +199,7 @@ def run_embed(args):
     )
     
     conn_pool = SimpleConnectionPool(minconn=0, maxconn=args['workers'], **build_conn_kwargs(args['url']))
-
+    atexit.register(conn_pool.closeall)
 
     batch_counter = 0
 
