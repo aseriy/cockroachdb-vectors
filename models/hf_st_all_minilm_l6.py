@@ -4,13 +4,14 @@ import logging
 import contextlib
 import os, sys
 import textwrap
+from typing import Iterable, List, Tuple, Any
 
 
-def embedding_label():
+def embedding_label() -> str:
     return "Hugging Face Sentence Transformer all-MiniLM-L6-v2"
 
 
-def embedding_description():
+def embedding_description() -> str:
     return textwrap.dedent(
         """
         General-purpose English sentence embedding model
@@ -54,20 +55,25 @@ if m is None:
 
 
 
-def embedding_dim():
+def embedding_dim() -> int:
     model = _MODEL_CACHE[huggingface_path]
     return model.get_sentence_embedding_dimension()
 
 
 
-def embedding_encode(input_text: str, verbose = False):
+def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
     model = _MODEL_CACHE.get(huggingface_path)
     embeddings = model.encode([input_text], batch_size=128, show_progress_bar=False)
     return embeddings[0].tolist()
 
 
 
-def embedding_encode_batch(batch_index, batch, verbose = False) -> list[list[float]]:
+def embedding_encode_batch(
+        batch_index: int,
+        batch: Iterable[Tuple[Any, Any]],
+        verbose: bool = False
+  ) -> List[Tuple[Any, List[float]]]:
+  
     texts = [row_text for _, row_text in batch]
     row_ids = [row_id for row_id, _ in batch]
     model = _MODEL_CACHE.get(huggingface_path)
@@ -82,5 +88,3 @@ def embedding_encode_batch(batch_index, batch, verbose = False) -> list[list[flo
     values = [(row_id, embedding.tolist()) for row_id, embedding in zip(row_ids, embeddings)]
 
     return values
-
-
