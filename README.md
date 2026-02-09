@@ -167,3 +167,79 @@ Cost of living data is from the Missouri Economic Research and Information Cente
 
 ## Embedding Models
 
+`vectorize.py` is design to decouple the vector embedding from the data pipeline / database mechanics. The vector encoding is delegate to the embedding model wrappers located in the `models` directory:
+
+```bash
+models/
+models/__init__.py
+models/hf_st_all_minilm_l6.py
+```
+
+The model will be referenced by the name of the wrapper file, i.e. `hf_st_all_minilm_l6`.
+
+A model wrapper has to implement the following functions:
+
+```python
+def embedding_label() -> str
+```
+
+A short description of the model. This is what `vectorize.py model list` will show:
+
+```bash
+$ python3 vectorize.py model list
+hf_st_all_minilm_l6	Hugging Face Sentence Transformer all-MiniLM-L6-v2
+```
+
+```python
+def embedding_description() -> str
+```
+
+A long description of the model, including the dimensionality and anything else that's important to the user to know. This is displayed by `vectorize.py model desc f_st_all_minilm_l6`:
+
+```bash
+$ python3 vectorize.py model desc hf_st_all_minilm_l6
+------------------------------------------------------
+| Hugging Face Sentence Transformer all-MiniLM-L6-v2 |
+------------------------------------------------------
+General-purpose English sentence embedding model
+based on MiniLM. Optimized for semantic similarity,
+clustering, and retrieval tasks. Produces 384-dimensional
+float vectors. Not multilingual.
+https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+
+```
+
+```python
+def embedding_dim() -> int
+```
+
+Returns the dimensionality of the model. It's used by the script to create the vector output column if it doesn't exist.
+
+
+```python
+def embedding_encode(
+        input_data: Any,
+        verbose: bool = False
+    ) -> List[float]
+```
+
+This function takes a single row's input column data to be encode, and return the resulting vector.
+
+>[!NOTE]
+> The input data may be of any type, not just text. The model needs to be aware of the data type it's embedding.
+
+
+```python
+def embedding_encode_batch(
+        batch_index: int,
+        batch: Iterable[Tuple[Any, Any]],
+        verbose: bool = False
+    ) -> List[Tuple[Any, List[float]]]
+```
+
+This function takes:
+
+1. a batch index - this is for information purposes only and used to generate INFO message
+2. a list of tuple where each tuple contains the primary key and the input column value. Both can be of any data type.
+
+It returns a resulting list of PK-Embedding tuples.
