@@ -18,7 +18,6 @@ At the center of the toolkit is the vectorize.py script. It exposes a simple CLI
 The `embed` subcommand generates vector embeddings for rows in an existing CockroachDB table and stores them alongside the original data.
 
 At a high level, it:
-
 - Reads values from a specified input column
 - Generates embeddings using the selected encoding model
 - Writes the resulting vectors into a specified output column
@@ -46,6 +45,46 @@ Done in 13.912834882736206 seconds
 If the output vector column does not already exist, the script will create it automatically. The vector column’s dimensionality is derived from the selected embedding model (see the model subcommand below).
 
 To keep the workflow simple and generic, the script only processes rows where the output vector column is `NULL`. There is no built-in mechanism to detect whether embeddings are out of date. If the source data in a row is updated, the corresponding vector column must be explicitly cleared (set to `NULL`) in order for embed to regenerate the embedding.
+
+
+### `embed` Performance Options
+
+The `embed` command is designed to efficiently generate embeddings while keeping database writes predictable and low-contention. To achieve this, embedding computation and database updates are intentionally decoupled.
+
+At a high level:
+- Embedding computation can run in parallel across multiple CPUs.
+- Generated embeddings are collected into batches.
+- Database updates are executed sequentially, in batches, to minimize write contention and maximize database efficiency.
+
+The following options control this behavior.
+
+### Batch size (-b, --batch-size)
+
+The batch size defines how many rows are updated in a single database write batch. Each batch groups together a fixed number of newly generated embeddings before they are written back to CockroachDB.
+
+Larger batches reduce the number of database write operations, while smaller batches reduce per-batch resource usage. Batch size affects database write behavior but does not control parallelism.
+
+>[!NOTE]
+> Since this is purposefully a non-production script, it doesn't prevent the input column from being updated while the embeddings are calculated. Your real-life production application may require this level of strictness.
+
+### Parallel workers (-w, --workers)
+
+The workers option controls how many embeddings are calculated in parallel. Each worker independently computes embeddings for input rows, allowing the embedding step to utilize multiple CPUs.
+
+Parallelism applies only to embedding computation. Database updates remain single-threaded and batched to avoid write contention.
+
+### Number of batches (-n, --num-batches)
+
+The number of batches option limits how many batches are processed during a single invocation of embed. This provides a simple way to bound the amount of work performed before the command exits.
+
+The total number of rows processed in one run is approximately the batch size multiplied by the number of batches.
+
+### Continuous operation (-F, --follow)
+
+When run with --follow, the embed command continues running until there are no remaining rows where the output vector column is NULL. The same batching and parallelism rules apply, but the process does not exit after a fixed number of batches.
+
+This mode enables continuous vectorization as new rows are inserted, without introducing additional logic for detecting stale or out-of-date embeddings.
+
 
 
 ### `model`
@@ -83,7 +122,6 @@ The `vectorize.py` script uses a pluggable model architecture. Encoding models a
 The `search` subcommand performs semantic similarity search over rows that have already been vectorized.
 
 Given an input text value, it:
-
 - Encodes the text using the same embedding model used during `embed`
 - Executes a vector similarity query directly inside CockroachDB
 - Returns the closest matching rows based on vector distance
@@ -125,4 +163,7 @@ As tax season kicks off, NYC Free Tax Prep is ready | New York Amsterdam News: T
 Cost of living data is from the Missouri Economic Research and Information Center. This is 24/7 Wall St.’s states doing the most (and least) to spread the wealth. Everyone Who Believes in God Should Watch This.
 
 ```
+
+
+## Embedding Models
 
