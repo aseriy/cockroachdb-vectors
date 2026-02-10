@@ -170,12 +170,11 @@ Cost of living data is from the Missouri Economic Research and Information Cente
 `vectorize.py` is design to decouple the vector embedding from the data pipeline / database mechanics. The vector encoding is delegate to the embedding model wrappers located in the `models` directory:
 
 ```bash
-models/
-models/__init__.py
 models/hf_st_all_minilm_l6.py
+models/openai_text_embed.py
 ```
 
-The model will be referenced by the name of the wrapper file, i.e. `hf_st_all_minilm_l6`.
+The model will be referenced by the name of the wrapper file, i.e. `hf_st_all_minilm_l6` or `openai_text_embed.py`.
 
 A model wrapper has to implement the following functions:
 
@@ -188,6 +187,7 @@ A short description of the model. This is what `vectorize.py model list` will sh
 ```bash
 $ python3 vectorize.py model list
 hf_st_all_minilm_l6	Hugging Face Sentence Transformer all-MiniLM-L6-v2
+openai_text_embed	OpenAI Text Embedding API
 ```
 
 ```python
@@ -243,3 +243,48 @@ This function takes:
 2. a list of tuple where each tuple contains the primary key and the input column value. Both can be of any data type.
 
 It returns a resulting list of PK-Embedding tuples.
+
+
+### Debugging Models
+
+A simple script called `model_test.py` in this repo that you can use to check / debug a model wrapper in the `model` directory. It invokes the expected API functions described above. *It will be nice to turn this into a real unit test :-)* You can run it as following:
+
+```bash
+python3 model_test.py hf_st_all_minilm_l6
+```
+
+or
+
+```bash
+python3 model_test.py openai_text_embed
+```
+
+### Configuring Model Run-Time
+
+Some models require configuration. For example, the OpenAI model needs the API key. The repo has a template configuration file `config_tmpl.yaml`:
+
+```yaml
+models:
+  - hf_st_all_minilm_l6
+  - openai_text_embed:
+      api_key: OpenAI_API_Key
+      model: text-embedding-3-[small|large]
+```
+
+The actual file that the models expect should be called `config.yaml`. Models don't have to use this config, but if a model does, its parameters should be exclusively under `models/<model_name>` section. It is the responsibility of the model wrapper to parse and utilize its associated parameters. For example, `models/openai_text_embed.py`:
+
+```python
+config_path = Path(__file__).resolve().parent.parent / "config.yaml"
+config = None
+with open("config.yaml", "r") as file:
+    config = yaml.safe_load(file)
+
+openai_settings = next(
+    item[Path(__file__).stem] 
+    for item in config['models'] 
+    if isinstance(item, dict) and 'openai_text_embed' in item
+)
+
+_client = OpenAI(api_key=openai_settings['api_key'])
+_MODEL = openai_settings['model']
+```

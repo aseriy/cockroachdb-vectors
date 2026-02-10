@@ -26,15 +26,11 @@ config = None
 with open("config.yaml", "r") as file:
     config = yaml.safe_load(file)
 
-# Access data like a normal dictionary
-# print(config['models'][Path(__file__).stem])
 openai_settings = next(
     item[Path(__file__).stem] 
     for item in config['models'] 
     if isinstance(item, dict) and 'openai_text_embed' in item
 )
-
-print(openai_settings)
 
 _client = OpenAI(api_key=openai_settings['api_key'])
 _MODEL = openai_settings['model']
