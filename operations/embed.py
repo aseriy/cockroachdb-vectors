@@ -40,7 +40,7 @@ def worker_put_conn(conn):
 
 
 
-def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=True):
+def ensure_vector_column(pool, table_name, pk, output_column, dry_run, show_info=True):
     conn = main_get_conn(pool)
 
     existing = None
@@ -58,22 +58,50 @@ def ensure_vector_column(pool, table_name, output_column, dry_run, show_info=Tru
 
     pool.putconn(conn)
 
+    sql = []
+
     if existing:
         if 'vector' not in existing[1]:
             raise RuntimeError(f"Column {output_column} exists but is not of VECTOR type.")
         if show_info:
             print(f"[INFO] Column {output_column} already exists")
-        return
+
+    else:
+        vector_dim = model.embedding_dim()
+        sql.append(
+            f"""
+                ALTER TABLE "{table_name}"
+                ADD COLUMN "{output_column}" VECTOR({vector_dim})
+            """
+        )
 
     conn = main_get_conn(pool)
 
-    with conn.cursor() as cur:
-        vector_dim = model.embedding_dim()
-        sql = f'ALTER TABLE "{table_name}" ADD COLUMN "{output_column}" VECTOR({vector_dim})'
-        if dry_run:
-            print(f"[DRY RUN] Would execute: {sql}")
-        else:
-            cur.execute(sql)
+    sql.append(f'''
+                CREATE VECTOR INDEX IF NOT EXISTS "{table_name}_{output_column}_idx"
+                ON "{table_name}"("{output_column}" vector_cosine_ops)
+                WHERE "{output_column}" IS NOT NULL
+                ''')
+    sql.append(f'''
+                CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_null_idx"
+                ON "{table_name}"("{pk}" ASC)
+                WHERE "{output_column}" IS NULL
+            '''
+    )
+    sql.append(f'''
+                CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_not_null_idx"
+                ON "{table_name}"("{pk}" ASC)
+                WHERE "{output_column}" IS NOT NULL
+            '''
+    )
+
+    for stmt in sql:
+        with conn.cursor() as cur:
+            if dry_run:
+                print(f"[DRY RUN] Would execute: {stmt}")
+            else:
+                cur.execute(stmt)
+
 
     pool.putconn(conn)
 
@@ -97,7 +125,12 @@ def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, v
         try:
             conn = main_get_conn(pool)
             with conn.cursor() as cur:
-                cur.execute(f'SELECT "{primary_key}" FROM "{table_name}" WHERE "{output_column}" IS NULL LIMIT %s', (limit,))
+                cur.execute(f"""
+                            SELECT "{primary_key}" FROM "{table_name}"
+                            WHERE "{output_column}" IS NULL
+                            LIMIT %s
+                            """,
+                            (limit,))
                 ids = [row[0] for row in cur.fetchall()]
 
             pool.putconn(conn)
@@ -207,6 +240,7 @@ def run_embed(args):
     ensure_vector_column(
         conn_pool,
         args['table'],
+        primary_key,
         args['output'],
         args['dry_run'],
         show_info=not args['progress']
@@ -339,7 +373,7 @@ def run_embed(args):
 
 
     if args['verbose']:
-        print("[INFO] Vectorization complete.")
+        print("[INFO] Embedding complete.")
 
     if (args['progress'] or args['verbose']) and (warnings or errors):
         from datetime import datetime

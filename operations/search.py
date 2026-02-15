@@ -26,17 +26,18 @@ def run_search(args: dict):
         print()
 
     vector = model.embedding_encode(args['text'], args['verbose'])
+    vector_dim = model.embedding_dim()
     vector_param = "[" + ",".join(str(x) for x in vector) + "]"
 
     query = f"""
             SELECT
                 {primary_key},
                 {args['source']},
-                {args['embedding']} <=> %s AS distance
+                ROUND({args['embedding']} <=> %s::VECTOR({vector_dim}), 6) AS distance
             FROM {args['table']}
             AS OF SYSTEM TIME follower_read_timestamp()
             WHERE {args['embedding']} IS NOT NULL
-            ORDER BY {args['embedding']} <=> %s
+            ORDER BY {args['embedding']} <=> %s::VECTOR({vector_dim})
             LIMIT {args['limit']}
     """
 
