@@ -60,12 +60,19 @@ def embedding_description() -> str:
 # response = client.embeddings.create(
 #     model="text-embedding-3-large",
 #     input="Your text here",
-#     dimensions=1024  # Lowering from 3072 to 1024
+#     dimensions=1024  # Lowering from 3072 to 102
 # )
 def embedding_dim() -> int:
     return MODEL_DIMENSIONS[_MODEL]
 
 
+def embedding_index_opclass() -> str:
+    return "vector_cosine_ops"
+
+
+def embedding_index_operator() -> str:
+    return "<=>"
+    
 
 def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
     global _encoding

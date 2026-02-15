@@ -217,6 +217,24 @@ Returns the dimensionality of the model. It's used by the script to create the v
 
 
 ```python
+def embedding_index_opclass() -> str:
+    return "vector_cosine_ops"
+
+def embedding_index_operator() -> str:
+    return "<=>"
+```
+
+These two functions are closely related. The first is used by `embed` during creting the vector index on the new vector column. The second is called by `search` to ensure that the comparison operator used in the search query aligns with the vector index thus telling the query planner to use the index to speed up the search. The following option exist:
+
+|             | Pupose | `opclass` | `operator` |
+| :--------- | :----- | :-------: | :--------: |
+| L2&nbsp;distance | Use when you want the true geometric distance, such as in spatial or physical models where absolute positioning matters. | `vector_l2_ops` | `<->` |
+| Cosine&nbsp;distance | Use when you only care about directional similarity, like in semantic text matching or clustering. Ideal for retrieval-augmented generation (RAG) use cases involving pretrained embedding models that either normalize vectors or are trained with a cosine similarity loss. | `vector_cosine_ops` | `<=>` |
+| Negative&nbsp;inner&nbsp;product | Use when both the magnitude and direction of vectors matter, such as in scoring or preference modeling. | `vector_ip_ops` | `<#>` |
+
+
+
+```python
 def embedding_encode(
         input_data: Any,
         verbose: bool = False

@@ -29,15 +29,16 @@ def run_search(args: dict):
     vector_dim = model.embedding_dim()
     vector_param = "[" + ",".join(str(x) for x in vector) + "]"
 
+    idxop = model.embedding_index_operator()
     query = f"""
             SELECT
                 {primary_key},
                 {args['source']},
-                ROUND({args['embedding']} <=> %s::VECTOR({vector_dim}), 6) AS distance
+                ROUND({args['embedding']} {idxop} %s::VECTOR({vector_dim}), 6) AS distance
             FROM {args['table']}
             AS OF SYSTEM TIME follower_read_timestamp()
             WHERE {args['embedding']} IS NOT NULL
-            ORDER BY {args['embedding']} <=> %s::VECTOR({vector_dim})
+            ORDER BY {args['embedding']} {idxop} %s::VECTOR({vector_dim})
             LIMIT {args['limit']}
     """
 

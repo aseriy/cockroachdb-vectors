@@ -67,19 +67,19 @@ def ensure_vector_column(pool, table_name, pk, output_column, dry_run, show_info
             print(f"[INFO] Column {output_column} already exists")
 
     else:
-        vector_dim = model.embedding_dim()
         sql.append(
             f"""
                 ALTER TABLE "{table_name}"
-                ADD COLUMN "{output_column}" VECTOR({vector_dim})
+                ADD COLUMN "{output_column}" VECTOR({model.embedding_dim()})
             """
         )
 
     conn = main_get_conn(pool)
 
+
     sql.append(f'''
                 CREATE VECTOR INDEX IF NOT EXISTS "{table_name}_{output_column}_idx"
-                ON "{table_name}"("{output_column}" vector_cosine_ops)
+                ON "{table_name}"("{output_column}" {model.embedding_index_opclass()})
                 WHERE "{output_column}" IS NOT NULL
                 ''')
     sql.append(f'''

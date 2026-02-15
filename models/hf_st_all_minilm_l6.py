@@ -60,6 +60,13 @@ def embedding_dim() -> int:
     return model.get_sentence_embedding_dimension()
 
 
+def embedding_index_opclass() -> str:
+    return "vector_cosine_ops"
+
+
+def embedding_index_operator() -> str:
+    return "<=>"
+
 
 def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
     model = _MODEL_CACHE.get(huggingface_path)
