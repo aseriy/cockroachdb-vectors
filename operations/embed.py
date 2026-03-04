@@ -2,14 +2,21 @@ import time
 import random
 from tqdm import tqdm
 import atexit
+import re
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
+import jinja2
 import importlib
 from .model import is_valid_model
-from .common import build_conn_kwargs, main_get_conn, get_primary_key_column
+from .common import (
+    build_conn_kwargs,
+    main_get_conn,
+    get_primary_key_column,
+    get_column_type
+)
 
 
 _WORKER_POOL = None
@@ -41,36 +48,26 @@ def worker_put_conn(conn):
 
 
 def ensure_vector_column(pool, table_name, pk, output_column, dry_run, show_info=True):
-    conn = main_get_conn(pool)
-
-    existing = None
-    with conn.cursor() as cur:
-        cur.execute(f"""
-            SELECT a.attname, t.typname
-            FROM pg_attribute a
-            JOIN pg_type t ON a.atttypid = t.oid
-            WHERE a.attrelid = %s::regclass
-              AND a.attname = %s
-              AND a.attnum > 0
-              AND NOT a.attisdropped
-        """, (table_name, output_column))
-        existing = cur.fetchone()
-
-    pool.putconn(conn)
-
     sql = []
+    vector_dim = model.embedding_dim()
 
-    if existing:
-        if 'vector' not in existing[1]:
+    column_type = get_column_type(pool, table_name, output_column)
+
+    if column_type:
+        if 'vector' not in column_type:
             raise RuntimeError(f"Column {output_column} exists but is not of VECTOR type.")
+
+        if not re.match(rf"^vector\({vector_dim}\)$", column_type):
+            raise RuntimeError(f"Column {output_column} is {column_type} but must be VECTOR({vector_dim}).")
+
         if show_info:
-            print(f"[INFO] Column {output_column} already exists")
+            print(f"[INFO] Column {output_column} {column_type} already exists")
 
     else:
         sql.append(
             f"""
                 ALTER TABLE "{table_name}"
-                ADD COLUMN "{output_column}" VECTOR({model.embedding_dim()})
+                ADD COLUMN "{output_column}" VECTOR({vector_dim})
             """
         )
 
