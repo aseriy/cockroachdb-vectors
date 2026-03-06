@@ -25,7 +25,7 @@ def main_get_conn(pool) -> connection:
     return conn
 
 
-def get_primary_key_column(pool, table_name) -> tuple[str, str]:
+def get_primary_key_column(pool, table_name) -> dict:
     conn = main_get_conn(pool)
 
     pk_result = None

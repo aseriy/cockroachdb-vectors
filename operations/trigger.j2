@@ -1,0 +1,22 @@
+CREATE OR REPLACE FUNCTION clear_vector_on_source_change()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+
+BEGIN
+    IF (NEW).{{input_col}} <> (OLD).{{input_col}} THEN
+        {% for column in output_cols %}
+            NEW.{{column}} := NULL;
+        {% endfor %}
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+
+CREATE TRIGGER clear_vector_on_{{table}}_source_change
+    BEFORE UPDATE ON {{table}}
+    FOR EACH ROW
+    EXECUTE FUNCTION clear_vector_on_source_change();
+

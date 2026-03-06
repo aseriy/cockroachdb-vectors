@@ -8,6 +8,7 @@ greenlet==3.2.4
 hf-xet==1.1.5
 huggingface-hub==0.33.4
 idna==3.10
+Jinja2==3.1.6
 joblib==1.5.1
 mpmath==1.3.0
 networkx==3.5

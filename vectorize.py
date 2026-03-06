@@ -1,6 +1,11 @@
 import click
 import json
-from operations import run_embed, run_search, run_model_list, run_model_desc
+from operations import (
+    run_embed,
+    run_search,
+    run_model_list, run_model_desc,
+    run_instrument
+)
 
 
 class OperationGroup(click.Group):
@@ -129,6 +134,31 @@ def search(
     }
 
     run_search(args)
+
+
+
+@cli.command(short_help="Instrument for vector search")
+@shared_db_options
+def instrument(
+        url,
+        table,
+        input_col,
+        output_col,
+        model,
+        verbose
+):
+
+    args = {
+        "url": url,
+        "table": table,
+        "source": input_col,
+        "embedding": output_col,
+        "model": model,
+        "verbose": verbose
+    }
+
+    run_instrument(args)
+
 
 
 
