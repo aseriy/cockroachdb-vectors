@@ -11,7 +11,7 @@ config = [
 
 
 
-CREATE OR REPLACE FUNCTION clear_vector_on_source_change()
+CREATE OR REPLACE FUNCTION clear_vector_on_update_passage()
 RETURNS trigger
 LANGUAGE plpgsql
 AS $$
@@ -25,6 +25,20 @@ BEGIN
     IF (NEW).description <> (OLD).description THEN
         NEW.description_hf := NULL;
         NEW.description_openai := NULL;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION clear_vector_on_update_passage()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+
+BEGIN
+    IF (NEW).passage <> (OLD).passage THEN
+        NEW.passage_vector := NULL;
     END IF;
 
     RETURN NEW;

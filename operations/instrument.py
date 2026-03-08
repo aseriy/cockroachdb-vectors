@@ -1,6 +1,9 @@
 from psycopg2.pool import SimpleConnectionPool
 import importlib
 import re
+import json
+import textwrap
+from jinja2 import Template
 from .model import is_valid_model
 import atexit
 from .common import (
@@ -55,39 +58,56 @@ def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, ver
 
     if not is_vector_column(pool, table_name, output_column, vector_dim, verbose):
         sql.append(
-            f"""
-                ALTER TABLE "{table_name}"
-                ADD COLUMN "{output_column}" VECTOR({vector_dim})
-            """
+            (
+                f"[INFO] Adding new column {output_column}' VECTOR({vector_dim}",
+                f"""
+                    ALTER TABLE "{table_name}"
+                    ADD COLUMN "{output_column}" VECTOR({vector_dim})
+                """
+            )
         )
 
 
     conn = main_get_conn(pool)
 
-    sql.append(f'''
-                CREATE VECTOR INDEX IF NOT EXISTS "{table_name}_{output_column}_idx"
-                ON "{table_name}"("{output_column}" {model.embedding_index_opclass()})
-                WHERE "{output_column}" IS NOT NULL
-                ''')
-    sql.append(f'''
+    sql.append(
+        (
+            f"[INFO] Creating vector index",
+            f'''
+            CREATE VECTOR INDEX IF NOT EXISTS "{table_name}_{output_column}_idx"
+            ON "{table_name}"("{output_column}" {model.embedding_index_opclass()})
+            WHERE "{output_column}" IS NOT NULL
+            '''
+        )
+    )
+    sql.append(
+        (
+            f"[INFO] Creating index to accelerate locating rows with no embeddings",
+            f'''
                 CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_null_idx"
                 ON "{table_name}"("{pk}" ASC)
                 WHERE "{output_column}" IS NULL
             '''
+        )
     )
-    sql.append(f'''
+    sql.append(
+        (
+            f"[INFO] Creating index to rows considered in vector searches",
+            f'''
                 CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_not_null_idx"
                 ON "{table_name}"("{pk}" ASC)
                 WHERE "{output_column}" IS NOT NULL
             '''
+        )
     )
 
     for stmt in sql:
         with conn.cursor() as cur:
+            print(stmt[0])
             if dry_run:
-                print(f"[DRY RUN] Would execute: {stmt}")
+                print(f"[DRY RUN] Would execute: {stmt[1]}")
             else:
-                cur.execute(stmt)
+                cur.execute(stmt[1])
 
 
     pool.putconn(conn)
@@ -112,5 +132,159 @@ def run_instrument(args: dict):
         args['verbose']
     )
 
+    trigger_cocnfig = read_trigger_function(conn_pool, args['table'])
+
+    config = update_trigger_function_config(trigger_cocnfig, args['table'], args['source'], args['embedding'])
+    trg_func_sql = update_trigger_sql(config, args['table'])
+    install_trigger(conn_pool, trg_func_sql)
+
+
     return None
+
+
+
+def install_trigger(pool, sql):
+    conn = main_get_conn(pool)
+
+    with conn.cursor() as cur:
+        cur.execute(sql[0])
+        if cur.fetchone()[0]:
+            print(f"[INFO] Dropping trigger...")
+            cur.execute(sql[1])
+
+        print(f"[INFO] Updating trigger function...")
+        cur.execute(sql[2])
+        print(f"[INFO] Creating trigger...")
+        cur.execute(sql[3])
+
+
+    pool.putconn(conn)
+
+
+
+
+
+def update_trigger_sql(config, table_name):
+    sql_tmpl = [
+        """
+            SELECT count(*) FROM pg_catalog.pg_trigger
+            WHERE tgname='clear_vector_on_update_{{ table_name }}'; 
+        """,
+        """
+            DROP TRIGGER IF EXISTS clear_vector_on_update_{{ table_name }}
+            ON {{ table_name }};
+        """,
+        """
+            CREATE OR REPLACE FUNCTION clear_vector_on_update_{{ table_name }}()
+            RETURNS trigger
+            LANGUAGE plpgsql
+            AS $$
+
+            BEGIN
+                {% for item in config %}
+                IF (NEW).{{ item.input }} <> (OLD).{{ item.input }} THEN
+                    {% for out in item.output %}NEW.{{ out }} := NULL;
+                    {% endfor %}
+                END IF;
+
+                {% endfor %}
+                RETURN NEW;
+            END;
+            $$;
+        """,
+        """
+            CREATE TRIGGER clear_vector_on_update_{{ table_name }}
+            BEFORE UPDATE ON passage
+            FOR EACH ROW
+            EXECUTE FUNCTION clear_vector_on_update_{{ table_name }}();
+        """
+    ]
+
+    sql = []
+    for tmpl in sql_tmpl:
+        template = Template(tmpl)
+        sql.append(
+            textwrap.dedent(
+                template.render(
+                    table_name=table_name, 
+                    config=config
+                )
+            )
+        )
+
+    return sql
+
+
+
+
+def update_trigger_function_config(config, table_name, source_column, vector_column):
+    new_config = config
+
+    match_source = [(i, c) for i, c in enumerate(config) if c['input'] == source_column]
+
+    if match_source:
+        i, c = match_source[0]
+        output = c['output']
+        if not vector_column in output:
+            output.append(vector_column)
+        new_config[i]['output'] = output
+
+    else:
+        new_config.append(
+            {
+                'input': source_column,
+                'output': [vector_column]
+            }
+        )        
+
+
+    return new_config
+
+
+
+def read_trigger_function(pool, table_name) -> dict:
+    trg_func_name = f"clear_vector_on_update_{table_name}"
+    trg_func_body = None
+
+    stmt = f"""
+            SELECT create_statement FROM [
+                SHOW CREATE FUNCTION {trg_func_name}
+            ]
+        """  
+
+    config = []
+
+    conn = main_get_conn(pool)
+
+    with conn.cursor() as cur:
+        cur.execute(stmt)
+        trg_func_body = cur.fetchone()[0]
+
+    pool.putconn(conn)
+
+    # 1. Extract everything between $$ ... $$
+    body_match = re.search(r'\$\$(.*?)\$\$', trg_func_body, re.DOTALL)
+    if body_match:
+        body = body_match.group(1)
+        
+        # 2. Find each IF ... END IF block
+        # This captures the condition and the internal assignments
+        blocks = re.findall(r'IF\s+(.*?)\s+THEN(.*?)\s+END IF;', body, re.DOTALL)
+        
+        for condition, assignments in blocks:
+
+            # Extract the input column from (NEW).colname
+            # Match handles both "(NEW).col" and "NEW.col"
+            input_col = re.search(r'\(?NEW\)?\.(\w+)', condition, re.IGNORECASE)
+            
+            # Extract all output columns from "NEW.colname := NULL"
+            output_cols = re.findall(r'NEW\.(\w+)\s*:=', assignments, re.IGNORECASE)
+            
+            if input_col and output_cols:
+                config.append({
+                    'input': input_col.group(1),
+                    'output': output_cols
+                })
+
+    return config
 
