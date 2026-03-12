@@ -130,6 +130,62 @@ When run with --follow, the embed command continues running until there are no r
 This mode enables continuous vectorization as new rows are inserted, without introducing additional logic for detecting stale or out-of-date embeddings.
 
 
+### Running embed as a Background Service (Docker)
+
+The `embed` sub-command can be run in continuous mode using `--follow`/`-F` CLI option. In this mode, the process behaves like a lightweight daemon:
+
+- It continuously processes rows where the output vector column is `NULL`.
+- It exits only after a prolonged idle period (if configured to do so).
+
+When all rows have corresponding embeddings (i.e., no `NULL` values remain in the vector column), the process does not immediately terminate. Instead:
+
+1. It enters a sleep period.
+2. It periodically re-checks for new rows requiring backfill.
+3. It resumes embedding if new `NULL` rows are detected.
+
+This model allows `embed` to run safely inside a long-lived container, continuously handling new rows or source column updates.
+
+The image can be built with:
+
+```bash
+docker build -t vectorize .
+```
+
+A typical Docker invocation might look like:
+
+```bash
+docker run -d \
+  --name vectorizer \
+  -v $HOME/.postgresql:/root/.postgresql:ro \
+  -v $(pwd)/config.yaml:/app/config.yaml:ro \
+  vectorize \
+  -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full \
+  -t passage \
+  -i passage \
+  -o passage_vector \
+  -m hf_st_all_minilm_l6 \
+  -b 100 \
+  -w 2 \
+  -F
+```
+
+In this configuration:
+
+- The container runs detached (`-d`).
+- `--follow` keeps the embedding process active.
+- The container may be restarted externally (e.g., via `--restart unless-stopped`) if desired.
+- The process exits naturally if no new embeddings are required for the configured maximum idle duration.
+
+This approach avoids additional scheduling infrastructure while enabling continuous vectorization alongside your application workload.
+
+When running inside a container, embed expects the following paths to be available inside the container filesystem:
+
+1. `/root/.postgresql/`: Directory containing the CockroachDB client certificates (for example, root.crt when using sslmode=verify-full).
+2. `/app/config.yaml`: Model configuration file, if required by the selected embedding model.
+3. `/logs/`: Directory for log output.
+
+These paths must be provided by mounting the corresponding host directories or files at runtime.
+
 
 ### `search`
 
@@ -187,7 +243,7 @@ The `cleanup` sub-command reverses the effects of `instrument`, restoring the ta
 2. Drops all indexes created during instrumentation of the specified column.
 3. Drops the vector column.
 
->[WARNING]
+>[!WARNING]
 > Dropping the vector column deletes all stored embeddings. `cleanup` prompts separately before dropping indexes and before dropping the vector column. You may choose to remove the indexes while retaining the vector column.
 
 
