@@ -13,9 +13,29 @@ At the center of the toolkit is the vectorize.py script. It exposes a simple CLI
 > This toolkit is intended for experimentation and prototyping. It favors simplicity and transparency over production-grade automation.
 
 
+### `instrument`
+
+The `instrument` sub-command automates "instrumenting" the specified column to enable semantic search on the column's content.
+
+1. Creates the vector column. The dimensionality is derived from the selected embedding model (see the model subcommand below).
+2. Creates the vector index on this new column, as well as other auxiliary indexes that accelerate embedding generation and vector searches.
+3. Wires a trigger that resets the vector column to NULL when the source column is updated. This flags the row for the embedding generation process so the embedding will be regenerated.
+
+```bash
+$ python3 vectorize.py instrument -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -v
+```
+
+Instrumentation is defined with the following scope and rules:
+
+1. Instrumentation targets a specific source column within a specific table.
+2. A single source column may have multiple vector “shadow” columns (for example, when using different embedding models). Each vector column must be instrumented separately.
+3. Multiple source columns within the same table may be instrumented independently.
+4. Trigger wiring is managed per table. A single trigger handles update detection and nullifies only the vector column(s) associated with the source column that was modified, leaving other vector columns unchanged.
+
+
 ### `embed`
 
-The `embed` subcommand generates vector embeddings for rows in an existing CockroachDB table and stores them alongside the original data.
+The `embed` sub-command generates vector embeddings for rows in an existing CockroachDB table and stores them alongside the original data.
 
 At a high level, it:
 - Reads values from a specified input column
@@ -41,50 +61,7 @@ Done in 13.912834882736206 seconds
 [INFO] Vectorization complete.
 ```
 
-
-If the output vector column does not already exist, the script will create it automatically. The vector column’s dimensionality is derived from the selected embedding model (see the model subcommand below).
-
 To keep the workflow simple and generic, the script only processes rows where the output vector column is `NULL`. There is no built-in mechanism to detect whether embeddings are out of date. If the source data in a row is updated, the corresponding vector column must be explicitly cleared (set to `NULL`) in order for embed to regenerate the embedding.
-
-
-### `embed` Performance Options
-
-The `embed` command is designed to efficiently generate embeddings while keeping database writes predictable and low-contention. To achieve this, embedding computation and database updates are intentionally decoupled.
-
-At a high level:
-- Embedding computation can run in parallel across multiple CPUs.
-- Generated embeddings are collected into batches.
-- Database updates are executed sequentially, in batches, to minimize write contention and maximize database efficiency.
-
-The following options control this behavior.
-
-### Batch size (-b, --batch-size)
-
-The batch size defines how many rows are updated in a single database write batch. Each batch groups together a fixed number of newly generated embeddings before they are written back to CockroachDB.
-
-Larger batches reduce the number of database write operations, while smaller batches reduce per-batch resource usage. Batch size affects database write behavior but does not control parallelism.
-
->[!NOTE]
-> Since this is purposefully a non-production script, it doesn't prevent the input column from being updated while the embeddings are calculated. Your real-life production application may require this level of strictness.
-
-### Parallel workers (-w, --workers)
-
-The workers option controls how many embeddings are calculated in parallel. Each worker independently computes embeddings for input rows, allowing the embedding step to utilize multiple CPUs.
-
-Parallelism applies only to embedding computation. Database updates remain single-threaded and batched to avoid write contention.
-
-### Number of batches (-n, --num-batches)
-
-The number of batches option limits how many batches are processed during a single invocation of embed. This provides a simple way to bound the amount of work performed before the command exits.
-
-The total number of rows processed in one run is approximately the batch size multiplied by the number of batches.
-
-### Continuous operation (-F, --follow)
-
-When run with --follow, the embed command continues running until there are no remaining rows where the output vector column is NULL. The same batching and parallelism rules apply, but the process does not exit after a fixed number of batches.
-
-This mode enables continuous vectorization as new rows are inserted, without introducing additional logic for detecting stale or out-of-date embeddings.
-
 
 
 ### `model`
@@ -115,6 +92,99 @@ https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 ```
 
 The `vectorize.py` script uses a pluggable model architecture. Encoding models are implemented as interchangeable modules with a small, well-defined interface. Instructions for adding new models are provided in a later section.
+
+
+### `embed` Performance Options
+
+The `embed` command is designed to efficiently generate embeddings while keeping database writes predictable and low-contention. To achieve this, embedding computation and database updates are intentionally decoupled.
+
+At a high level:
+- Embedding computation can run in parallel across multiple CPUs.
+- Generated embeddings are collected into batches.
+- Database updates are executed sequentially, in batches, to minimize write contention and maximize database efficiency.
+
+The following options control this behavior.
+
+### Batch size (-b, --batch-size)
+
+The batch size defines how many rows are updated in a single database write batch. Each batch groups together a fixed number of newly generated embeddings before they are written back to CockroachDB.
+
+Larger batches reduce the number of database write operations, while smaller batches reduce per-batch resource usage. Batch size affects database write behavior but does not control parallelism.
+
+### Parallel workers (-w, --workers)
+
+The workers option controls how many embeddings are calculated in parallel. Each worker independently computes embeddings for input rows, allowing the embedding step to utilize multiple CPUs.
+
+Parallelism applies only to embedding computation. Database updates remain single-threaded and batched to avoid write contention.
+
+### Number of batches (-n, --num-batches)
+
+The number of batches option limits how many batches are processed during a single invocation of embed. This provides a simple way to bound the amount of work performed before the command exits.
+
+The total number of rows processed in one run is approximately the batch size multiplied by the number of batches.
+
+### Continuous operation (-F, --follow)
+
+When run with --follow, the embed command continues running until there are no remaining rows where the output vector column is NULL. The same batching and parallelism rules apply, but the process does not exit after a fixed number of batches.
+
+This mode enables continuous vectorization as new rows are inserted, without introducing additional logic for detecting stale or out-of-date embeddings.
+
+
+### Running embed as a Background Service (Docker)
+
+The `embed` sub-command can be run in continuous mode using `--follow`/`-F` CLI option. In this mode, the process behaves like a lightweight daemon:
+
+- It continuously processes rows where the output vector column is `NULL`.
+- It exits only after a prolonged idle period (if configured to do so).
+
+When all rows have corresponding embeddings (i.e., no `NULL` values remain in the vector column), the process does not immediately terminate. Instead:
+
+1. It enters a sleep period.
+2. It periodically re-checks for new rows requiring backfill.
+3. It resumes embedding if new `NULL` rows are detected.
+
+This model allows `embed` to run safely inside a long-lived container, continuously handling new rows or source column updates.
+
+The image can be built with:
+
+```bash
+docker build -t vectorize .
+```
+
+A typical Docker invocation might look like:
+
+```bash
+docker run -d \
+  --name vectorizer \
+  -v $HOME/.postgresql:/root/.postgresql:ro \
+  -v $(pwd)/config.yaml:/app/config.yaml:ro \
+  vectorize \
+  -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full \
+  -t passage \
+  -i passage \
+  -o passage_vector \
+  -m hf_st_all_minilm_l6 \
+  -b 100 \
+  -w 2 \
+  -F
+```
+
+In this configuration:
+
+- The container runs detached (`-d`).
+- `--follow` keeps the embedding process active.
+- The container may be restarted externally (e.g., via `--restart unless-stopped`) if desired.
+- The process exits naturally if no new embeddings are required for the configured maximum idle duration.
+
+This approach avoids additional scheduling infrastructure while enabling continuous vectorization alongside your application workload.
+
+When running inside a container, embed expects the following paths to be available inside the container filesystem:
+
+1. `/root/.postgresql/`: Directory containing the CockroachDB client certificates (for example, root.crt when using sslmode=verify-full).
+2. `/app/config.yaml`: Model configuration file, if required by the selected embedding model.
+3. `/logs/`: Directory for log output.
+
+These paths must be provided by mounting the corresponding host directories or files at runtime.
 
 
 ### `search`
@@ -163,6 +233,19 @@ As tax season kicks off, NYC Free Tax Prep is ready | New York Amsterdam News: T
 Cost of living data is from the Missouri Economic Research and Information Center. This is 24/7 Wall St.’s states doing the most (and least) to spread the wealth. Everyone Who Believes in God Should Watch This.
 
 ```
+
+
+### `cleanup`
+
+The `cleanup` sub-command reverses the effects of `instrument`, restoring the table to its pre-embedding state.
+
+1. Removes the mechanism that nullifies the vector column when its source column is updated.
+2. Drops all indexes created during instrumentation of the specified column.
+3. Drops the vector column.
+
+>[!WARNING]
+> Dropping the vector column deletes all stored embeddings. `cleanup` prompts separately before dropping indexes and before dropping the vector column. You may choose to remove the indexes while retaining the vector column.
+
 
 
 ## Embedding Models

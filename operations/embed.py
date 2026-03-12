@@ -2,14 +2,25 @@ import time
 import random
 from tqdm import tqdm
 import atexit
+import re
+import os, sys
+import textwrap
+import click
 from psycopg2.pool import SimpleConnectionPool
 from psycopg2.extras import execute_values
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from datetime import datetime
+import jinja2
 import importlib
 from .model import is_valid_model
-from .common import build_conn_kwargs, main_get_conn, get_primary_key_column
+from .common import (
+    build_conn_kwargs,
+    main_get_conn,
+    get_primary_key_column,
+    get_column_type
+)
+from .instrument import is_vector_column
 
 
 _WORKER_POOL = None
@@ -40,70 +51,10 @@ def worker_put_conn(conn):
 
 
 
-def ensure_vector_column(pool, table_name, pk, output_column, dry_run, show_info=True):
-    conn = main_get_conn(pool)
+# def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, verbose=False):
+#     if not is_vector_column(pool, table_name, output_column, model.embedding_dim(), verbose):
+#         print(msg)
 
-    existing = None
-    with conn.cursor() as cur:
-        cur.execute(f"""
-            SELECT a.attname, t.typname
-            FROM pg_attribute a
-            JOIN pg_type t ON a.atttypid = t.oid
-            WHERE a.attrelid = %s::regclass
-              AND a.attname = %s
-              AND a.attnum > 0
-              AND NOT a.attisdropped
-        """, (table_name, output_column))
-        existing = cur.fetchone()
-
-    pool.putconn(conn)
-
-    sql = []
-
-    if existing:
-        if 'vector' not in existing[1]:
-            raise RuntimeError(f"Column {output_column} exists but is not of VECTOR type.")
-        if show_info:
-            print(f"[INFO] Column {output_column} already exists")
-
-    else:
-        sql.append(
-            f"""
-                ALTER TABLE "{table_name}"
-                ADD COLUMN "{output_column}" VECTOR({model.embedding_dim()})
-            """
-        )
-
-    conn = main_get_conn(pool)
-
-
-    sql.append(f'''
-                CREATE VECTOR INDEX IF NOT EXISTS "{table_name}_{output_column}_idx"
-                ON "{table_name}"("{output_column}" {model.embedding_index_opclass()})
-                WHERE "{output_column}" IS NOT NULL
-                ''')
-    sql.append(f'''
-                CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_null_idx"
-                ON "{table_name}"("{pk}" ASC)
-                WHERE "{output_column}" IS NULL
-            '''
-    )
-    sql.append(f'''
-                CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_not_null_idx"
-                ON "{table_name}"("{pk}" ASC)
-                WHERE "{output_column}" IS NOT NULL
-            '''
-    )
-
-    for stmt in sql:
-        with conn.cursor() as cur:
-            if dry_run:
-                print(f"[DRY RUN] Would execute: {stmt}")
-            else:
-                cur.execute(stmt)
-
-
-    pool.putconn(conn)
 
 
 
@@ -237,14 +188,28 @@ def run_embed(args):
     batch_counter = 0
 
     primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
-    ensure_vector_column(
-        conn_pool,
-        args['table'],
-        primary_key,
-        args['output'],
-        args['dry_run'],
-        show_info=not args['progress']
-    )
+
+    # Check if the specified vector column exist.
+    # If it doesn't, recommend running "instrument"
+    if not is_vector_column(
+                    conn_pool,
+                    args['table'], args['output'],
+                    model.embedding_dim(),
+                    not args['progress']
+            ):
+        ctx = click.get_current_context()
+        msg = f"""
+            Column {args['output']} doesn't exist.
+
+            Run:
+            {os.path.basename(sys.executable)} {ctx.find_root().info_name} instrument ...
+
+            to create the vector column.
+        """
+        print(textwrap.dedent(msg))
+        return
+
+
 
     pbar = None
 

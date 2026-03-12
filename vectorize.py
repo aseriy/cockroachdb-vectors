@@ -1,6 +1,12 @@
 import click
 import json
-from operations import run_embed, run_search, run_model_list, run_model_desc
+from operations import (
+    run_embed,
+    run_search,
+    run_model_list, run_model_desc,
+    run_instrument,
+    run_cleanup
+)
 
 
 class OperationGroup(click.Group):
@@ -29,7 +35,7 @@ def cli():
 
 
 
-def shared_db_options(f):
+def shared_options(f):
     f = click.option("-u", "--url", required=True, help="CockroachDB connection URL")(f)
     f = click.option("-t", "--table", required=True, help="Target table name")(f)
     f = click.option("-i", "--input", "input_col", required=True, help="Column containing input text")(f)
@@ -41,7 +47,7 @@ def shared_db_options(f):
 
 
 @cli.command(short_help="Vectorize rows in CockroachDB using a specified encoding model.")
-@shared_db_options
+@shared_options
 @click.option("-b", "--batch-size", default=1000, type=int, help="Rows to process per batch")
 @click.option("-n", "--num-batches", default=1, type=int,
               help="Number of batches to process before exiting (default: 1)")
@@ -103,7 +109,7 @@ def embed(
 
 
 @cli.command(short_help="Run similarity search")
-@shared_db_options
+@shared_options
 @click.option("-l", "--limit", default=10, type=int, help="Number of the closest matches (default: 10)")
 @click.argument("text", required=False)
 def search(
@@ -129,6 +135,54 @@ def search(
     }
 
     run_search(args)
+
+
+
+@cli.command(short_help="Instrument for vector search")
+@shared_options
+def instrument(
+        url,
+        table,
+        input_col,
+        output_col,
+        model,
+        verbose
+):
+
+    args = {
+        "url": url,
+        "table": table,
+        "source": input_col,
+        "embedding": output_col,
+        "model": model,
+        "verbose": verbose
+    }
+
+    run_instrument(args)
+
+
+
+@cli.command(short_help="Remove instrumentation for a vectorized column")
+@shared_options
+def cleanup(
+        url,
+        table,
+        input_col,
+        output_col,
+        model,
+        verbose
+):
+
+    args = {
+        "url": url,
+        "table": table,
+        "source": input_col,
+        "embedding": output_col,
+        "model": model,
+        "verbose": verbose
+    }
+
+    run_cleanup(args)
 
 
 
