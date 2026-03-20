@@ -327,7 +327,7 @@ def update_trigger_sql(config, table_name, drop = False):
         sql_tmpl.append(
             """
                 CREATE TRIGGER clear_vector_on_update_{{ table_name }}
-                BEFORE UPDATE ON passage
+                BEFORE UPDATE ON {{ table_name }}
                 FOR EACH ROW
                 EXECUTE FUNCTION clear_vector_on_update_{{ table_name }}();
             """
