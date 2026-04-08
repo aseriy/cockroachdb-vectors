@@ -389,3 +389,110 @@ openai_settings = next(
 _client = OpenAI(api_key=openai_settings['api_key'])
 _MODEL = openai_settings['model']
 ```
+
+
+
+# Notes
+
+```sql
+SELECT
+    range_id,
+    range_size_mb,
+    lease_holder,
+    replicas,
+    voting_replicas,
+    range_size,
+    span_stats
+FROM
+[SHOW RANGES FROM TABLE passage WITH DETAILS]; 
+```
+
+```sql
+SELECT
+    range_id,
+    range_size_mb,
+    range_size,
+    span_stats
+FROM
+[SHOW RANGES FROM TABLE passage WITH DETAILS]; 
+```
+
+```sql
+SELECT
+    span_stats
+FROM
+[SHOW RANGES FROM TABLE passage WITH DETAILS]; 
+```
+
+
+
+
+* approximate_disk_bytes: Total physical space used on disk across all replicas (includes data, garbage, and Raft logs).
+* intent_bytes: Space taken by "uncommitted" writes (locks from active transactions).
+* intent_count: Number of these uncommitted/provisional writes.
+* key_bytes: Space taken by the "names" (Primary Keys/Index keys) of your rows.
+* key_count: Total number of unique keys/rows in this range.
+* live_bytes: The size of the actual, current data that would return in a query.
+* live_count: The number of current, non-deleted rows.
+* sys_bytes: Space used by internal metadata (replica locations, leaseholders).
+* sys_count: Number of internal system entries.
+* val_bytes: Space taken by the actual "content" (column data) of your rows.
+* val_count: Total number of values stored (usually matches key_count).
+
+Do you want to see which of these is driving your costs the most?
+
+```json
+ {
+      "approximate_disk_bytes": 40166862,
+      "intent_bytes": 0,
+      "intent_count": 0,
+      "key_bytes": 4070134,
+      "key_count": 82440,
+      "live_bytes": 5480717,
+      "live_count": 82121,
+      "sys_bytes": 1081,
+      "sys_count": 12,
+      "val_bytes": 1564279,
+      "val_count": 88085
+  }
+  {
+      "approximate_disk_bytes": 1898849,
+      "intent_bytes": 0,
+      "intent_count": 0,
+      "key_bytes": 0,
+      "key_count": 0,
+      "live_bytes": 0,
+      "live_count": 0,
+      "sys_bytes": 479,
+      "sys_count": 7,
+      "val_bytes": 0,
+      "val_count": 0
+  }
+```
+
+```sql
+SELECT 
+    sum((span_stats::JSONB ->> 'approximate_disk_bytes')::INT) AS disk_bytes,
+    sum((span_stats::JSONB ->> 'live_bytes')::INT) AS live_bytes
+FROM [SHOW RANGES FROM TABLE passage WITH DETAILS];
+```
+
+
+```sql
+  disk_bytes  | live_bytes
+--------------+-------------
+  37542238671 | 4371953860
+  ```
+
+
+```sql
+SELECT table_id
+FROM crdb_internal.tables
+WHERE name = 'passage';
+```
+
+```sql
+SELECT index_id, index_name
+FROM crdb_internal.table_indexes
+WHERE descriptor_name = 'passage';
+```

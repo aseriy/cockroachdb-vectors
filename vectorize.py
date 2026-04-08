@@ -5,6 +5,7 @@ from operations import (
     run_search,
     run_model_list, run_model_desc,
     run_instrument,
+    run_size,
     run_cleanup
 )
 
@@ -35,19 +36,23 @@ def cli():
 
 
 
-def shared_options(f):
+def common_options(f):
     f = click.option("-u", "--url", required=True, help="CockroachDB connection URL")(f)
     f = click.option("-t", "--table", required=True, help="Target table name")(f)
     f = click.option("-i", "--input", "input_col", required=True, help="Column containing input text")(f)
     f = click.option("-o", "--output", "output_col", required=True, help="Column to store the vector")(f)
-    f = click.option("-m", "--model", required=True, help="Embedding model. See 'model list' for available models")(f)
     f = click.option("-v", "--verbose", is_flag=True, help="Verbose output (used for debugging)")(f)
+    return f
+
+def model_options(f):
+    f = click.option("-m", "--model", required=True, help="Embedding model. See 'model list' for available models")(f)
     return f
 
 
 
 @cli.command(short_help="Vectorize rows in CockroachDB using a specified encoding model.")
-@shared_options
+@common_options
+@model_options
 @click.option("-b", "--batch-size", default=1000, type=int, help="Rows to process per batch")
 @click.option("-n", "--num-batches", default=1, type=int,
               help="Number of batches to process before exiting (default: 1)")
@@ -109,7 +114,8 @@ def embed(
 
 
 @cli.command(short_help="Run similarity search")
-@shared_options
+@common_options
+@model_options
 @click.option("-l", "--limit", default=10, type=int, help="Number of the closest matches (default: 10)")
 @click.argument("text", required=False)
 def search(
@@ -139,7 +145,8 @@ def search(
 
 
 @cli.command(short_help="Instrument for vector search")
-@shared_options
+@common_options
+@model_options
 def instrument(
         url,
         table,
@@ -162,8 +169,31 @@ def instrument(
 
 
 
+@cli.command(short_help="Estimate the storage footprint for a vector column")
+@common_options
+def size(
+        url,
+        table,
+        input_col,
+        output_col,
+        verbose
+):
+
+    args = {
+        "url": url,
+        "table": table,
+        "source": input_col,
+        "embedding": output_col,
+        "verbose": verbose
+    }
+
+    run_size(args)
+
+
+
 @cli.command(short_help="Remove instrumentation for a vectorized column")
-@shared_options
+@common_options
+@model_options
 def cleanup(
         url,
         table,
