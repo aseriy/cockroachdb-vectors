@@ -62,11 +62,17 @@ def run_size(args: dict):
 
 
 
-
-_TABLE_RE = re.compile(r'/Table/(\d+)(?:/(\d+))?')
+# Scenario	Start Key	End Key	Your Current Logic
+# Normal	/Table/131/1/...	/Table/131/1/...	Covered
+# Bridge	/Table/131/1/...	/Table/131/2/...	Covered
+# Gap/Shared	/Table/131/1/...	/Table/131/5/...	Covered
+# Sentinel	<TableMin>	<TableMax>	Covered
+# Bleed	<before:...>	<after:...>	Covered
+# Literal NULL	NULL	/Table/...	NOT Covered
 
 
 def _extract_table_index(key: str) -> tuple[int | None, int | None]:
+    _TABLE_RE = re.compile(r'/Table/(\d+)(?:/(\d+))?')
     match = _TABLE_RE.search(key)
     if not match:
         return None, None
