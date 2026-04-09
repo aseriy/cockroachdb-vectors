@@ -26,7 +26,6 @@ def run_size(args: dict):
     index_name = "passage_passage_tsv_id_null_idx"
 
     index_id = get_index_id(conn_pool, args['table'], index_name)
-    print(f"{index_name}: {index_id}")
 
     # Now pull the list of ranges with disk usage
     query = f"""
@@ -50,12 +49,20 @@ def run_size(args: dict):
 
     conn_pool.putconn(conn)
 
-    print(json.dumps(ranges, indent=2))
+    # print(json.dumps(ranges, indent=2))
 
     n_ranges = x_parser(ranges)
     for r in n_ranges:
         print(r)
 
+
+    index_sizes = calc_index_bytes(
+        get_table_id(conn_pool, args['table']),
+        get_index_id(conn_pool, args['table']),
+        n_ranges
+    ) 
+
+    print(json.dumps(index_sizes, indent=2))
 
     return None
 
@@ -72,54 +79,105 @@ def run_size(args: dict):
 
 
 def _extract_table_index(key: str) -> tuple[int | None, int | None]:
+    # Regex looks for /Table/ID and optionally /IndexID
     _TABLE_RE = re.compile(r'/Table/(\d+)(?:/(\d+))?')
     match = _TABLE_RE.search(key)
+    
     if not match:
         return None, None
 
     table_id = int(match.group(1))
     index_raw = match.group(2)
-    index_id = 1 if index_raw is None else int(index_raw)
+    
+    # Return index_id as None if it's missing in the key string
+    index_id = int(index_raw) if index_raw is not None else None
 
     return table_id, index_id
 
 
+
+
 def _normalize_key(key: str, fallback_table_id: int | None) -> list[int | None]:
+    # 1. Handle Symbolic Start
     if '<TableMin>' in key:
-        if fallback_table_id is None:
-            raise ValueError(f'Cannot resolve table_id for key={key!r}')
         return [fallback_table_id, 1]
 
+    # 2. Handle Symbolic End
     if '<TableMax>' in key:
-        if fallback_table_id is None:
-            raise ValueError(f'Cannot resolve table_id for key={key!r}')
         return [fallback_table_id, None]
 
+    # 3. Extract IDs - index_id will be None if not in string
     table_id, index_id = _extract_table_index(key)
-    if table_id is None or index_id is None:
-        raise ValueError(f'Unrecognized boundary key={key!r}')
 
+    # 4. Use fallback if the key is a boundary without a Table ID
+    if table_id is None:
+        table_id = fallback_table_id
+
+    # No more raises. Return what we have for the estimation phase.
     return [table_id, index_id]
 
 
-def x_parser(input: Sequence[Sequence[Any]]) -> list[list[Any]]:
-    out: list[list[Any]] = []
 
-    for row in input:
-        if len(row) != 3:
-            raise ValueError(f'Expected 3 elements per row, got row={row!r}')
 
-        from_key, to_key, value = row
+def x_parser(input: list[list[str, str, int]]) -> list[list[list[int | None], list[int | None], int]]:
+    out = []
 
-        if not isinstance(from_key, str) or not isinstance(to_key, str):
-            raise TypeError(f'Boundary keys must be strings, got row={row!r}')
-
+    for from_key, to_key, value in input:
+        # Pre-extract to get fallback context for symbolic boundaries
         from_table_id, _ = _extract_table_index(from_key)
         to_table_id, _ = _extract_table_index(to_key)
 
+        # Normalize using the other side as a fallback if one side is <TableMin/Max>
         from_boundary = _normalize_key(from_key, fallback_table_id=to_table_id)
         to_boundary = _normalize_key(to_key, fallback_table_id=from_table_id)
 
         out.append([from_boundary, to_boundary, value])
 
     return out
+
+
+
+
+def calc_index_bytes(
+        table_id: int,
+        index_ids: list[int],
+        ranges: list[list] # [ [from_t, from_i], [to_t, to_i], size ]
+    ) -> dict[int, int]:
+
+    out = {index_id: 0 for index_id in index_ids}
+
+    for (from_table, from_idx), (to_table, to_idx), size in ranges:
+        matched = []
+        
+        # Treat None in the starting index as 0 (start of table)
+        f_idx = from_idx if from_idx is not None else 0
+
+        # Case A: Range is entirely within our table
+        if from_table == table_id and to_table == table_id:
+            if to_idx is None: # Ends at <TableMax>
+                matched = [i for i in index_ids if i >= f_idx]
+            else:
+                matched = [i for i in index_ids if f_idx <= i <= to_idx]
+
+        # Case B: Range starts in our table but ends in another
+        elif from_table == table_id:
+            matched = [i for i in index_ids if i >= f_idx]
+
+        # Case C: Range starts in a previous table but ends in ours
+        elif to_table == table_id:
+            if to_idx is None: # Covers the whole table up to Max
+                matched = index_ids
+            else:
+                matched = [i for i in index_ids if i <= to_idx]
+
+        # Case D: Super-range that completely swallows our table
+        elif from_table < table_id < to_table:
+            matched = index_ids
+
+        for i in matched:
+            out[i] += size
+
+    return out
+
+
+

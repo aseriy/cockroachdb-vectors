@@ -48,7 +48,7 @@ def get_table_id(pool, table_name) -> int:
 
 
 
-def get_index_id(pool, table_name, index_name) -> int:
+def get_index_id(pool, table_name, index_name = None) -> int | list[int]:
     conn = main_get_conn(pool)
     table_id = get_table_id(pool, table_name)
     index_id = None
@@ -59,15 +59,22 @@ def get_index_id(pool, table_name, index_name) -> int:
             FROM crdb_internal.table_indexes
             WHERE
                 descriptor_name = '{table_name}'
-                AND
-                index_name = '{index_name}'
         """
+
+        if index_name:
+            query += f"""
+                    AND
+                    index_name = '{index_name}'
+            """
 
         with conn.cursor() as cur:
             cur.execute(query)
-            result = cur.fetchone()
-            if result:
+            if index_name:
+                result = cur.fetchone()
                 index_id = result[0]
+            else:
+                result = cur.fetchall()
+                index_id = [r[0] for r in result]
 
     pool.putconn(conn)
 
