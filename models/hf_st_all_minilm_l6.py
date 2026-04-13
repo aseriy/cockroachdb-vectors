@@ -145,6 +145,62 @@ if os.getenv("NUCLIO"):
                 status_code=200
             )
 
+        if path == "/embedding_description" and method == "GET":
+            return context.Response(
+                body=embedding_description(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_dim" and method == "GET":
+            return context.Response(
+                body=embedding_dim(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_index_opclass" and method == "GET":
+            return context.Response(
+                body=embedding_index_opclass(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_index_operator" and method == "GET":
+            return context.Response(
+                body=embedding_index_operator(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_encode" and method == "POST":
+            body = event.body
+            context.logger.info(f"event.body: {body}")
+
+            input_text = body["inputs"]
+            result = embedding_encode(input_text)
+
+            return context.Response(
+                body=result,
+                headers={},
+                content_type="application/json",
+                status_code=200
+            )
+
+
+        if path == "/embedding_index_operator" and method == "POST":
+            return context.Response(
+                body=embedding_encode_batch(0, batch),
+                headers={},
+                content_type="application/json",
+                status_code=200
+            )
+
+
         return context.Response(
             body="not found",
             headers={},
