@@ -51,12 +51,6 @@ def worker_put_conn(conn):
 
 
 
-# def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, verbose=False):
-#     if not is_vector_column(pool, table_name, output_column, model.embedding_dim(), verbose):
-#         print(msg)
-
-
-
 
 def get_null_vector_row_count(pool, table_name, output_column, primary_key):
     count = 0

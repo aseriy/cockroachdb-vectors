@@ -3,12 +3,78 @@ from huggingface_hub import snapshot_download
 import logging
 import contextlib
 import os, sys
-import textwrap
+import textwrap, json
 from typing import Iterable, List, Tuple, Any
+from pathlib import Path
+import yaml
+import requests
+
+exec_local = True
+
+if not os.getenv("NUCLIO"):
+    # Read the configuration
+    config_path = Path(__file__).resolve().parent.parent / "config.yaml"
+    config = None
+    with open(config_path, "r") as file:
+        config = yaml.safe_load(file)
+
+    model_settings = next(
+        item[Path(__file__).stem] 
+        for item in config['models'] 
+        if isinstance(item, dict) and 'hf_st_all_minilm_l6' in item
+    )
+    print(json.dumps(model_settings, indent=2))
+
+    if 'nuclio' in model_settings:
+        exec_local = False
+
+    print(f"exec_local: {exec_local}")
+# enf if
+#
+
+
+if exec_local:
+    _MODEL_CACHE = {}
+    huggingface_path = None
+
+    @contextlib.contextmanager
+    def silence_everything():
+        with open(os.devnull, "w") as fnull:
+            old_stdout = sys.stdout
+            old_stderr = sys.stderr
+            sys.stdout = fnull
+            sys.stderr = fnull
+            try:
+                yield
+            finally:
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+
+    # Suppress huggingface_hub logger
+    logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
+    with silence_everything():
+        huggingface_path = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
+
+    m = _MODEL_CACHE.get(huggingface_path)
+    if m is None:
+        m = SentenceTransformer(huggingface_path)   # loads once per process
+        _MODEL_CACHE[huggingface_path] = m
+
+# end if
+#
 
 
 def embedding_label() -> str:
-    return "Hugging Face Sentence Transformer all-MiniLM-L6-v2"
+    if exec_local:
+        return "Hugging Face Sentence Transformer all-MiniLM-L6-v2"
+
+    if 'nuclio' in model_settings:
+        url = model_settings['nuclio']['url']
+        response = requests.get(url)
+        response.raise_for_status()  # raises on non-200
+        return response.text
+
 
 
 def embedding_description() -> str:
@@ -21,38 +87,6 @@ def embedding_description() -> str:
         https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
         """
     ).strip()
-
-
-_MODEL_CACHE = {}
-huggingface_path = None
-
-
-@contextlib.contextmanager
-def silence_everything():
-    with open(os.devnull, "w") as fnull:
-        old_stdout = sys.stdout
-        old_stderr = sys.stderr
-        sys.stdout = fnull
-        sys.stderr = fnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
-            sys.stderr = old_stderr
-
-
-
-# Suppress huggingface_hub logger
-logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
-
-with silence_everything():
-    huggingface_path = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
-
-m = _MODEL_CACHE.get(huggingface_path)
-if m is None:
-    m = SentenceTransformer(huggingface_path)   # loads once per process
-    _MODEL_CACHE[huggingface_path] = m
-
 
 
 def embedding_dim() -> int:
@@ -95,3 +129,45 @@ def embedding_encode_batch(
     values = [(row_id, embedding.tolist()) for row_id, embedding in zip(row_ids, embeddings)]
 
     return values
+
+
+
+if os.getenv("NUCLIO"):
+    def handler(context, event):
+        path = event.path
+        method = event.method
+
+        if path == "/embedding_label" and method == "GET":
+            return context.Response(
+                body=embedding_label(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        return context.Response(
+            body="not found",
+            headers={},
+            content_type="text/plain",
+            status_code=404
+        )
+
+
+
+
+
+
+
+
+        # context.logger.info('This is an unstructured log')
+
+        # input_batch: Iterable[Tuple[int, str]] = (
+        #     (0, "zero zero zero zero zero"),
+        #     (1, "one one one one one one"),
+        #     (2, "two two two two two two")
+        # )
+
+        # return context.Response(body = embedding_encode_batch(0, input_batch, True),
+        #                         headers={},
+        #                         content_type='application/json',
+        #                         status_code=200)

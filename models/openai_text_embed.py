@@ -23,7 +23,7 @@ MODEL_DIMENSIONS = {
 
 config_path = Path(__file__).resolve().parent.parent / "config.yaml"
 config = None
-with open("config.yaml", "r") as file:
+with open(config_path, "r") as file:
     config = yaml.safe_load(file)
 
 openai_settings = next(
