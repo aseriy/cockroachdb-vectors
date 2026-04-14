@@ -170,12 +170,15 @@ def embedding_encode_batch(
         return values
 
     if 'nuclio' in model_settings:
+        print(f"embedding_encode_batch: {row_ids}")
         url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
         payload = {
             "index": batch_index,
             "batch": [[row_id, row_text] for row_id, row_text in zip(row_ids, texts)]
         }
+        print(f"embedding_encode_batch: {payload}")
         response = requests.post(url, json=payload)
+        print(f"response: {response.json()}")
         response.raise_for_status()  # raises on non-200
         return response.json()
 
@@ -266,21 +269,3 @@ if os.getenv("NUCLIO"):
         )
 
 
-
-
-
-
-
-
-        # context.logger.info('This is an unstructured log')
-
-        # input_batch: Iterable[Tuple[int, str]] = (
-        #     (0, "zero zero zero zero zero"),
-        #     (1, "one one one one one one"),
-        #     (2, "two two two two two two")
-        # )
-
-        # return context.Response(body = embedding_encode_batch(0, input_batch, True),
-        #                         headers={},
-        #                         content_type='application/json',
-        #                         status_code=200)
