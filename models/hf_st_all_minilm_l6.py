@@ -235,7 +235,7 @@ if os.getenv("NUCLIO"):
             result = embedding_encode(input_text)
 
             return context.Response(
-                body=result,
+                body=json.dumps(result),
                 headers={},
                 content_type="application/json",
                 status_code=200
@@ -251,7 +251,7 @@ if os.getenv("NUCLIO"):
             result = embedding_encode_batch(batch_index, batch)
 
             return context.Response(
-                body=result,
+                body=json.dumps(result),
                 headers={},
                 content_type="application/json",
                 status_code=200
