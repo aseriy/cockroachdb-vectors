@@ -181,7 +181,7 @@ if os.getenv("NUCLIO"):
             body = event.body
             context.logger.info(f"event.body: {body}")
 
-            input_text = body["inputs"]
+            input_text = body["text"]
             result = embedding_encode(input_text)
 
             return context.Response(
@@ -192,9 +192,16 @@ if os.getenv("NUCLIO"):
             )
 
 
-        if path == "/embedding_index_operator" and method == "POST":
+        if path == "/embedding_encode_batch" and method == "POST":
+            body = event.body
+            context.logger.info(f"event.body: {body}")
+
+            batch_index = body['index']
+            batch = body["batch"]
+            result = embedding_encode_batch(batch_index, batch)
+
             return context.Response(
-                body=embedding_encode_batch(0, batch),
+                body=result,
                 headers={},
                 content_type="application/json",
                 status_code=200
