@@ -28,8 +28,8 @@ def run_search(args: dict):
     vector = model.embedding_encode(args['text'], args['verbose'])
     vector_dim = model.embedding_dim()
     vector_param = "[" + ",".join(str(x) for x in vector) + "]"
-
     idxop = model.embedding_index_operator()
+
     query = f"""
             SELECT
                 {primary_key},
@@ -41,7 +41,7 @@ def run_search(args: dict):
             ORDER BY {args['embedding']} {idxop} %s::VECTOR({vector_dim})
             LIMIT {args['limit']}
     """
-
+    
     conn = main_get_conn(conn_pool)
     with conn.cursor() as cur:
         cur.execute(query, (vector_param,vector_param))

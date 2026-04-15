@@ -119,6 +119,12 @@ def batch_embed(
     if not batch:
         return None
 
+    if verbose:
+        for i, (row_id, row_text) in enumerate(batch, 1):
+            input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
+            print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector {row_id}: '{input_column_text}'")
+
+
     values = model.embedding_encode_batch(batch_index, batch, verbose)
     return values
     
