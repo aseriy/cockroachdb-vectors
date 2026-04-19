@@ -154,7 +154,7 @@ docker build -t vectorize .
 A typical Docker invocation might look like:
 
 ```bash
-docker run -d \
+docker run --rm -d \
   --name vectorizer \
   -v $HOME/.postgresql:/root/.postgresql:ro \
   -v $(pwd)/config.yaml:/app/config.yaml:ro \
@@ -167,7 +167,8 @@ docker run -d \
   -m hf_st_all_minilm_l6 \
   -b 100 \
   -w 2 \
-  -F
+  -F \
+  -v
 ```
 
 In this configuration:

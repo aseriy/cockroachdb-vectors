@@ -243,20 +243,16 @@ def run_embed_follow(
     max_idle_secs = max_idle *  60
     to_sleep = 1
     
-
-    # run_counter: int,
-    # batch_in_run = 1
     batch_counter = 1
-    
-    
+        
     while True:
         # Fetch one batchfull of IDs (no wait on start or after successful work)
         ids = fetch_null_vector_ids(conn_pool, table, vector_column, primary_key, batch_size)
 
         if ids:
             # Got work!!! Reset the current idle_time
-            idle_time = 0
-            to_sleep = 0
+            idle_wait = 0
+            to_sleep = 1
 
             update_count, worker_errors, worker_warnings = process_single_batch(
                 executor,
@@ -271,15 +267,14 @@ def run_embed_follow(
                 False,
                 False
             )
-            print(update_count, worker_errors, worker_warnings)
-            
-            # errors.extend(worker_errors)
-            # warnings.extend(worker_warnings)
 
             # Increment counters
             batch_counter += 1
 
         else:
+            if verbose:
+                print(f"[INFO] idle_wait: {idle_wait}")
+
             # No work returned
             if idle_wait >= max_idle_secs:
                 if verbose:
@@ -304,78 +299,81 @@ def run_embed_follow(
 
     
 
-def run_embed_n_batches():
-    while True:
-        # Can this be a FOR loop instead????
+def run_embed_n_batches(
+    executor: ProcessPoolExecutor,
+    conn_pool: SimpleConnectionPool,
+    url: str, table: str,
+    primary_key: str, primary_key_type: str,
+    source_column: str, vector_column: str,
+    batch_size, num_batches,
+    workers: int,
+    verbose: bool = False,
+    progress: bool = False,
+    dry_run: bool = False
+):
+    pbar = None
 
-        # Stop after N batches per run (default 1) unless num_batches is 0
-        if (not args['follow']) and batch_in_run > args['num_batches']:
-            break
+    # Set up the progress bar
+    if progress:
+        total_rows = batch_size * num_batches
 
-        # Set up the progress bar
-        if args['progress'] and batch_in_run == 1:
-            total_rows = args['batch_size'] * args['num_batches']
-            if args['follow']:
-                total_rows = get_null_vector_row_count(conn_pool, args['table'], args['output'], primary_key)
+        pbar = tqdm(
+                    total=total_rows,
+                    desc="Vectorizing",
+                    unit="rows",
+                    smoothing=0.01
+                )
 
-            pbar = tqdm(
-                        total=total_rows,
-                        desc="Vectorizing",
-                        unit="rows",
-                        smoothing=0.01
-                    )
-
-            def _on_done_embed(fut):
-                try:
-                    embeddings = fut.result()
-                except Exception:
-                    return
-                if embeddings:
-                    pbar.update(len(embeddings))
+        def _on_done_embed(fut):
+            try:
+                embeddings = fut.result()
+            except Exception:
+                return
+            if embeddings:
+                pbar.update(len(embeddings))
 
 
+    warnings = []
+    errors = []
+
+    start = time.time() if verbose else None
+
+    for batch in range(1, num_batches+1):
         # Fetch one batchfull of IDs (no wait on start or after successful work)
-        ids = fetch_null_vector_ids(conn_pool, args['table'], args['output'], primary_key, args['batch_size'])
+        ids = fetch_null_vector_ids(conn_pool, table, vector_column, primary_key, batch_size)
+
+        if not ids:
+            if verbose:
+                print(f"[INFO] No work found. Exiting... ")
+            break
 
 
         if ids:
-            # Got work → reset backoff
-            idle_wait = max(0.001, float(args['min_idle']))
-            idle_spent = 0.0
-
             update_count, worker_errors, worker_warnings = process_single_batch(
                 executor,
                 conn_pool,
-                args['url'], args['table'],
+                url, table,
                 primary_key, primary_key_type,
-                args['input'], args['output'],
+                source_column, vector_column,
                 ids,
-                args['workers'],
-                run_counter,        # this is only related to a continuous/daemon mode
-                batch_in_run,       # same here
-                args['verbose'],
-                args['progress'],
-                args['dry_run']
+                workers,
+                batch,
+                verbose,
+                progress,
+                dry_run
             )
-            # print(update_count, worker_errors, worker_warningsx)
             
             errors.extend(worker_errors)
             warnings.extend(worker_warnings)
 
-            # Increment counters
-            batch_counter += 1
-            batch_in_run += 1
-
-    # End while
+    # end for
 
 
-    if args['verbose']:
-        print("Done in", time.time() - start, "seconds")
-
-    if args['verbose']:
+    print("Done in", time.time() - start, "seconds")
+    if verbose and ids:
         print("[INFO] Embedding complete.")
 
-    if (args['progress'] or args['verbose']) and (warnings or errors):
+    if (progress or verbose) and (warnings or errors):
         from datetime import datetime
         print("\n[WARNINGS SUMMARY]", flush=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -437,24 +435,6 @@ def run_embed(args):
         return
 
 
-    batch_counter = 0
-    pbar = None
-
-    futures = []
-    warnings = []
-    errors = []
-
-    # # Backoff state
-    # idle_wait = max(0.001, float(args['min_idle']))   # seconds
-    # idle_spent = 0.0                               # seconds
-    # idle_budget = max(0.0, float(args['max_idle']) * 60.0)  # seconds (0 = unlimited)
-
-    start = time.time() if args['verbose'] else None
-
-    # Per-run counters (1-based for human-friendly logs)
-    run_counter = 1
-    batch_in_run = 1
-
 
     # Call the correct mode depending on batch run or daemon
     if args['follow']:
@@ -471,7 +451,18 @@ def run_embed(args):
         )
     
     else:
-        run_embed_n_batches()
+        run_embed_n_batches(
+            executor,
+            conn_pool,
+            args['url'], args['table'],
+            primary_key, primary_key_type,
+            args['input'], args['output'],
+            args['batch_size'], args['num_batches'],
+            args['workers'],
+            args['verbose'],
+            args['progress'],
+            args['dry_run']
+        )
 
 
 

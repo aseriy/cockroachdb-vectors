@@ -55,7 +55,7 @@ def shared_options(f):
               help="Keep running: keep vectorizing new NULL rows indefinitely")
 @click.option("--min-idle", default=15, type=int,
               help="Initial idle backoff between empty scans, in SECONDS")
-@click.option("--max-idle", default=3600, type=int,
+@click.option("--max-idle", default=10, type=int,
               help="Max idle time before exit, in MINUTES")
 @click.option("-w", "--workers", default=1, type=int,
               help="Number of parallel workders to use (default: 1)")
@@ -71,8 +71,8 @@ def embed(
     batch_size,
     num_batches,
     follow,
-    max_idle,
     min_idle,
+    max_idle,
     workers,
     progress,
     dry_run,
@@ -96,8 +96,8 @@ def embed(
         "batch_size": batch_size,
         "num_batches": num_batches,
         "follow": follow,
-        "max_idle": max_idle,
         "min_idle": min_idle,
+        "max_idle": max_idle,
         "workers": workers,
         "progress": progress,
         "dry_run": dry_run,
