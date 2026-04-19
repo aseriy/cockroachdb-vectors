@@ -50,13 +50,13 @@ def shared_options(f):
 @shared_options
 @click.option("-b", "--batch-size", default=1000, type=int, help="Rows to process per batch")
 @click.option("-n", "--num-batches", default=1, type=int,
-              help="Number of batches to process before exiting (default: 1)")
+              help="Number of batches to process before exiting (default: 1). 0: keep vectorizing new NULL rows indefinitely")
 @click.option("-F", "--follow", is_flag=True,
               help="Keep running: keep vectorizing new NULL rows indefinitely")
-@click.option("--max-idle", default=60.0, type=float,
-              help="Max idle time before exit, in MINUTES (0 = no idle limit)")
-@click.option("--min-idle", default=15.0, type=float,
+@click.option("--min-idle", default=15, type=int,
               help="Initial idle backoff between empty scans, in SECONDS")
+@click.option("--max-idle", default=3600, type=int,
+              help="Max idle time before exit, in MINUTES")
 @click.option("-w", "--workers", default=1, type=int,
               help="Number of parallel workders to use (default: 1)")
 @click.option("-p", "--progress", is_flag=True, help="Show progress bar")

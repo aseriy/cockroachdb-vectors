@@ -158,6 +158,7 @@ docker run -d \
   --name vectorizer \
   -v $HOME/.postgresql:/root/.postgresql:ro \
   -v $(pwd)/config.yaml:/app/config.yaml:ro \
+  -v $(pwd)/logs:/logs \
   vectorize \
   -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full \
   -t passage \
