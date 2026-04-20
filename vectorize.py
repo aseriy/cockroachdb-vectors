@@ -54,9 +54,9 @@ def shared_options(f):
 @click.option("-F", "--follow", is_flag=True,
               help="Keep running: keep vectorizing new NULL rows indefinitely")
 @click.option("--min-idle", default=15, type=int,
-              help="Initial idle backoff between empty scans, in SECONDS")
-@click.option("--max-idle", default=10, type=int,
-              help="Max idle time before exit, in MINUTES")
+              help="Initial idle backoff between empty scans, in SECONDS (default: 15)")
+@click.option("--max-idle", default=1, type=int,
+              help="Max idle time before exit, in MINUTES (default: 1)")
 @click.option("-w", "--workers", default=1, type=int,
               help="Number of parallel workders to use (default: 1)")
 @click.option("-p", "--progress", is_flag=True, help="Show progress bar")
@@ -87,6 +87,7 @@ def embed(
         verbose = True
         progress = False
 
+    
     args = {
         "url": url,
         "table": table,
@@ -103,6 +104,11 @@ def embed(
         "dry_run": dry_run,
         "verbose": verbose
     }
+
+    if follow:
+        args['num_batches'] = None
+        args['progress'] = False
+
 
     # print(json.dumps(args, indent=2))
     run_embed(args)
