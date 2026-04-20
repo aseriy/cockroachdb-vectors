@@ -7,8 +7,9 @@ spec:
   image: hf_st_all_minilm_l6:latest
   runtime: python:3.12
   handler: hf_st_all_minilm_l6:handler
-  replicas: 0
+  replicas: 2
   minReplicas: 1
+  maxReplicas: 10
   disableDefaultHTTPTrigger: false
   build:
     commands:
