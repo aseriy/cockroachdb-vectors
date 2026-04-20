@@ -6,7 +6,9 @@ from typing import Iterable, List, Tuple, Any
 from pathlib import Path
 import yaml
 import requests
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
+from requests.auth import HTTPBasicAuth
+import urllib3
 import inspect
 
 exec_local = True
@@ -26,6 +28,22 @@ if not os.getenv("NUCLIO"):
 
     if 'nuclio' in model_settings:
         exec_local = False
+
+        url_parsed = urlparse(model_settings['nuclio']['url'])
+        if url_parsed.scheme == "https":
+            if model_settings['nuclio'].get('username') \
+                and model_settings['nuclio'].get('password'):
+
+                model_settings['nuclio']['auth'] = HTTPBasicAuth(
+                            model_settings['nuclio']['username'],
+                            model_settings['nuclio']['password']
+                        )
+
+                if not model_settings['nuclio'].get('verify'):
+                    model_settings['nuclio']['verify'] = False
+
+                if not model_settings['nuclio']['verify']:
+                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # enf if
 #
@@ -66,13 +84,19 @@ if exec_local:
 #
 
 
+
+
 def embedding_label() -> str:
     if exec_local:
         return "Hugging Face Sentence Transformer all-MiniLM-L6-v2"
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        response = requests.get(url)
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
         response.raise_for_status()  # raises on non-200
         return response.text
 
@@ -91,8 +115,12 @@ def embedding_description() -> str:
         ).strip()
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        response = requests.get(url)
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
         response.raise_for_status()  # raises on non-200
         return response.text
 
@@ -104,8 +132,12 @@ def embedding_dim() -> int:
         return model.get_sentence_embedding_dimension()
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        response = requests.get(url)
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
         response.raise_for_status()  # raises on non-200
         return response.text
 
@@ -116,8 +148,12 @@ def embedding_index_opclass() -> str:
         return "vector_cosine_ops"
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        response = requests.get(url)
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
         response.raise_for_status()  # raises on non-200
         return response.text
 
@@ -127,8 +163,12 @@ def embedding_index_operator() -> str:
         return "<=>"
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        response = requests.get(url)
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
         response.raise_for_status()  # raises on non-200
         return response.text
 
@@ -141,9 +181,13 @@ def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
         return embeddings[0].tolist()
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        payload = {"text": input_text}
-        response = requests.post(url, json=payload)
+        response = requests.post(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"},
+                        json = {"text": input_text}
+                    )
         response.raise_for_status()  # raises on non-200
         return response.json()
 
@@ -171,12 +215,16 @@ def embedding_encode_batch(
         return values
 
     if 'nuclio' in model_settings:
-        url = urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name)
-        payload = {
-            "index": batch_index,
-            "batch": [[row_id, row_text] for row_id, row_text in zip(row_ids, texts)]
-        }
-        response = requests.post(url, json=payload)
+        response = requests.post(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"},
+                        json = {
+                            "index": batch_index,
+                            "batch": [[row_id, row_text] for row_id, row_text in zip(row_ids, texts)]
+                        }
+                    )
         response.raise_for_status()  # raises on non-200
         return response.json()
 

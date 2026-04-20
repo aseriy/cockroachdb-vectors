@@ -272,9 +272,6 @@ def run_embed_follow(
             batch_counter += 1
 
         else:
-            if verbose:
-                print(f"[INFO] idle_wait: {idle_wait}")
-
             # No work returned
             if idle_wait >= max_idle_secs:
                 if verbose:
