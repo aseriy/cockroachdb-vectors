@@ -14,7 +14,7 @@ with open(config_path, "r") as file:
 model_settings = next(
     item[Path(__file__).stem] 
     for item in config['models'] 
-    if isinstance(item, dict) and 'takara-ds1-fukuro' in item
+    if isinstance(item, dict) and Path(__file__).stem in item
 )
 
 _client = OpenAI(
@@ -71,7 +71,6 @@ def embedding_encode_batch(
     if verbose:
         for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
             input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
-            print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector for row id {row_id}: '{input_column_text}'")
 
     response = _client.embeddings.create(
         model=_MODEL,
