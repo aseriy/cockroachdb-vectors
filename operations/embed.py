@@ -333,7 +333,7 @@ def run_embed_n_batches(
     warnings = []
     errors = []
 
-    start = time.time() if verbose else None
+    start = time.time()
 
     for batch in range(1, num_batches+1):
         # Fetch one batchfull of IDs (no wait on start or after successful work)
