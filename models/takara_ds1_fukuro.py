@@ -42,7 +42,7 @@ def embedding_dim() -> int:
 
 
 def embedding_index_opclass() -> str:
-    return "vector_cosine_ops"
+    return "vector_ip_ops"
 
 
 def embedding_index_operator() -> str:
