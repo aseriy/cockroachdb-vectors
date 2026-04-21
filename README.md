@@ -368,10 +368,17 @@ Some models require configuration. For example, the OpenAI model needs the API k
 
 ```yaml
 models:
-  - hf_st_all_minilm_l6
+
+  - hf_st_all_minilm_l6:
+    nuclio:
+      url: http://localhost:32772
+      username: <username>
+      password: <password>
+      verify: False
+
   - openai_text_embed:
       api_key: OpenAI_API_Key
-      model: text-embedding-3-[small|large]
+      model: text-embedding-3-small | text-embedding-3-large
 ```
 
 The actual file that the models expect should be called `config.yaml`. Models don't have to use this config, but if a model does, its parameters should be exclusively under `models/<model_name>` section. It is the responsibility of the model wrapper to parse and utilize its associated parameters. For example, `models/openai_text_embed.py`:
@@ -391,3 +398,11 @@ openai_settings = next(
 _client = OpenAI(api_key=openai_settings['api_key'])
 _MODEL = openai_settings['model']
 ```
+
+### External Compute Support
+
+Embedding generation can become the dominant cost when working with large existing datasets. While the toolkit is designed for simplicity, generating embeddings for thousands to millions of rows—especially with CPU- or memory-intensive models—can quickly exceed the practical limits of running everything within the same process or container as vectorize.py. To address this, the model abstraction supports executing embedding workloads on external compute backends such as Nuclio. In this mode, the model wrapper transparently switches from local, in-process execution to remote function invocation, while preserving the same interface and behavior expected by the toolkit. This allows embed to remain a lightweight orchestrator of data movement and batching, while embedding computation is scaled independently across distributed resources. From the user’s perspective, the workflow and CLI remain unchanged; only the model configuration determines whether embeddings are generated locally or delegated to external compute.
+
+The Hugging Face model (`hf_st_all_minilm_l6`) included in this repository implements this pattern and serves as a reference for adding external execution support to other models. By convention, each model is defined as a Python wrapper in `models/hf_st_all_minilm_l6.py`, while the corresponding Nuclio function deployment is defined separately as `models/hf_st_all_minilm_l6.yaml`. Together, these provide a consistent structure for supporting both local and distributed embedding execution without changing the toolkit’s core behavior.
+
+Configuration for external execution is defined in `config.yaml`, using the structure shown in `config_tmpl.yaml`. Each model may include an optional `nuclio` section under its configuration block, specifying the endpoint and any required connection settings. When this section is present, the model wrapper automatically routes embedding requests to the configured Nuclio function instead of executing locally. This keeps execution control entirely within the model configuration, without requiring changes to the CLI or toolkit workflow.
