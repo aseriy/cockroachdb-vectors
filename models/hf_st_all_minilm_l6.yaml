@@ -1,0 +1,19 @@
+apiVersion: "nuclio.io/v1"
+kind: NuclioFunction
+metadata:
+  name: hf_st_all_minilm_l6
+spec:
+  description: Hugging Face Sentence Transformer all-MiniLM-L6-v2
+  image: hf_st_all_minilm_l6:latest
+  runtime: python:3.12
+  handler: hf_st_all_minilm_l6:handler
+  replicas: 2
+  minReplicas: 1
+  maxReplicas: 10
+  disableDefaultHTTPTrigger: false
+  build:
+    commands:
+      - pip install sentence-transformers huggingface-hub requests
+  env:
+    - name: NUCLIO
+      value: 1

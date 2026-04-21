@@ -23,7 +23,7 @@ MODEL_DIMENSIONS = {
 
 config_path = Path(__file__).resolve().parent.parent / "config.yaml"
 config = None
-with open("config.yaml", "r") as file:
+with open(config_path, "r") as file:
     config = yaml.safe_load(file)
 
 openai_settings = next(
@@ -124,7 +124,6 @@ def embedding_encode_batch(
     if verbose:
         for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
             input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
-            print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector for row id {row_id}: '{input_column_text}'")
 
     response = _client.embeddings.create(
         model=_MODEL,
