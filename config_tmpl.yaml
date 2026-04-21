@@ -1,5 +1,12 @@
 models:
-  - hf_st_all_minilm_l6
+
+  - hf_st_all_minilm_l6:
+    nuclio:
+      url: http://localhost:32772
+      username: <username>
+      password: <password>
+      verify: False
+
   - openai_text_embed:
       api_key: OpenAI_API_Key
       model: text-embedding-3-small | text-embedding-3-large

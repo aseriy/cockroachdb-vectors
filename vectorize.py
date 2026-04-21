@@ -50,13 +50,13 @@ def shared_options(f):
 @shared_options
 @click.option("-b", "--batch-size", default=1000, type=int, help="Rows to process per batch")
 @click.option("-n", "--num-batches", default=1, type=int,
-              help="Number of batches to process before exiting (default: 1)")
+              help="Number of batches to process before exiting (default: 1). 0: keep vectorizing new NULL rows indefinitely")
 @click.option("-F", "--follow", is_flag=True,
               help="Keep running: keep vectorizing new NULL rows indefinitely")
-@click.option("--max-idle", default=60.0, type=float,
-              help="Max idle time before exit, in MINUTES (0 = no idle limit)")
-@click.option("--min-idle", default=15.0, type=float,
-              help="Initial idle backoff between empty scans, in SECONDS")
+@click.option("--min-idle", default=15, type=int,
+              help="Initial idle backoff between empty scans, in SECONDS (default: 15)")
+@click.option("--max-idle", default=1, type=int,
+              help="Max idle time before exit, in MINUTES (default: 1)")
 @click.option("-w", "--workers", default=1, type=int,
               help="Number of parallel workders to use (default: 1)")
 @click.option("-p", "--progress", is_flag=True, help="Show progress bar")
@@ -71,8 +71,8 @@ def embed(
     batch_size,
     num_batches,
     follow,
-    max_idle,
     min_idle,
+    max_idle,
     workers,
     progress,
     dry_run,
@@ -87,6 +87,7 @@ def embed(
         verbose = True
         progress = False
 
+    
     args = {
         "url": url,
         "table": table,
@@ -96,13 +97,18 @@ def embed(
         "batch_size": batch_size,
         "num_batches": num_batches,
         "follow": follow,
-        "max_idle": max_idle,
         "min_idle": min_idle,
+        "max_idle": max_idle,
         "workers": workers,
         "progress": progress,
         "dry_run": dry_run,
         "verbose": verbose
     }
+
+    if follow:
+        args['num_batches'] = None
+        args['progress'] = False
+
 
     # print(json.dumps(args, indent=2))
     run_embed(args)

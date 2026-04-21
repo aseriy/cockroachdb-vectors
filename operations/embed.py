@@ -51,12 +51,6 @@ def worker_put_conn(conn):
 
 
 
-# def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, verbose=False):
-#     if not is_vector_column(pool, table_name, output_column, model.embedding_dim(), verbose):
-#         print(msg)
-
-
-
 
 def get_null_vector_row_count(pool, table_name, output_column, primary_key):
     count = 0
@@ -125,6 +119,12 @@ def batch_embed(
     if not batch:
         return None
 
+    if verbose:
+        for i, (row_id, row_text) in enumerate(batch, 1):
+            input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
+            print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector {row_id}: '{input_column_text}'")
+
+
     values = model.embedding_encode_batch(batch_index, batch, verbose)
     return values
     
@@ -170,6 +170,230 @@ def batch_update(
 
 
 
+def process_single_batch(
+    executor: ProcessPoolExecutor,
+    conn_pool: SimpleConnectionPool,
+    url: str, table: str,
+    primary_key: str, primary_key_type: str,
+    source_column: str, vector_column: str,
+    ids: list,
+    workers: int,
+    batch_counter: int,
+    verbose: bool = False,
+    progress: bool = False,
+    dry_run: bool = False
+):
+
+    chunk_size = int(0.5 + len(ids) / workers)
+    futures = []
+
+    # Run one batch (via pool for per-process model reuse)
+    if verbose:
+        print(f"[INFO] Batch {batch_counter} starting ({len(ids)} rows)")
+
+    embeddings = []
+
+    for i in range(0, len(ids), chunk_size):
+        id_chunk = ids[i : i + chunk_size]
+
+        # # Got work → reset backoff
+        # idle_wait = max(0.001, float(args['min_idle']))
+        # idle_spent = 0.0
+
+        fut = executor.submit(
+            batch_embed,
+            url,
+            table, source_column,
+            primary_key, id_chunk,
+            dry_run, verbose, batch_counter
+        )
+
+        if progress:
+            fut.add_done_callback(_on_done_embed)
+        
+        futures.append(fut)
+        
+    for fut in as_completed(futures):
+        embeddings.extend(fut.result())
+
+    update_count, worker_errors, worker_warnings = batch_update(
+        conn_pool, table, vector_column,
+        primary_key, primary_key_type,
+        embeddings,
+        dry_run, verbose, batch_counter
+    )
+
+    return  update_count, worker_errors, worker_warnings
+
+
+# This is called when --follow option is in effect
+def run_embed_follow(
+    executor: ProcessPoolExecutor,
+    conn_pool: SimpleConnectionPool,
+    url: str, table: str,
+    primary_key: str, primary_key_type: str,
+    source_column: str, vector_column: str,
+    batch_size,
+    workers: int,
+    min_idle: int, max_idle: int,
+    verbose: bool = False
+):
+    # Backoff state
+    idle_wait = 0
+    max_idle_secs = max_idle *  60
+    to_sleep = 1
+    
+    batch_counter = 1
+        
+    while True:
+        # Fetch one batchfull of IDs (no wait on start or after successful work)
+        ids = fetch_null_vector_ids(conn_pool, table, vector_column, primary_key, batch_size)
+
+        if ids:
+            # Got work!!! Reset the current idle_time
+            idle_wait = 0
+            to_sleep = 1
+
+            update_count, worker_errors, worker_warnings = process_single_batch(
+                executor,
+                conn_pool,
+                url, table,
+                primary_key, primary_key_type,
+                source_column, vector_column,
+                ids,
+                workers,
+                batch_counter,
+                verbose,
+                False,
+                False
+            )
+
+            # Increment counters
+            batch_counter += 1
+
+        else:
+            # No work returned
+            if idle_wait >= max_idle_secs:
+                if verbose:
+                    print(f"[INFO] Max idle reached ({max_idle} minutes). Exiting.")
+                
+                break
+
+            else:
+                if verbose:
+                    msg = 'No work found.'
+                    if idle_wait > 0:
+                        msg = f"No work for {idle_wait} secs."
+
+                    print(f"[INFO] {msg} Sleeping for {to_sleep} secs...")
+
+                time.sleep(to_sleep)
+                idle_wait += to_sleep
+                to_sleep *= 2
+
+
+
+
+    
+
+def run_embed_n_batches(
+    executor: ProcessPoolExecutor,
+    conn_pool: SimpleConnectionPool,
+    url: str, table: str,
+    primary_key: str, primary_key_type: str,
+    source_column: str, vector_column: str,
+    batch_size, num_batches,
+    workers: int,
+    verbose: bool = False,
+    progress: bool = False,
+    dry_run: bool = False
+):
+    pbar = None
+
+    # Set up the progress bar
+    if progress:
+        total_rows = batch_size * num_batches
+
+        pbar = tqdm(
+                    total=total_rows,
+                    desc="Vectorizing",
+                    unit="rows",
+                    smoothing=0.01
+                )
+
+        def _on_done_embed(fut):
+            try:
+                embeddings = fut.result()
+            except Exception:
+                return
+            if embeddings:
+                pbar.update(len(embeddings))
+
+
+    warnings = []
+    errors = []
+
+    start = time.time() if verbose else None
+
+    for batch in range(1, num_batches+1):
+        # Fetch one batchfull of IDs (no wait on start or after successful work)
+        ids = fetch_null_vector_ids(conn_pool, table, vector_column, primary_key, batch_size)
+
+        if not ids:
+            if verbose:
+                print(f"[INFO] No work found. Exiting... ")
+            break
+
+
+        if ids:
+            update_count, worker_errors, worker_warnings = process_single_batch(
+                executor,
+                conn_pool,
+                url, table,
+                primary_key, primary_key_type,
+                source_column, vector_column,
+                ids,
+                workers,
+                batch,
+                verbose,
+                progress,
+                dry_run
+            )
+            
+            errors.extend(worker_errors)
+            warnings.extend(worker_warnings)
+
+    # end for
+
+
+    print("Done in", time.time() - start, "seconds")
+    if verbose and ids:
+        print("[INFO] Embedding complete.")
+
+    if (progress or verbose) and (warnings or errors):
+        from datetime import datetime
+        print("\n[WARNINGS SUMMARY]", flush=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_filename = f"warnings_{timestamp}.log"
+        with open(log_filename, "w") as f:
+            for w in warnings:
+                print(w)
+                f.write(w + "\n")
+        print(f"Total warnings: {len(warnings)}")
+        print("\n[ERROR SUMMARY]", flush=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_filename = f"errors_{timestamp}.log"
+        with open(log_filename, "w") as f:
+            for w in errors:
+                print(w)
+                f.write(w + "\n")
+        print(f"Total errors: {len(errors)}")
+
+
+
+
+
+
 def run_embed(args):
     if not is_valid_model(args['model']):
         raise RuntimeError(f"Invalid embedding model {args['model']}")
@@ -184,8 +408,6 @@ def run_embed(args):
     
     conn_pool = SimpleConnectionPool(minconn=0, maxconn=args['workers'], **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
-
-    batch_counter = 0
 
     primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
 
@@ -211,151 +433,34 @@ def run_embed(args):
 
 
 
-    pbar = None
-
-    futures = []
-    warnings = []
-    errors = []
-
-    # Backoff state
-    idle_wait = max(0.001, float(args['min_idle']))   # seconds
-    idle_spent = 0.0                               # seconds
-    idle_budget = max(0.0, float(args['max_idle']) * 60.0)  # seconds (0 = unlimited)
-
-    start = time.time() if args['verbose'] else None
-
-    # Per-run counters (1-based for human-friendly logs)
-    run_counter = 1
-    batch_in_run = 1
-
-
-    while True:
-        # Stop after N batches per run (default 1) unless following
-        if (not args['follow']) and batch_in_run > args['num_batches']:
-            break
-
-        if args['progress'] and batch_in_run == 1:
-            total_rows = args['batch_size'] * args['num_batches']
-            if args['follow']:
-                total_rows = get_null_vector_row_count(conn_pool, args['table'], args['output'], primary_key)
-
-            pbar = tqdm(
-                        total=total_rows,
-                        desc="Vectorizing",
-                        unit="rows",
-                        smoothing=0.01
-                    )
-
-            def _on_done_embed(fut):
-                try:
-                    embeddings = fut.result()
-                except Exception:
-                    return
-                if embeddings:
-                    pbar.update(len(embeddings))
+    # Call the correct mode depending on batch run or daemon
+    if args['follow']:
+        run_embed_follow(
+            executor,
+            conn_pool,
+            args['url'], args['table'],
+            primary_key, primary_key_type,
+            args['input'], args['output'],
+            args['batch_size'],
+            args['workers'],
+            args['min_idle'], args['max_idle'],
+            args['verbose']
+        )
+    
+    else:
+        run_embed_n_batches(
+            executor,
+            conn_pool,
+            args['url'], args['table'],
+            primary_key, primary_key_type,
+            args['input'], args['output'],
+            args['batch_size'], args['num_batches'],
+            args['workers'],
+            args['verbose'],
+            args['progress'],
+            args['dry_run']
+        )
 
 
-        # Fetch one page of IDs (no wait on start or after successful work)
-        ids = fetch_null_vector_ids(conn_pool, args['table'], args['output'], primary_key, args['batch_size'])
 
-        chunk_size = int(0.5 + len(ids) / args['workers'])
-        futures = []
-
-        # Run one batch (via pool for per-process model reuse)
-        if args['verbose']:
-            print(f"[INFO] Run {run_counter}, Batch {batch_in_run} starting ({len(ids)} rows)")
-
-        embeddings = []
-
-        for i in range(0, len(ids), chunk_size):
-            id_chunk = ids[i : i + chunk_size]
-
-            # Got work → reset backoff
-            idle_wait = max(0.001, float(args['min_idle']))
-            idle_spent = 0.0
-
-            fut = executor.submit(
-                batch_embed,
-                args['url'],
-                args['table'], args['input'],
-                primary_key, id_chunk,
-                args['dry_run'], args['verbose'], batch_in_run
-            )
-
-            if args['progress']:
-                fut.add_done_callback(_on_done_embed)
-            
-            futures.append(fut)
-            
-        for fut in as_completed(futures):
-            embeddings.extend(fut.result())
-
-        # for e in embeddings:
-        #     print(json.dumps(e, indent=2))
-
-        worker_count, worker_errors, worker_warnings = batch_update(
-                conn_pool, args['table'], args['output'],
-                primary_key, primary_key_type,
-                embeddings,
-                args['dry_run'], args['verbose'], batch_in_run
-            )
-        errors.extend(worker_errors)
-        warnings.extend(worker_warnings)
-
-
-        batch_counter += 1
-        batch_in_run += 1
-        if args['follow'] and batch_in_run > args['num_batches']:
-            if args['verbose']:
-                print(f"[INFO] Run {run_counter} complete ({args['num_batches']} batches).")
-
-            if args['progress'] and pbar is not None:
-                pbar.close()
-                pbar = None
-
-            run_counter += 1
-            batch_in_run = 1
-
-        continue
-
-        # No work returned → back off or exit if max idle reached
-        if idle_budget > 0.0 and idle_spent >= idle_budget:
-            if args['verbose']:
-                print(f"[INFO] Max idle reached ({args['max_idle']} min). Exiting.")
-            break
-
-        # Sleep current backoff and then double it (exponential), cap by remaining budget if any
-        to_sleep = idle_wait
-        if idle_budget > 0.0:
-            remaining = max(0.0, idle_budget - idle_spent)
-            to_sleep = min(to_sleep, remaining)
-        time.sleep(to_sleep)
-        idle_spent += to_sleep
-        idle_wait = idle_wait * 2.0
-
-    if args['verbose']:
-        print("Done in", time.time() - start, "seconds")
-
-
-    if args['verbose']:
-        print("[INFO] Embedding complete.")
-
-    if (args['progress'] or args['verbose']) and (warnings or errors):
-        from datetime import datetime
-        print("\n[WARNINGS SUMMARY]", flush=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_filename = f"warnings_{timestamp}.log"
-        with open(log_filename, "w") as f:
-            for w in warnings:
-                print(w)
-                f.write(w + "\n")
-        print(f"Total warnings: {len(warnings)}")
-        print("\n[ERROR SUMMARY]", flush=True)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_filename = f"errors_{timestamp}.log"
-        with open(log_filename, "w") as f:
-            for w in errors:
-                print(w)
-                f.write(w + "\n")
-        print(f"Total errors: {len(errors)}")
 
