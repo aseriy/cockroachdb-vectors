@@ -32,6 +32,7 @@ def embedding_description() -> str:
     return textwrap.dedent(
         """
         Takara-DS1/ds1-fukuro
+        https://ds1.takara.ai/capabilities/text-embeddings.html
         """
     ).strip()
 
@@ -45,7 +46,7 @@ def embedding_index_opclass() -> str:
 
 
 def embedding_index_operator() -> str:
-    return "<=>"
+    return "<#>"
     
 
 def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
