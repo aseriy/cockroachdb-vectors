@@ -5,6 +5,10 @@ import re
 import humanize
 from typing import Any, Sequence
 from psycopg2.pool import SimpleConnectionPool
+from rich.console import Console
+from rich.table import Table
+from rich.padding import Padding
+from rich.align import Align
 from .model import is_valid_model
 from .common import (
     build_conn_kwargs,
@@ -18,7 +22,10 @@ from .common import (
 
 def run_size(args: dict):
     verbose = args['verbose']
-    print(args)
+    
+    display_results()
+    return
+
 
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
@@ -59,18 +66,94 @@ def run_size(args: dict):
     print(f"embedding space: {embedding_space} --> {humanize.naturalsize(embedding_space, gnu=True)}")
 
     table_space, index_space = calc_index_space(conn_pool, args['table'], index_vector_name)
-    print(json.dumps(index_space, indent=2))
+    # print(json.dumps(index_space, indent=2))
 
     print(f"index: {index_vector_name} --> {index_vector_id} --> {humanize.naturalsize(index_space[index_vector_id], gnu=True)}")
     print(f"index: {index_id_null_name} --> {index_id_null_id} --> {humanize.naturalsize(index_space[index_id_null_id], gnu=True)}")
     print(f"index: {index_id_not_null_name} --> {index_id_not_null_id} --> {humanize.naturalsize(index_space[index_id_not_null_id], gnu=True)}")
     print(f"table: {table_space}")
 
-    total_space = embedding_space + index_space[index_vector_id]
-    print(f"Total: {humanize.naturalsize(total_space, gnu=True)}")
+    # Total extra space including the auxiliary indexes
+    vector_space = embedding_space + index_space[index_vector_id] 
+    toolkit_space = (
+            vector_space +
+            index_space[index_id_null_id] +
+            index_space[index_id_not_null_id]
+        )
+
+    # Table space without the above
+    table_space = table_space - toolkit_space
+
+    # Vector space as a percentage of the initial table space
+    vector_space_increase_ration = float(vector_space) / float(table_space)
+
+    print(f"table: {humanize.naturalsize(table_space, gnu=True)}")
+    print(f"vector: {humanize.naturalsize(vector_space, gnu=True)}")
+    print(f"increase: {vector_space_increase_ration}")
 
 
     return None
+
+
+
+def display_results():
+    console = Console()
+
+    # 💡 Move padding here (Row Padding, Column Padding)
+    table = Table(
+                    show_header=False,
+                    pad_edge=False,
+                    padding=0,
+                    show_lines=True
+                )
+
+    table.add_column("1") 
+    table.add_column("2") 
+    table.add_column("3", justify="right") 
+
+    table.add_row(
+                    Padding("Initial table size", (0, 4, 0, 1)),
+                    Padding("passage", (0, 4, 0, 1)),
+                    Padding("6.8G", (0, 0, 0, 6))
+                )
+    table.add_row(
+                    Padding("+ Vector column", (0, 4, 0, 1)),
+                    Padding("passage_vector", (0, 4, 0, 1)),
+                    Padding("5.3G", (0, 0, 0, 6)),
+                )
+    table.add_row(
+                    Padding("+ Vector index", (0, 4, 0, 1)),
+                    Padding("passage_passage_vector_idx", (0, 4, 0, 1)),
+                    Padding("2.4G", (0, 0, 0, 6)),
+                )
+    table.add_row(
+                    Padding("+ Toolkit indexes", (0, 4, 0, 1)),
+                    Padding("\n".join([
+                                "passage_passage_vector_id_null_idx",
+                                "passage_passage_vector_id_not_null_idx"
+                            ]),
+                            (0, 4, 0, 1)),
+                    Padding("\n".join(["17.6M", "479.0M"]), (0, 0, 0, 6))
+                )
+    table.add_row(
+                    Padding("= Resulting table size", (0, 4, 0, 1)),
+                    Padding("passage", (0, 4, 0, 1)),
+                    Padding("6.8G", (0, 0, 0, 6))
+                )
+    table.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Vector storage overhead", align="right"), (0, 1, 0, 1)),
+                    Padding("14%", (0, 0, 0, 6))
+                )
+    table.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Toolkit storage overhead", align="right"), (0, 1, 0, 1)),
+                    Padding("0.1%", (0, 0, 0, 6))
+                )
+
+    console.print(table)
+
+
 
 
 
@@ -106,8 +189,8 @@ def calc_index_space(
     total = sum(r[2] for r in ranges)
 
     n_ranges = x_parser(ranges)
-    for r in n_ranges:
-        print(r)
+    # for r in n_ranges:
+    #     print(r)
 
     index_sizes = calc_index_bytes(
         get_table_id(pool, table_name),

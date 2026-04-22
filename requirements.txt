@@ -25,6 +25,7 @@ python-dateutil==2.9.0.post0
 pytz==2025.2
 regex==2024.11.6
 requests==2.32.4
+rich==15.0.0
 safetensors==0.5.3
 scikit-learn==1.7.0
 scipy==1.16.0
