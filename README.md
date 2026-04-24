@@ -15,10 +15,10 @@ At the center of the toolkit is the vectorize.py script. It exposes a simple CLI
 
 ### `instrument`
 
-The `instrument` sub-command automates "instrumenting" the specified column to enable semantic search on the column's content.
+The `instrument` sub-command automates "instrumenting" the specified column to enable semantic search on this column's content.
 
 1. Creates the vector column. The dimensionality is derived from the selected embedding model (see the model subcommand below).
-2. Creates the vector index on this new column, as well as other auxiliary indexes that accelerate embedding generation and vector searches.
+2. Creates a vector index on this new column, as well as other auxiliary indexes that accelerate embedding generation and vector searches.
 3. Wires a trigger that resets the vector column to NULL when the source column is updated. This flags the row for the embedding generation process so the embedding will be regenerated.
 
 ```bash
@@ -75,7 +75,9 @@ It supports two operations:
 
 ```bash
 $ python3 vectorize.py model list
-hf_st_all_minilm_l6	Hugging Face Sentence Transformer all-MiniLM-L6-v2
+hf_st_all_minilm_l6   Hugging Face Sentence Transformer all-MiniLM-L6-v2
+openai_text_embed     OpenAI Text Embedding API
+takara_ds1_fukuro     Takara-DS1/ds1-fukuro
 ```
 
 ```bash
@@ -326,7 +328,7 @@ def embedding_encode(
     ) -> List[float]
 ```
 
-This function takes a single row's input column data to be encode, and return the resulting vector.
+This function takes a single row's input column data to be encoded, and returns the resulting vector.
 
 >[!NOTE]
 > The input data may be of any type, not just text. The model needs to be aware of the data type it's embedding.
@@ -343,14 +345,14 @@ def embedding_encode_batch(
 This function takes:
 
 1. a batch index - this is for information purposes only and used to generate INFO message
-2. a list of tuple where each tuple contains the primary key and the input column value. Both can be of any data type.
+2. a list of tuples where each tuple contains the primary key and the input column value. Both can be of any data type.
 
 It returns a resulting list of PK-Embedding tuples.
 
 
 ### Debugging Models
 
-A simple script called `model_test.py` in this repo that you can use to check / debug a model wrapper in the `model` directory. It invokes the expected API functions described above. *It will be nice to turn this into a real unit test :-)* You can run it as following:
+A simple script called `model_test.py` exists in this repo that you can use to check / debug a model wrapper in the `model` directory. It invokes the expected API functions described above. *It would be nice to turn this into a real unit test :-)* You can run it as:
 
 ```bash
 python3 model_test.py hf_st_all_minilm_l6
@@ -406,3 +408,34 @@ Embedding generation can become the dominant cost when working with large existi
 The Hugging Face model (`hf_st_all_minilm_l6`) included in this repository implements this pattern and serves as a reference for adding external execution support to other models. By convention, each model is defined as a Python wrapper in `models/hf_st_all_minilm_l6.py`, while the corresponding [Nuclio](https://docs.nuclio.io/en/latest/tasks/quick-start.html) function deployment is defined separately as `models/hf_st_all_minilm_l6.yaml`. Together, these provide a consistent structure for supporting both local and distributed embedding execution without changing the toolkit’s core behavior.
 
 Configuration for external execution is defined in `config.yaml`, using the structure shown in `config_tmpl.yaml`. Each model may include an optional `nuclio` section under its configuration block, specifying the endpoint and any required connection settings. When this section is present, the model wrapper automatically routes embedding requests to the configured Nuclio function instead of executing locally. This keeps execution control entirely within the model configuration, without requiring changes to the CLI or toolkit workflow.
+
+
+### Sizing
+
+The sizing operation estimates the storage impact introduced by vectorization, based on the current table, model, and indexing configuration. It reports the additional footprint of the vector column, vector index, and toolkit indexes, along with the resulting total table size and relative overhead percentages. The estimate is intentionally conservative, reflecting a worst-case view of storage growth rather than exact usage. This allows users to quantify the cost of vectorization after validating its usefulness, and make an informed decision about whether to carry the approach forward into production.
+
+
+```bash
+python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector
+```
+
+
+```bash
+┌───────────────────────────┬───────────────────────────────────────────┬────────────┐
+│ Initial table size        │ passage                                   │       39.9G│
+├───────────────────────────┼───────────────────────────────────────────┼────────────┤
+│ + Vector column           │ passage_vector                            │        2.9G│
+├───────────────────────────┼───────────────────────────────────────────┼────────────┤
+│ + Vector index            │ passage_passage_vector_idx                │        2.3G│
+├───────────────────────────┼───────────────────────────────────────────┼────────────┤
+│ + Toolkit indexes         │ passage_passage_vector_id_null_idx        │       18.7M│
+│                           │ passage_passage_vector_id_not_null_idx    │      485.7M│
+├───────────────────────────┼───────────────────────────────────────────┼────────────┤
+│ = Resulting table size    │ passage                                   │       45.6G│
+├───────────────────────────┼───────────────────────────────────────────┼────────────┤
+│                       >>> │                   Vector storage overhead │       11.4%│
+├───────────────────────────┼───────────────────────────────────────────┼────────────┤
+│                       >>> │                  Toolkit storage overhead │        1.1%│
+└───────────────────────────┴───────────────────────────────────────────┴────────────┘
+```
+

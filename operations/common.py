@@ -25,6 +25,63 @@ def main_get_conn(pool) -> connection:
     return conn
 
 
+
+def get_table_id(pool, table_name) -> int:
+    conn = main_get_conn(pool)
+    table_id = None
+
+    query = f"""
+        SELECT table_id                                         
+        FROM crdb_internal.tables                               
+        WHERE name = '{table_name}'
+    """
+
+    with conn.cursor() as cur:
+        cur.execute(query)
+        result = cur.fetchone()
+        if result:
+            table_id = result[0]
+
+    pool.putconn(conn)
+
+    return table_id
+
+
+
+def get_index_id(pool, table_name, index_name = None) -> int | list[int]:
+    conn = main_get_conn(pool)
+    table_id = get_table_id(pool, table_name)
+    index_id = None
+
+    if table_id:
+        query = f"""
+            SELECT index_id
+            FROM crdb_internal.table_indexes
+            WHERE
+                descriptor_name = '{table_name}'
+        """
+
+        if index_name:
+            query += f"""
+                    AND
+                    index_name = '{index_name}'
+            """
+
+        with conn.cursor() as cur:
+            cur.execute(query)
+            if index_name:
+                result = cur.fetchone()
+                index_id = result[0]
+            else:
+                result = cur.fetchall()
+                index_id = [r[0] for r in result]
+
+    pool.putconn(conn)
+
+    return index_id
+
+
+
 def get_primary_key_column(pool, table_name) -> dict:
     conn = main_get_conn(pool)
 

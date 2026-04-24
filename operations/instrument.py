@@ -191,9 +191,9 @@ def run_instrument(args: dict):
         args['verbose']
     )
 
-    trigger_cocnfig = read_trigger_function(conn_pool, args['table'])
+    trigger_config = read_trigger_function(conn_pool, args['table'])
 
-    config = update_trigger_func_add_column(trigger_cocnfig, args['table'], args['source'], args['embedding'])
+    config = update_trigger_func_add_column(trigger_config, args['table'], args['source'], args['embedding'])
     trg_func_sql = update_trigger_sql(config, args['table'])
     install_trigger(conn_pool, trg_func_sql)
 
@@ -213,8 +213,8 @@ def run_cleanup(args: dict):
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    trigger_cocnfig = read_trigger_function(conn_pool, args['table'])
-    config = update_trigger_func_drop_column(trigger_cocnfig, args['table'], args['source'], args['embedding'])
+    trigger_config = read_trigger_function(conn_pool, args['table'])
+    config = update_trigger_func_drop_column(trigger_config, args['table'], args['source'], args['embedding'])
     
     trg_func_sql = update_trigger_sql(config, args['table'], drop=True)
     install_trigger(conn_pool, trg_func_sql)
@@ -406,20 +406,29 @@ def read_trigger_function(pool, table_name) -> dict:
     trg_func_name = f"clear_vector_on_update_{table_name}"
     trg_func_body = None
 
+    config = []
+
+    func_list = None
+    stmt = "SELECT function_name FROM [SHOW FUNCTIONS]"
+    conn = main_get_conn(pool)
+    with conn.cursor() as cur:
+        cur.execute(stmt)
+        func_list = [r[0] for r in cur.fetchall()]
+    pool.putconn(conn)
+
+    if not trg_func_name in func_list:
+        return config
+
     stmt = f"""
             SELECT create_statement FROM [
                 SHOW CREATE FUNCTION {trg_func_name}
             ]
         """  
 
-    config = []
-
     conn = main_get_conn(pool)
-
     with conn.cursor() as cur:
         cur.execute(stmt)
         trg_func_body = cur.fetchone()[0]
-
     pool.putconn(conn)
 
     # 1. Extract everything between $$ ... $$
