@@ -416,7 +416,7 @@ The sizing operation estimates the storage impact introduced by vectorization, b
 
 
 ```bash
-python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector
+$ python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector
 ```
 
 
@@ -439,3 +439,34 @@ python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database
 └───────────────────────────┴───────────────────────────────────────────┴────────────┘
 ```
 
+
+### Emitting search SQL
+
+The `sql` operation generates the vector similarity search query for a given table, column, and model configuration. Unlike search, it does not execute the query — it outputs SQL ready to be integrated into application code or run directly in a SQL client.
+
+It supports two modes:
+
+1. Without `-s/--sample`, it outputs a parameterized query template using positional placeholders (`%s`), intended for direct use in application code.
+2. With `-s/--sample`, it encodes the provided text using the selected model and outputs the complete query with the vector literal embedded inline, ready to execute in a SQL client.
+
+In both modes, the vector operator and embedding dimensionality are derived from the selected model. The query uses `AS OF SYSTEM TIME follower_read_timestamp()` to enable follower reads, reducing latency for read-heavy similarity search workloads.
+
+```bash
+$ python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6
+SELECT
+    id,
+    passage,
+    ROUND(passage_vector <=> %s::VECTOR(1536), 6) AS distance
+FROM passage
+AS OF SYSTEM TIME follower_read_timestamp()
+WHERE passage_vector IS NOT NULL
+ORDER BY passage_vector <=> %s::VECTOR(1536)
+LIMIT %s
+
+Note:
+'%s' are positional parameters. Bind in order:
+    1) query vector,
+    2) same query vector,
+    3) limit.
+Adjust syntax for your client library if needed.
+```

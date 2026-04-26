@@ -3,6 +3,7 @@ import json
 from operations import (
     run_embed,
     run_search,
+    run_emit,
     run_model_list, run_model_desc,
     run_instrument,
     run_size,
@@ -123,7 +124,7 @@ def embed(
 @common_options
 @model_options
 @click.option("-l", "--limit", default=10, type=int, help="Number of the closest matches (default: 10)")
-@click.argument("text", required=False)
+@click.argument("text", required=True)
 def search(
         url,
         table,
@@ -147,6 +148,37 @@ def search(
     }
 
     run_search(args)
+
+
+
+@cli.command(short_help="Emit SQL for integrations")
+@common_options
+@model_options
+@click.option("-s", "--sample", type=str, help="Text to search for")
+@click.option("-l", "--limit", default=10, type=int, help="Number of the closest matches (default: 10)")
+def sql(
+        url,
+        table,
+        input_col,
+        output_col,
+        model,
+        verbose,
+        sample,
+        limit
+):
+
+    args = {
+        "url": url,
+        "table": table,
+        "source": input_col,
+        "embedding": output_col,
+        "model": model,
+        "verbose": verbose,
+        "sample": sample,
+        "limit": limit
+    }
+
+    run_emit(args)
 
 
 
