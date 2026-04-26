@@ -90,7 +90,6 @@ def run_search(args: dict):
 
 
 def run_emit(args: dict):
-    print(f"run_emit(): {args}")
     verbose = args['verbose']
     sample = args['sample']
 
@@ -132,6 +131,6 @@ def run_emit(args: dict):
         )
     )
     print(f"{query}\n")
-    if sample:
+    if not sample:
         print(f"{emit_note}\n")
 
