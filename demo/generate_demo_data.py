@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 DOMAINS = None
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(BASE_DIR, "domains.yaml"), "r") as file:
+with open(os.path.join(BASE_DIR, "semantic_clusters.yaml"), "r") as file:
     DOMAINS = yaml.safe_load(file)
 
 # ── LLM generation ───────────────────────────────────────────────────────────
@@ -66,7 +66,15 @@ def setup_schema(conn, schema: str):
     conn.commit()
 
 
-def setup_table(conn, schema: str, table: str, ddl: str):
+def setup_table(conn, schema: str, table: str):
+    ddl = f"""
+        CREATE TABLE IF NOT EXISTS products (
+            id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            name        TEXT NOT NULL,
+            description TEXT NOT NULL
+        )
+    """
+
     with conn.cursor() as cur:
         cur.execute(f"SET search_path = {schema}")
         cur.execute(ddl)
@@ -79,7 +87,9 @@ def row_count(conn, schema: str, table: str) -> int:
         return cur.fetchone()[0]
 
 
-def insert_rows(conn, schema: str, table: str, columns: List[str], rows: List[Dict]) -> int:
+def insert_rows(conn, schema: str, table: str, rows: List[Dict]) -> int:
+    columns = ['name', 'description']
+
     if not rows:
         return 0
     col_str = ", ".join(columns)
@@ -105,7 +115,7 @@ def run_domain(conn, client, domain_name, domain_def, target, batch_size, model)
 
     for table_name, tdef in domain_def["tables"].items():
         logger.info(f"  Table: {table_name}")
-        setup_table(conn, domain_name, table_name, tdef["ddl"])
+        setup_table(conn, domain_name, table_name)
 
         current = row_count(conn, domain_name, table_name)
         logger.info(f"  Existing rows: {current} / {target}")
@@ -117,7 +127,7 @@ def run_domain(conn, client, domain_name, domain_def, target, batch_size, model)
             if not rows:
                 logger.warning("  Empty batch, retrying...")
                 continue
-            inserted = insert_rows(conn, domain_name, table_name, tdef["columns"], rows)
+            inserted = insert_rows(conn, domain_name, table_name, rows)
             current += inserted
             logger.info(f"  Total: {current} / {target}")
 
