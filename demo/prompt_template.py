@@ -6,11 +6,13 @@ tmpl_vars = {
     "entry_count": "120",
     "concept_unit": "account",
     "concept_scope_examples": "account type, ownership model, status, or structural variant",
+    "instance_exclusion_rules": "no IDs, no numbers, no dates, no people, no balances",
     "trivial_variant_example": '"basic checking account" vs "standard checking account"',
     "distinctness_criteria": "function or structure",
     "domain_name": "financial services",
-    "var_8": "retail, business, payments, digital wallets, etc.",
-    "var_9": "Checking Account",
+    "terminology_domain": "financial",
+    "domain_scope": "retail, business, payments, digital wallets, etc.",
+    "example_name": "Checking Account",
     "example_description": "A deposit account designed for frequent transactions such as payments, withdrawals, and transfers.",
 }
 
@@ -26,24 +28,24 @@ prompt_tmpl = """
         Format: an array of objects with exactly two fields: "name" and "description"
         Generate {{ entry_count }} entries
         Each entry must represent a unique {{ concept_unit }} concept (e.g., {{ concept_scope_examples }})
-        Do not generate specific instances (no IDs, no numbers, no dates, no people, no balances)
+        Do not generate specific instances ({{ instance_exclusion_rules }})
         Avoid synonyms or near-duplicates
         Avoid trivial variants (e.g., {{ trivial_variant_example }})
         Keep names concise (2-5 words)
         Descriptions: 1 sentence, precise and non-overlapping
-        Use standard financial terminology
+        Use standard {{ terminology_domain }} terminology
 
         Quality constraints:
 
         Concepts must be meaningfully distinct in {{ distinctness_criteria }}
         No repetition or rewording of the same idea
-        Stay within realistic {{ domain_name }} domain ({{ var_8 }})
+        Stay within realistic {{ domain_name }} domain ({{ domain_scope }})
 
         Output format example:
 
         [
             {
-                "name": "{{ var_9 }}",
+                "name": "{{ example_name }}",
                 "description": "{{ example_description }}"
             }
         ]
