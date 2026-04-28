@@ -1,166 +1,146 @@
 financial_services:
   tables:
     accounts:
-      domain_label:
-
-      entry_count:
-      
-      concept_definition:
-
-      distinctness_criteria:
-      
-      domain_boundary_xamples:
-    
-      prompt: |-
-        You are generating a controlled vocabulary, not sample data.
-
-        Task: Produce a list of distinct financial account concepts.
-
-        Output requirements:
-
-        Return valid JSON only
-        Format: an array of objects with exactly two fields: "name" and "description"
-        Generate 120 entries
-        Each entry must represent a unique account concept (e.g., account type, ownership model, status, or structural variant)
-        Do not generate specific instances (no IDs, no numbers, no dates, no people, no balances)
-        Avoid synonyms or near-duplicates
-        Avoid trivial variants (e.g., "basic checking account" vs "standard checking account")
-        Keep names concise (2-5 words)
-        Descriptions: 1 sentence, precise and non-overlapping
-        Use standard financial terminology
-
-        Quality constraints:
-
-        Concepts must be meaningfully distinct in function or structure
-        No repetition or rewording of the same idea
-        Stay within realistic financial services domain (retail, business, payments, digital wallets, etc.)
-
-        Output format example:
-
-        [
-        {
-        "name": "Checking Account",
-        "description": "A deposit account designed for frequent transactions such as payments, withdrawals, and transfers."
-        }
-        ]
-
-        Now generate the full list.
-
+      concept_domain: financial account
+      entry_count: 120
+      concept_unit: account
+      concept_scope_examples: account type, ownership model, status, or structural variant
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"basic checking account" vs "standard checking account"'
+      terminology_domain: financial
+      distinctness_criteria: function or structure
+      domain_name: financial services
+      domain_scope: retail, business, payments, digital wallets, etc.
+      example_name: Checking Account
+      example_description: A deposit account designed for frequent transactions such as payments, withdrawals, and transfers.
 
     transactions:
-      prompt: |-
-        You are generating a controlled vocabulary, not sample data.
-
-        Task: Produce a list of distinct financial transaction concepts.
-
-        Output requirements:
-
-        Return valid JSON only
-        Format: an array of objects with exactly two fields: "name" and "description"
-        Generate 150 entries
-        Each entry must represent a unique transaction concept (e.g., payment type, transfer type, funding mechanism, channel-specific transaction, or settlement form)
-        Do not generate specific instances (no IDs, no numbers, no dates, no people, no balances)
-        Avoid synonyms or near-duplicates
-        Avoid trivial variants (e.g., "online payment" vs "internet payment")
-        Keep names concise (2-5 words)
-        Descriptions: 1 sentence, precise and non-overlapping
-        Use standard financial terminology
-
-        Quality constraints:
-
-        Concepts must be meaningfully distinct in function, flow, or mechanism
-        No repetition or rewording of the same idea
-        Stay within realistic financial services domain (retail, business, payments, cards, transfers, etc.)
-
-        Output format example:
-
-        [
-        {
-        "name": "Card Purchase",
-        "description": "A transaction where a payment card is used to pay a merchant for goods or services."
-        }
-        ]
-
-        Now generate the full list.
-
+      concept_domain: financial transaction
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: payment type, transfer type, funding mechanism, channel-specific transaction, or settlement form
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"online payment" vs "internet payment"'
+      terminology_domain: financial
+      distinctness_criteria: function, flow, or mechanism
+      domain_name: financial services
+      domain_scope: retail, business, payments, cards, transfers, etc.
+      example_name: Card Purchase
+      example_description: A transaction where a payment card is used to pay a merchant for goods or services.
 
     payment_events:
-      prompt: |-
-        Events describing the lifecycle of a payment, including initiation, authorization,
-        routing, clearing, settlement, reversals, chargebacks, and failures across payment
-        rails such as card networks, ACH, wires, and real-time payments.
+      payment_events:
+      concept_domain: payment lifecycle event
+      entry_count: 120
+      concept_unit: payment event
+      concept_scope_examples: initiation, authorization, routing, clearing, settlement, reversal, exception, or failure stage across payment rails
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"payment approval" vs "approved payment"'
+      terminology_domain: payment
+      distinctness_criteria: lifecycle stage, processing step, or outcome
+      domain_name: payment systems
+      domain_scope: cards, ACH, wires, real-time payments, wallets, etc.
+      example_name: Payment Authorization
+      example_description: An event where a payment request is approved or declined by the issuing institution based on available funds and risk checks.
 
     lending_lifecycle_events:
-      prompt: |-
-        Events describing the lifecycle of a loan or credit product, including application,
-        underwriting, approval, origination, disbursement, repayment, delinquency,
-        restructuring, and closure.
+      lending_lifecycle_events:
+      concept_domain: lending lifecycle event
+      entry_count: 120
+      concept_unit: lending event
+      concept_scope_examples: application, underwriting, approval, origination, disbursement, repayment, delinquency, restructuring, or closure stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"loan approval" vs "approved loan"'
+      terminology_domain: lending
+      distinctness_criteria: lifecycle stage, processing step, or outcome
+      domain_name: lending services
+      domain_scope: consumer lending, mortgages, credit cards, business loans, servicing, collections, etc.
+      example_name: Loan Origination
+      example_description: An event where a loan agreement is finalized and the credit facility is established for the borrower.
 
     customer_profiles:
-      prompt: |-
-        You are generating a controlled vocabulary, not sample data.
-
-        Task: Produce a list of distinct payment lifecycle event concepts.
-
-        Output requirements:
-
-        Return valid JSON only
-        Format: an array of objects with exactly two fields: "name" and "description"
-        Generate 120 entries
-        Each entry must represent a unique payment event concept (e.g., initiation, authorization, routing, clearing, settlement, reversal, exception, or failure stage across payment rails)
-        Do not generate specific instances (no IDs, no numbers, no dates, no people, no balances)
-        Avoid synonyms or near-duplicates
-        Avoid trivial variants (e.g., "payment approval" vs "approved payment")
-        Keep names concise (2–5 words)
-        Descriptions: 1 sentence, precise and non-overlapping
-        Use standard financial terminology
-
-        Quality constraints:
-
-        Concepts must be meaningfully distinct in lifecycle stage, processing step, or outcome
-        No repetition or rewording of the same idea
-        Stay within realistic payment systems domain (cards, ACH, wires, real-time payments, wallets, etc.)
-
-        Output format example:
-
-        [
-        {
-        "name": "Payment Authorization",
-        "description": "An event where a payment request is approved or declined by the issuing institution based on available funds and risk checks."
-        }
-        ]
-
-        Now generate the full list.
+      concept_domain: customer profile
+      entry_count: 120
+      concept_unit: customer profile
+      concept_scope_examples: identity attribute, demographic segment, relationship classification, risk category, or KYC attribute
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"high value customer" vs "premium customer"'
+      terminology_domain: financial
+      distinctness_criteria: attribute type, classification, or segmentation
+      domain_name: financial services
+      domain_scope: retail, business, onboarding, KYC, risk, segmentation, etc.
+      example_name: Individual Customer
+      example_description: A profile representing a single natural person with associated identity, demographic, and relationship attributes.
 
     fraud_risk_events:
-      prompt: |-
-        Events related to fraud detection, risk scoring, suspicious activity, transaction
-        monitoring alerts, chargebacks, identity verification outcomes, and other signals
-        used to assess and mitigate financial crime.
+      concept_domain: fraud risk event
+      entry_count: 120
+      concept_unit: fraud event
+      concept_scope_examples: alert type, risk signal, anomaly detection, verification outcome, chargeback event, or monitoring trigger
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"fraud alert" vs "fraud notification"'
+      terminology_domain: financial
+      distinctness_criteria: risk signal, detection method, or outcome
+      domain_name: financial services
+      domain_scope: payments, cards, transactions, identity verification, fraud detection, AML, etc.
+      example_name: Suspicious Transaction Alert
+      example_description: An event where a transaction is flagged by monitoring systems as potentially fraudulent based on risk indicators.
 
     compliance_policies:
-      prompt: |-
-        Policies, rules, and regulatory obligations governing financial services operations,
-        including KYC/AML requirements, sanctions screening, transaction monitoring,
-        data retention, consumer protection, and reporting obligations.
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: KYC requirement, AML rule, sanctions screening policy, reporting obligation, or data retention rule
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"AML policy" vs "anti money laundering policy"'
+      terminology_domain: regulatory
+      distinctness_criteria: regulatory requirement, control objective, or obligation type
+      domain_name: financial services
+      domain_scope: KYC, AML, sanctions, reporting, consumer protection, data governance, etc.
+      example_name: KYC Policy
+      example_description: A policy defining requirements for verifying customer identity during onboarding and ongoing monitoring.
 
     client_requests:
-      prompt: |-
-        Requests, inquiries, or instructions from customers related to account access,
-        payments, disputes, card management, loan servicing, onboarding, documentation,
-        or issue resolution.
+      concept_domain: client request
+      entry_count: 150
+      concept_unit: request
+      concept_scope_examples: account inquiry, payment instruction, dispute request, card management action, or documentation request
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"balance inquiry" vs "account balance request"'
+      terminology_domain: financial
+      distinctness_criteria: request intent, action type, or service category
+      domain_name: financial services
+      domain_scope: support, servicing, onboarding, payments, disputes, account management, etc.
+      example_name: Payment Dispute Request
+      example_description: A request from a client to challenge or investigate a previously processed payment transaction.
 
     operational_incidents:
-      prompt: |-
-        Operational problems, outages, failed transactions, reconciliation breaks,
-        processing errors, system incidents, or workflow disruptions affecting financial
-        services operations.
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, processing failure, reconciliation break, data error, or workflow disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system outage" vs "service downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, or impact category
+      domain_name: financial services
+      domain_scope: payments processing, core banking, infrastructure, reconciliation, data pipelines, etc.
+      example_name: Payment Processing Failure
+      example_description: An incident where a payment cannot be completed due to a system or processing error.
 
     product_configurations:
-      prompt: |-
-        Definitions and configurations of financial products, including account terms,
-        fees, interest rates, limits, rewards programs, loan terms, and eligibility rules
-        governing how products are offered and managed.
+      concept_domain: financial product configuration
+      entry_count: 120
+      concept_unit: configuration
+      concept_scope_examples: fee structure, interest rate rule, limit setting, eligibility criterion, or rewards parameter
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"monthly fee" vs "monthly charge"'
+      terminology_domain: financial
+      distinctness_criteria: parameter type, rule definition, or product feature
+      domain_name: financial services
+      domain_scope: accounts, cards, loans, pricing, limits, rewards, eligibility, etc.
+      example_name: Interest Rate Rule
+      example_description: A configuration defining how interest is calculated and applied to a financial product.
 
 
 capital_markets:

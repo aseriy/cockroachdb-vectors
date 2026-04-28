@@ -18,8 +18,12 @@ import logging
 import time
 import os
 from typing import List, Dict
+from jinja2 import Template
+import textwrap
 
 import psycopg
+import time
+from psycopg.errors import SerializationFailure
 from openai import OpenAI
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -36,12 +40,11 @@ with open(os.path.join(BASE_DIR, "semantic_clusters.yaml"), "r") as file:
 # ── LLM generation ───────────────────────────────────────────────────────────
 
 def generate_batch(client: OpenAI, prompt: str, n: int, model: str) -> List[Dict]:
-    filled = prompt.format(n=n)
     for attempt in range(3):
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages=[{"role": "user", "content": filled}],
+                messages=[{"role": "user", "content": prompt}],
                 temperature=0.9,
             )
             content = response.choices[0].message.content.strip()
@@ -68,10 +71,11 @@ def setup_schema(conn, schema: str):
 
 def setup_table(conn, schema: str, table: str):
     ddl = f"""
-        CREATE TABLE IF NOT EXISTS products (
+        CREATE TABLE IF NOT EXISTS {table} (
             id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             name        TEXT NOT NULL,
-            description TEXT NOT NULL
+            description TEXT NOT NULL,
+            UNIQUE INDEX name_description_key (name ASC, description ASC)
         )
     """
 
@@ -94,17 +98,87 @@ def insert_rows(conn, schema: str, table: str, rows: List[Dict]) -> int:
         return 0
     col_str = ", ".join(columns)
     placeholders = ", ".join(["%s"] * len(columns))
-    sql = f"INSERT INTO {schema}.{table} (id, {col_str}) VALUES (gen_random_uuid(), {placeholders})"
+    sql = f"""
+        INSERT INTO {schema}.{table} (id, {col_str})
+        VALUES (gen_random_uuid(), {placeholders})
+        ON CONFLICT (name, description) 
+        DO NOTHING
+    """
+
     values = []
     for row in rows:
         try:
             values.append(tuple(row[c] for c in columns))
         except KeyError as e:
             logger.warning(f"Skipping row missing key {e}")
-    with conn.cursor() as cur:
-        cur.executemany(sql, values)
-    conn.commit()
+    max_retries = 10
+    for attempt in range(max_retries):
+        try:
+            with conn.cursor() as cur:
+                cur.executemany(sql, values)
+            conn.commit()
+            break
+        except SerializationFailure:
+            conn.rollback()
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(0.1 * (2 ** attempt))
+
     return len(values)
+
+
+
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            with conn.cursor() as cur:
+                cur.executemany(sql, values)
+            conn.commit()
+            break
+        except SerializationFailure:
+            conn.rollback()
+            if attempt == max_retries - 1:
+                raise
+            time.sleep(0.1 * (2 ** attempt))
+
+
+
+
+prompt_tmpl = """
+        You are generating a controlled vocabulary, not sample data.
+
+        Task: Produce a list of distinct {{ concept_domain }} concepts.
+
+        Output requirements:
+
+        Return valid JSON only
+        Format: an array of objects with exactly two fields: "name" and "description"
+        Generate {{ entry_count }} entries
+        Each entry must represent a unique {{ concept_unit }} concept (e.g., {{ concept_scope_examples }})
+        Do not generate specific instances ({{ instance_exclusion_rules }})
+        Avoid synonyms or near-duplicates
+        Avoid trivial variants (e.g., {{ trivial_variant_example }})
+        Keep names concise (2-5 words)
+        Descriptions: 1 sentence, precise and non-overlapping
+        Use standard {{ terminology_domain }} terminology
+
+        Quality constraints:
+
+        Concepts must be meaningfully distinct in {{ distinctness_criteria }}
+        No repetition or rewording of the same idea
+        Stay within realistic {{ domain_name }} domain ({{ domain_scope }})
+
+        Output format example:
+
+        [
+            {
+                "name": "{{ example_name }}",
+                "description": "{{ example_description }}"
+            }
+        ]
+
+        Now generate the full list.
+"""
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -118,20 +192,28 @@ def run_domain(conn, client, domain_name, domain_def, target, batch_size, model)
         setup_table(conn, domain_name, table_name)
 
         current = row_count(conn, domain_name, table_name)
+        target = tdef['entry_count']
         logger.info(f"  Existing rows: {current} / {target}")
 
-        while current < target:
-            n = min(batch_size, target - current)
-            logger.info(f"  Generating {n} rows...")
-            rows = generate_batch(client, tdef["prompt"], n, model)
-            if not rows:
-                logger.warning("  Empty batch, retrying...")
-                continue
-            inserted = insert_rows(conn, domain_name, table_name, rows)
-            current += inserted
-            logger.info(f"  Total: {current} / {target}")
+        # while current < target:
+        # n = min(batch_size, target - current)
+        n = tdef['entry_count']
+        logger.info(f"  Generating {n} rows...")
 
-        logger.info(f"  ✓ {table_name} done")
+        template = Template(prompt_tmpl)
+        prompt = textwrap.dedent(
+            template.render(**tdef)
+        )
+
+        rows = generate_batch(client, prompt, n, model)
+        if not rows:
+            logger.warning("  Empty batch, retrying...")
+            continue
+        inserted = insert_rows(conn, domain_name, table_name, rows)
+        current += inserted
+        logger.info(f"  Total: {current} / {target}")
+
+    logger.info(f"  ✓ {table_name} done")
 
 
 def main():
@@ -140,7 +222,7 @@ def main():
     parser.add_argument("-d", "--domain", help=f"Domain name. Available: {list(DOMAINS.keys())}")
     parser.add_argument("--all", action="store_true", help="Run all domains")
     parser.add_argument("-t", "--target", type=int, default=10000, help="Target rows per table (default: 10000)")
-    parser.add_argument("-b", "--batch-size", type=int, default=50, help="Rows per LLM call (default: 50)")
+    parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Rows per LLM call (default: 50)")
     parser.add_argument("--model", default="gpt-4o-mini", help="OpenAI model (default: gpt-4o-mini)")
     parser.add_argument("--api-key", help="OpenAI API key (or set OPENAI_API_KEY env var)")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -164,6 +246,8 @@ def main():
 
     with psycopg.connect(args.url) as conn:
         for name, defn in to_run.items():
+            # print(f"name: {name}")
+            # print(f"defn: {json.dumps(defn, indent=2)}")
             run_domain(conn, client, name, defn, args.target, args.batch_size, args.model)
 
     logger.info("All done.")

@@ -1,21 +1,29 @@
 from jinja2 import Template
 import textwrap
+import os
+import yaml
+import json
 
-tmpl_vars = {
-    "concept_domain": "financial account",
-    "entry_count": "120",
-    "concept_unit": "account",
-    "concept_scope_examples": "account type, ownership model, status, or structural variant",
-    "instance_exclusion_rules": "no IDs, no numbers, no dates, no people, no balances",
-    "trivial_variant_example": '"basic checking account" vs "standard checking account"',
-    "distinctness_criteria": "function or structure",
-    "domain_name": "financial services",
-    "terminology_domain": "financial",
-    "domain_scope": "retail, business, payments, digital wallets, etc.",
-    "example_name": "Checking Account",
-    "example_description": "A deposit account designed for frequent transactions such as payments, withdrawals, and transfers.",
-}
+# tmpl_vars = {
+#     "concept_domain": "financial account",
+#     "entry_count": 120,
+#     "concept_unit": "account",
+#     "concept_scope_examples": "account type, ownership model, status, or structural variant",
+#     "instance_exclusion_rules": "no IDs, no numbers, no dates, no people, no balances",
+#     "trivial_variant_example": '"basic checking account" vs "standard checking account"',
+#     "distinctness_criteria": "function or structure",
+#     "domain_name": "financial services",
+#     "terminology_domain": "financial",
+#     "domain_scope": "retail, business, payments, digital wallets, etc.",
+#     "example_name": "Checking Account",
+#     "example_description": "A deposit account designed for frequent transactions such as payments, withdrawals, and transfers.",
+# }
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(BASE_DIR, "semantic_clusters.yaml"), "r") as file:
+    DOMAINS = yaml.safe_load(file)
+
+tmpl_vars = DOMAINS['financial_services']['tables']['accounts']
 
 prompt_tmpl = """
         You are generating a controlled vocabulary, not sample data.

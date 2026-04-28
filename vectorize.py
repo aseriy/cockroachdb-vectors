@@ -27,6 +27,24 @@ class OperationGroup(click.Group):
 
 
 
+def parse_table_name(table: str) -> tuple[str,str]:
+    # Split by the dot to separate schema and table
+    parts = table.split('.')
+    
+    if len(parts) > 2:
+        raise ValueError(f"Invalid table identifier format: {table}")
+
+    schema = None
+    if len(parts) > 1:
+        schema, table = parts
+    else:
+        table = parts[0] 
+
+    return schema, table
+
+
+
+
 @click.group(
     cls=OperationGroup,
     options_metavar="[OPTIONS]",
@@ -193,9 +211,11 @@ def instrument(
         model,
         verbose
 ):
+    schema, table = parse_table_name(table)
 
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
