@@ -261,8 +261,11 @@ def cleanup(
         verbose
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,

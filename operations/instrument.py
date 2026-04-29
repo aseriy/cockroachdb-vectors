@@ -121,12 +121,16 @@ def drop_vector_column(
     sql = []
     vector_dim = model.embedding_dim()
 
+    table_name_orig = table_name
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     if green_idx:
         sql.append(
             (
                 f"[INFO] Dropping vector index",
                 f'''
-                DROP INDEX IF EXISTS "{table_name}_{output_column}_idx"
+                DROP INDEX IF EXISTS {table_name}@{output_column}_idx
                 '''
             )
         )
@@ -134,7 +138,7 @@ def drop_vector_column(
             (
                 f"[INFO] Dropping index to accelerate locating rows with no embeddings",
                 f'''
-                    DROP INDEX IF EXISTS "{table_name}_{output_column}_{pk}_null_idx"
+                DROP INDEX IF EXISTS {table_name}@{output_column}_{pk}_null_idx
                 '''
             )
         )
@@ -142,18 +146,18 @@ def drop_vector_column(
             (
                 f"[INFO] Dropping index to rows considered in vector searches",
                 f'''
-                    DROP INDEX IF EXISTS "{table_name}_{output_column}_{pk}_not_null_idx"
+                DROP INDEX IF EXISTS {table_name}@{output_column}_{pk}_not_null_idx
                 '''
             )
         )
 
     if green_embed:
-        if is_vector_column(pool, table_name, output_column, vector_dim, verbose):
+        if is_vector_column(pool, schema_name, table_name_orig, output_column, vector_dim, verbose):
             sql.append(
                 (
                     f"[INFO] Dropping vector column {output_column} VECTOR({vector_dim})",
                     f"""
-                        ALTER TABLE "{table_name}" DROP COLUMN "{output_column}"
+                    ALTER TABLE {table_name} DROP COLUMN {output_column}
                     """
                 )
             )
@@ -206,7 +210,7 @@ def run_cleanup(args: dict):
     global model
     model = importlib.import_module(f"models.{args['model']}")
 
-    green_idx, green_embed = cleanup_confirm(args['table'], args['source'], args['embedding'])
+    green_idx, green_embed = cleanup_confirm(args['schema'], args['table'], args['source'], args['embedding'])
 
     # TODO: check if the vector column exists. User may specify a non-existent column.
     #       Actually both, source and embedding.
@@ -214,8 +218,11 @@ def run_cleanup(args: dict):
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    trigger_config = read_trigger_function(conn_pool, args['table'])
-    config = update_trigger_func_drop_column(trigger_config, args['table'], args['source'], args['embedding'])
+    trigger_config = read_trigger_function(conn_pool, args['schema'], args['table'])
+    config = update_trigger_func_drop_column(
+                                                trigger_config,
+                                                args['source'], args['embedding']
+                                            )
     
     trg_func_sql = update_trigger_sql(config, args['schema'], args['table'], drop=True)
     install_trigger(conn_pool, trg_func_sql)
@@ -236,8 +243,11 @@ def run_cleanup(args: dict):
 
 
 
-def cleanup_confirm(table_name, source_col, vector_col):
+def cleanup_confirm(schema_name, table_name, source_col, vector_col):
     drop_indexes, drop_column = False, False
+
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
 
     prompt = textwrap.dedent(f"""
         You're about to remove the vector embeddings associated with {table_name}.{source_col}.
@@ -391,7 +401,7 @@ def update_trigger_func_add_column(config, source_column, vector_column):
 
 
 
-def update_trigger_func_drop_column(config, table_name, source_column, vector_column):
+def update_trigger_func_drop_column(config, source_column, vector_column):
     new_config = config
 
     match_source = [(i, c) for i, c in enumerate(config) if c['input'] == source_column]
