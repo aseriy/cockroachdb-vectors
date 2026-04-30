@@ -56,12 +56,15 @@ def ensure_vector_column(pool, schema_name, table_name, pk, output_column, dry_r
     sql = []
     vector_dim = model.embedding_dim()
 
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     if not is_vector_column(pool, schema_name, table_name, output_column, vector_dim, verbose):
         sql.append(
             (
                 f"[INFO] Adding new column {output_column} VECTOR({vector_dim})",
                 f"""
-                    ALTER TABLE {schema_name}.{table_name}
+                    ALTER TABLE {table_name}
                     ADD COLUMN "{output_column}" VECTOR({vector_dim})
                 """
             )
@@ -72,7 +75,7 @@ def ensure_vector_column(pool, schema_name, table_name, pk, output_column, dry_r
             f"[INFO] Creating vector index",
             f'''
             CREATE VECTOR INDEX IF NOT EXISTS {output_column}_idx
-            ON {schema_name}.{table_name} ({output_column} {model.embedding_index_opclass()})
+            ON {table_name} ({output_column} {model.embedding_index_opclass()})
             WHERE {output_column} IS NOT NULL
             '''
         )
@@ -82,7 +85,7 @@ def ensure_vector_column(pool, schema_name, table_name, pk, output_column, dry_r
             f"[INFO] Creating index to accelerate locating rows with no embeddings",
             f'''
                 CREATE INDEX IF NOT EXISTS {output_column}_{pk}_null_idx
-                ON {schema_name}.{table_name} ("{pk}" ASC)
+                ON {table_name} ("{pk}" ASC)
                 WHERE "{output_column}" IS NULL
             '''
         )
@@ -92,7 +95,7 @@ def ensure_vector_column(pool, schema_name, table_name, pk, output_column, dry_r
             f"[INFO] Creating index to rows considered in vector searches",
             f'''
                 CREATE INDEX IF NOT EXISTS {output_column}_{pk}_not_null_idx
-                ON {schema_name}.{table_name} ("{pk}" ASC)
+                ON {table_name} ("{pk}" ASC)
                 WHERE "{output_column}" IS NOT NULL
             '''
         )

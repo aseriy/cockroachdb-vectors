@@ -149,12 +149,18 @@ def get_column_type(
             JOIN pg_type t ON a.atttypid = t.oid
             JOIN pg_class c ON a.attrelid = c.oid
             JOIN pg_namespace n ON c.relnamespace = n.oid
-            WHERE n.nspname = %s AND c.relname = %s AND a.attname = %s;
+            WHERE {"n.nspname = %s AND" if schema_name is not None else ""}
+                c.relname = %s AND
+                a.attname = %s;
         '''
 
     column_type = None
     with conn.cursor() as cur:
-        cur.execute(sql, (schema_name, table_name, column_name))
+        if schema_name is None:
+            cur.execute(sql, (table_name, column_name))
+        else:
+            cur.execute(sql, (schema_name, table_name, column_name))
+
         existing = cur.fetchone()
         if existing:
             column_type = existing[0]
