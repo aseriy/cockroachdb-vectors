@@ -156,8 +156,11 @@ def search(
         text
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
@@ -187,8 +190,11 @@ def sql(
         limit
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
@@ -213,6 +219,7 @@ def instrument(
         model,
         verbose
 ):
+
     schema, table = parse_table_name(table)
 
     args = {
