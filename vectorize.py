@@ -111,9 +111,11 @@ def embed(
         verbose = True
         progress = False
 
+    schema, table = parse_table_name(table)
     
     args = {
         "url": url,
+        "schema": schema, 
         "table": table,
         "input": input_col,
         "output": output_col,
