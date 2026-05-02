@@ -4,144 +4,143 @@ financial_services:
       concept_domain: financial account
       entry_count: 120
       concept_unit: account
-      concept_scope_examples: account type, ownership model, status, or structural variant
+      concept_scope_examples: account type, ownership model, status, structural variant, primary financial use, or savings and liquidity purpose
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"basic checking account" vs "standard checking account"'
       terminology_domain: financial
-      distinctness_criteria: function or structure
+      distinctness_criteria: function, structure, or typical use
       domain_name: financial services
       domain_scope: retail, business, payments, digital wallets, etc.
       example_name: Checking Account
-      example_description: A deposit account designed for frequent transactions such as payments, withdrawals, and transfers.
+      example_description: A deposit account designed for frequent transactions such as payments, withdrawals, and transfers, supporting everyday spending, bill payments, and direct access to funds.
 
     transactions:
       concept_domain: financial transaction
       entry_count: 150
       concept_unit: transaction
-      concept_scope_examples: payment type, transfer type, funding mechanism, channel-specific transaction, or settlement form
+      concept_scope_examples: payment type, transfer type, funding mechanism, channel-specific transaction, settlement form, or primary money movement use
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"online payment" vs "internet payment"'
       terminology_domain: financial
-      distinctness_criteria: function, flow, or mechanism
+      distinctness_criteria: function, flow, mechanism, or typical use
       domain_name: financial services
       domain_scope: retail, business, payments, cards, transfers, etc.
       example_name: Card Purchase
-      example_description: A transaction where a payment card is used to pay a merchant for goods or services.
+      example_description: A transaction where a payment card is used to pay a merchant for goods or services, typically supporting routine purchases at physical or digital points of sale.
 
     payment_events:
       payment_events:
       concept_domain: payment lifecycle event
       entry_count: 120
       concept_unit: payment event
-      concept_scope_examples: initiation, authorization, routing, clearing, settlement, reversal, exception, or failure stage across payment rails
+      concept_scope_examples: initiation, authorization, routing, clearing, settlement, reversal, exception, failure stage, or role in payment processing flow across payment rails
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"payment approval" vs "approved payment"'
       terminology_domain: payment
-      distinctness_criteria: lifecycle stage, processing step, or outcome
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in the overall payment flow
       domain_name: payment systems
       domain_scope: cards, ACH, wires, real-time payments, wallets, etc.
       example_name: Payment Authorization
-      example_description: An event where a payment request is approved or declined by the issuing institution based on available funds and risk checks.
+      example_description: An event where a payment request is approved or declined by the issuing institution based on available funds and risk checks, determining whether a transaction can proceed.
 
     lending_lifecycle_events:
       lending_lifecycle_events:
       concept_domain: lending lifecycle event
       entry_count: 120
       concept_unit: lending event
-      concept_scope_examples: application, underwriting, approval, origination, disbursement, repayment, delinquency, restructuring, or closure stage
+      concept_scope_examples: application, underwriting, approval, origination, disbursement, repayment, delinquency, restructuring, closure stage, or role in the lending process
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"loan approval" vs "approved loan"'
       terminology_domain: lending
-      distinctness_criteria: lifecycle stage, processing step, or outcome
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in the overall lending flow
       domain_name: lending services
       domain_scope: consumer lending, mortgages, credit cards, business loans, servicing, collections, etc.
       example_name: Loan Origination
-      example_description: An event where a loan agreement is finalized and the credit facility is established for the borrower.
+      example_description: An event where a loan agreement is finalized and the credit facility is established, marking the formal creation of a borrowing arrangement.
 
     customer_profiles:
       concept_domain: customer profile
       entry_count: 120
       concept_unit: customer profile
-      concept_scope_examples: identity attribute, demographic segment, relationship classification, risk category, or KYC attribute
+      concept_scope_examples: identity attribute, demographic segment, relationship classification, risk category, KYC attribute, or role in financial interactions
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"high value customer" vs "premium customer"'
       terminology_domain: financial
-      distinctness_criteria: attribute type, classification, or segmentation
+      distinctness_criteria: attribute type, classification, segmentation, or role in financial behavior
       domain_name: financial services
       domain_scope: retail, business, onboarding, KYC, risk, segmentation, etc.
       example_name: Individual Customer
-      example_description: A profile representing a single natural person with associated identity, demographic, and relationship attributes.
+      example_description: A profile representing a single natural person with associated identity, demographic, and relationship attributes, used to characterize interactions with financial products and services.
 
     fraud_risk_events:
       concept_domain: fraud risk event
       entry_count: 120
       concept_unit: fraud event
-      concept_scope_examples: alert type, risk signal, anomaly detection, verification outcome, chargeback event, or monitoring trigger
+      concept_scope_examples: alert type, risk signal, anomaly detection, verification outcome, chargeback event, monitoring trigger, or role in fraud detection flow
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"fraud alert" vs "fraud notification"'
       terminology_domain: financial
-      distinctness_criteria: risk signal, detection method, or outcome
+      distinctness_criteria: risk signal, detection method, outcome, or role in the fraud assessment process
       domain_name: financial services
       domain_scope: payments, cards, transactions, identity verification, fraud detection, AML, etc.
       example_name: Suspicious Transaction Alert
-      example_description: An event where a transaction is flagged by monitoring systems as potentially fraudulent based on risk indicators.
+      example_description: An event where a transaction is flagged by monitoring systems as potentially fraudulent based on risk indicators, indicating elevated risk requiring further review or action.
 
     compliance_policies:
       concept_domain: compliance policy
       entry_count: 100
       concept_unit: policy
-      concept_scope_examples: KYC requirement, AML rule, sanctions screening policy, reporting obligation, or data retention rule
+      concept_scope_examples: KYC requirement, AML rule, sanctions screening policy, reporting obligation, data retention rule, or role in regulatory compliance framework
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"AML policy" vs "anti money laundering policy"'
       terminology_domain: regulatory
-      distinctness_criteria: regulatory requirement, control objective, or obligation type
+      distinctness_criteria: regulatory requirement, control objective, obligation type, or role in compliance processes
       domain_name: financial services
       domain_scope: KYC, AML, sanctions, reporting, consumer protection, data governance, etc.
       example_name: KYC Policy
-      example_description: A policy defining requirements for verifying customer identity during onboarding and ongoing monitoring.
+      example_description: A policy defining requirements for verifying identity during onboarding and ongoing monitoring, establishing controls to meet regulatory compliance obligations.
 
     client_requests:
       concept_domain: client request
       entry_count: 150
       concept_unit: request
-      concept_scope_examples: account inquiry, payment instruction, dispute request, card management action, or documentation request
+      concept_scope_examples: account inquiry, payment instruction, dispute request, card management action, documentation request, or role in service interaction flow
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"balance inquiry" vs "account balance request"'
       terminology_domain: financial
-      distinctness_criteria: request intent, action type, or service category
+      distinctness_criteria: request intent, action type, service category, or role in servicing process
       domain_name: financial services
       domain_scope: support, servicing, onboarding, payments, disputes, account management, etc.
       example_name: Payment Dispute Request
-      example_description: A request from a client to challenge or investigate a previously processed payment transaction.
+      example_description: A request to challenge or investigate a previously processed payment transaction, typically initiating a review or dispute handling process.
 
     operational_incidents:
       concept_domain: operational incident
       entry_count: 120
       concept_unit: incident
-      concept_scope_examples: system outage, processing failure, reconciliation break, data error, or workflow disruption
+      concept_scope_examples: system outage, processing failure, reconciliation break, data error, workflow disruption, or role in operational impact and recovery
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"system outage" vs "service downtime"'
       terminology_domain: operational
-      distinctness_criteria: incident type, root cause, or impact category
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
       domain_name: financial services
       domain_scope: payments processing, core banking, infrastructure, reconciliation, data pipelines, etc.
       example_name: Payment Processing Failure
-      example_description: An incident where a payment cannot be completed due to a system or processing error.
+      example_description: An incident where a payment cannot be completed due to a system or processing error, disrupting normal transaction processing and requiring remediation.
 
     product_configurations:
       concept_domain: financial product configuration
       entry_count: 120
       concept_unit: configuration
-      concept_scope_examples: fee structure, interest rate rule, limit setting, eligibility criterion, or rewards parameter
+      concept_scope_examples: fee structure, interest rate rule, limit setting, eligibility criterion, rewards parameter, or role in product behavior and pricing
       instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
       trivial_variant_example: '"monthly fee" vs "monthly charge"'
       terminology_domain: financial
-      distinctness_criteria: parameter type, rule definition, or product feature
+      distinctness_criteria: parameter type, rule definition, product feature, or role in product configuration
       domain_name: financial services
       domain_scope: accounts, cards, loans, pricing, limits, rewards, eligibility, etc.
       example_name: Interest Rate Rule
-      example_description: A configuration defining how interest is calculated and applied to a financial product.
-
+      example_description: A configuration defining how interest is calculated and applied to a financial product, determining how costs or returns are accrued over time.
 
 capital_markets:
   tables:
