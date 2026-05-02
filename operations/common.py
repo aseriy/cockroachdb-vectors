@@ -42,9 +42,6 @@ def main_get_conn(pool) -> connection:
 
 
 def get_table_id(pool, schema_name, table_name) -> int:
-    if schema_name is not None:
-        table_name = f"{schema_name}.{table_name}"
-
     conn = main_get_conn(pool)
     table_id = None
 
@@ -53,6 +50,12 @@ def get_table_id(pool, schema_name, table_name) -> int:
         FROM crdb_internal.tables                               
         WHERE name = '{table_name}'
     """
+
+    if schema_name is not None:
+        query += f"""
+                AND
+                schema_name = '{schema_name}'
+        """
 
     with conn.cursor() as cur:
         cur.execute(query)
@@ -71,21 +74,34 @@ def get_index_id(pool, schema_name, table_name, index_name = None) -> int | list
     table_id = get_table_id(pool, schema_name, table_name)
     index_id = None
 
-    if schema_name is not None:
-        table_name = f"{schema_name}.{table_name}"
-
     if table_id:
-        query = f"""
-            SELECT index_id
-            FROM crdb_internal.table_indexes
-            WHERE
-                descriptor_name = '{table_name}'
-        """
+        if schema_name is None:
+            query = f"""
+                SELECT index_id
+                FROM crdb_internal.table_indexes
+                WHERE
+                    descriptor_name = '{table_name}'
+            """
 
-        if index_name:
-            query += f"""
-                    AND
-                    index_name = '{index_name}'
+            if index_name:
+                query += f"""
+                        AND
+                        index_name = '{index_name}'
+                """
+
+        else:
+            query = f"""
+                SELECT i.index_id
+                FROM crdb_internal.table_indexes i
+                JOIN crdb_internal.tables t ON t.table_id = i.descriptor_id
+                WHERE t.name = '{table_name}'
+                AND t.schema_name = '{schema_name}'
+            """
+
+            if index_name:
+                query += f"""
+                        AND
+                        i.index_name = '{index_name}'
             """
 
         with conn.cursor() as cur:
@@ -109,26 +125,31 @@ def get_primary_key_column(pool, schema_name, table_name) -> dict:
     pk_result = None
 
     query = f"""
-        SELECT
-            a.attname AS column_name,
-            t.typname AS column_type
-        FROM pg_index i
-        JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
-        JOIN pg_type t ON a.atttypid = t.oid
-        JOIN pg_class c ON c.oid = i.indrelid
-        WHERE i.indrelid = %s::regclass AND i.indisprimary
-    """
-
-    if schema_name is not None:
-        table_name = f"{schema_name}.{table_name}"
+            SELECT
+                a.attname AS column_name,
+                t.typname AS column_type
+            FROM pg_index i
+            JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+            JOIN pg_type t ON a.atttypid = t.oid
+            JOIN pg_class c ON c.oid = i.indrelid
+            JOIN pg_namespace n ON c.relnamespace = n.oid
+            WHERE {"n.nspname = %s AND" if schema_name is not None else ""}
+                c.relname = %s AND
+                i.indisprimary
+        """
 
     with conn.cursor() as cur:
-        cur.execute(query, (table_name,))
+        if schema_name is not None:
+            cur.execute(query, (schema_name, table_name,))
+        else:
+            cur.execute(query, (table_name,))
         pk_result = cur.fetchone()
 
     pool.putconn(conn)
 
     if not pk_result:
+        if schema_name is not None:
+            table_name = f"{schema_name}.{table_name}"
         raise RuntimeError(f"No primary key found for table '{table_name}'")
 
     pk_name, pk_type = pk_result

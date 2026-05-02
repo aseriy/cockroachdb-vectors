@@ -26,8 +26,9 @@ def run_size(args: dict):
     verbose = args['verbose']
     schema_name, table_name = args['schema'], args['table']
 
+    full_table_name = table_name
     if schema_name is not None:
-        table_name = f"{schema_name}.{table_name}"
+        full_table_name = f"{schema_name}.{table_name}"
 
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
@@ -51,7 +52,7 @@ def run_size(args: dict):
     vector_dim = int(match.group(1))
 
     query = f"""
-            SELECT count(*) FROM {table_name}
+            SELECT count(*) FROM {full_table_name}
             WHERE {args['embedding']} IS NOT NULL
             """
 
@@ -63,7 +64,7 @@ def run_size(args: dict):
     conn_pool.putconn(conn)
 
     query = f"""
-            SELECT count(*) FROM {table_name}
+            SELECT count(*) FROM {full_table_name}
             """
 
     row_total = 0
@@ -210,10 +211,9 @@ def calc_index_space(
                     index_vector_name: str,
                 ):
 
-    # index_vector_id = get_index_id(pool, schema_name, table_name, index_vector_name)
-
+    full_table_name = table_name
     if schema_name is not None:
-        table_name = f"{schema_name}.{table_name}"
+        full_table_name = f"{schema_name}.{table_name}"
 
 
     # Now pull the list of ranges with disk usage
@@ -225,7 +225,7 @@ def calc_index_space(
             (span_stats::JSONB ->> 'live_bytes')::INT,
             array_length(replicas, 1)
         FROM
-            [SHOW RANGES FROM TABLE {table_name} WITH DETAILS]
+            [SHOW RANGES FROM TABLE {full_table_name} WITH DETAILS]
     """
 
     ranges = []
@@ -241,8 +241,6 @@ def calc_index_space(
     total = sum(r[2] for r in ranges)
 
     n_ranges = x_parser(ranges)
-    # for r in n_ranges:
-    #     print(r)
 
     index_sizes, compress_rate, repl_factor = calc_index_bytes(
         get_table_id(pool, schema_name, table_name),
