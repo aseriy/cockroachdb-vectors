@@ -53,6 +53,7 @@ def run_size(args: dict):
 
     query = f"""
             SELECT count(*) FROM {table_name}
+            WHERE {args['embedding']} IS NOT NULL
             """
 
     row_cnt = 0
@@ -62,10 +63,23 @@ def run_size(args: dict):
         row_cnt = cur.fetchone()[0]
     conn_pool.putconn(conn)
 
-    table_space, index_space, compress_rate = calc_index_space(conn_pool, schema_name, table_name, index_vector_name)
-    print(f"table_space: {table_space}, index_space: {json.dumps(index_space, indent=2)}")
+    query = f"""
+            SELECT count(*) FROM {table_name}
+            """
 
-    embedding_space = vector_dim * 4 * row_cnt * compress_rate
+    row_total = 0
+    conn = main_get_conn(conn_pool)
+    with conn.cursor() as cur:
+        cur.execute(query)
+        row_total = cur.fetchone()[0]
+    conn_pool.putconn(conn)
+
+    table_space, index_space, compress_rate, repl_factor = calc_index_space(conn_pool, schema_name, table_name, index_vector_name)
+    print(f"table_space: {table_space}, index_space: {json.dumps(index_space, indent=2)}")
+    print(f"compress_rate: {compress_rate}, repl_factor: {repl_factor}")
+
+
+    embedding_space = round(float(vector_dim * 4 * row_cnt * repl_factor) / compress_rate )
 
     # Total extra space including the auxiliary indexes
     vector_space = embedding_space + index_space[index_vector_id]
@@ -82,7 +96,7 @@ def run_size(args: dict):
 
     display_results(
         (
-            table_name,                                                  # table name
+            table_name,                                                     # table name
             humanize.naturalsize(init_table_space, gnu=True),               # init table sapce
             humanize.naturalsize(table_space, gnu=True)                     # resulting table space
         ),
@@ -101,7 +115,8 @@ def run_size(args: dict):
         (
             f"{float(vector_space) / float(table_space):.1%}",
             f"{float(index_space[index_pk_null_id] + index_space[index_pk_not_null_id]) / float(table_space):.1%}",
-        )
+        ),
+        compress_rate, repl_factor, float(row_cnt) / row_total
     )
     return
 
@@ -111,8 +126,13 @@ def display_results(
                         table: Tuple[str, str, str],
                         vector: Tuple[str, str, str, str],
                         toolkit: Tuple[str, str, str, str],
-                        overhead: Tuple[str, str]
+                        overhead: Tuple[str, str],
+                        compress_rate: float,
+                        repl_factor: int,
+                        rows_embedded: float
                     ):
+
+    print(f"compress_rate: {round(compress_rate)}, repl_factor: {repl_factor}")
 
     console = Console()
 
@@ -159,6 +179,21 @@ def display_results(
                 )
     report.add_row(
                     Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Rows embedded", align="right"), (0, 1, 0, 1)),
+                    Padding(f"{round(rows_embedded * 100)}%", (0, 0, 0, 6))
+                )
+    report.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Compression ratio", align="right"), (0, 1, 0, 1)),
+                    Padding(str(round(compress_rate, 2)), (0, 0, 0, 6))
+                )
+    report.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Replication factor", align="right"), (0, 1, 0, 1)),
+                    Padding(str(repl_factor), (0, 0, 0, 6))
+                )
+    report.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
                     Padding(Align("Vector storage overhead", align="right"), (0, 1, 0, 1)),
                     Padding(overhead[0], (0, 0, 0, 6))
                 )
@@ -179,7 +214,7 @@ def calc_index_space(
                     schema_name: str | None,
                     table_name: str,
                     index_vector_name: str,
-                ) -> str:
+                ):
 
     # index_vector_id = get_index_id(pool, schema_name, table_name, index_vector_name)
 
@@ -189,11 +224,12 @@ def calc_index_space(
 
     # Now pull the list of ranges with disk usage
     query = f"""
-        SELECT                                                  
+        SELECT
             start_key,
             end_key,
             (span_stats::JSONB ->> 'approximate_disk_bytes')::INT,
-            (span_stats::JSONB ->> 'live_bytes')::INT
+            (span_stats::JSONB ->> 'live_bytes')::INT,
+            array_length(replicas, 1)
         FROM
             [SHOW RANGES FROM TABLE {table_name} WITH DETAILS]
     """
@@ -214,13 +250,13 @@ def calc_index_space(
     # for r in n_ranges:
     #     print(r)
 
-    index_sizes, compress_rate = calc_index_bytes(
+    index_sizes, compress_rate, repl_factor = calc_index_bytes(
         get_table_id(pool, schema_name, table_name),
         get_index_id(pool, schema_name, table_name),
         n_ranges
-    ) 
+    )
 
-    return total, index_sizes, compress_rate
+    return total, index_sizes, compress_rate, repl_factor
 
 
 
@@ -276,7 +312,7 @@ def _normalize_key(key: str, fallback_table_id: int | None) -> list[int | None]:
 def x_parser(input: list[list[str, str, int, int]]) -> list[list[list[int | None], list[int | None], int]]:
     out = []
 
-    for from_key, to_key, size_physical, size_logical in input:
+    for from_key, to_key, size_physical, size_logical, repl_factor in input:
         # Pre-extract to get fallback context for symbolic boundaries
         from_table_id, _ = _extract_table_index(from_key)
         to_table_id, _ = _extract_table_index(to_key)
@@ -285,7 +321,7 @@ def x_parser(input: list[list[str, str, int, int]]) -> list[list[list[int | None
         from_boundary = _normalize_key(from_key, fallback_table_id=to_table_id)
         to_boundary = _normalize_key(to_key, fallback_table_id=from_table_id)
 
-        out.append([from_boundary, to_boundary, size_physical, size_logical])
+        out.append([from_boundary, to_boundary, size_physical, size_logical, repl_factor])
 
     return out
 
@@ -296,17 +332,18 @@ def calc_index_bytes(
         table_id: int,
         index_vector_ids: list[int],
         ranges: list[list] # [ [from_t, from_i], [to_t, to_i], size ]
-    ) -> dict[int, int]:
+    ):
 
     print(f"ranges: {json.dumps(ranges, indent=2)}")
 
     # Compression rate
-    compress_rate = [float(r[2]) / r[3] if r[3] > 0 else 1 for r in ranges]
+    repl_factor = ranges[0][4] 
+    compress_rate = [float(r[3]) * repl_factor / float(r[2]) for r in ranges if r[3] > 0]
     print(f"compress_rate: {compress_rate}")
 
     out = {index_vector_id: 0 for index_vector_id in index_vector_ids}
 
-    for (from_table, from_idx), (to_table, to_idx), size_physical, size_logical in ranges:
+    for (from_table, from_idx), (to_table, to_idx), size_physical, size_logical, rf in ranges:
         matched = []
         
         # Treat None in the starting index as 0 (start of table)
@@ -349,7 +386,7 @@ def calc_index_bytes(
 
     print(f"compress_rate: {compress_rate}")
 
-    return out, statistics.mean(compress_rate)
+    return out, float(statistics.mean(compress_rate)), repl_factor
 
 
 
