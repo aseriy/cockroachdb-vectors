@@ -36,8 +36,7 @@ def run_size(args: dict):
 
     index_vector_name = f"{args['embedding']}_idx"
     index_vector_id = get_index_id(conn_pool, schema_name, table_name, index_vector_name)
-    print(f"index_vector_name: {index_vector_name}, index_vector_id: {index_vector_id}")
-
+\
     index_pk_null_name = f"{args['embedding']}_{primary_key}_null_idx"
     index_pk_null_id = get_index_id(conn_pool, schema_name, table_name, index_pk_null_name)
 
@@ -75,9 +74,6 @@ def run_size(args: dict):
     conn_pool.putconn(conn)
 
     table_space, index_space, compress_rate, repl_factor = calc_index_space(conn_pool, schema_name, table_name, index_vector_name)
-    print(f"table_space: {table_space}, index_space: {json.dumps(index_space, indent=2)}")
-    print(f"compress_rate: {compress_rate}, repl_factor: {repl_factor}")
-
 
     embedding_space = round(float(vector_dim * 4 * row_cnt * repl_factor) / compress_rate )
 
@@ -131,8 +127,6 @@ def display_results(
                         repl_factor: int,
                         rows_embedded: float
                     ):
-
-    print(f"compress_rate: {round(compress_rate)}, repl_factor: {repl_factor}")
 
     console = Console()
 
@@ -334,12 +328,9 @@ def calc_index_bytes(
         ranges: list[list] # [ [from_t, from_i], [to_t, to_i], size ]
     ):
 
-    print(f"ranges: {json.dumps(ranges, indent=2)}")
-
     # Compression rate
     repl_factor = ranges[0][4] 
     compress_rate = [float(r[3]) * repl_factor / float(r[2]) for r in ranges if r[3] > 0]
-    print(f"compress_rate: {compress_rate}")
 
     out = {index_vector_id: 0 for index_vector_id in index_vector_ids}
 
@@ -375,16 +366,10 @@ def calc_index_bytes(
         elif from_table < table_id < to_table:
             matched = index_vector_ids
 
-        print(f"matched: {matched}")
         if len(matched) > 0:
             attribution = round(float(size_physical) / len(matched))
             for i in matched:
                 out[i] += attribution
-
-    for k,v in out.items():
-        print(f"{k}: {v}")
-
-    print(f"compress_rate: {compress_rate}")
 
     return out, float(statistics.mean(compress_rate)), repl_factor
 
