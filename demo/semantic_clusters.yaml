@@ -245,315 +245,722 @@ capital_markets:
 
 cloud_infrastructure:
   tables:
+
     compute_resources:
-      prompt: |-
-        Information about virtualized or physical compute resources, including virtual machines,
-        containers, serverless functions, clusters, instance types, regions, availability zones,
-        and configurations used to run applications and workloads.
+      concept_domain: compute resource
+      entry_count: 120
+      concept_unit: resource
+      concept_scope_examples: virtual machine type, container runtime, serverless execution model, cluster configuration, or workload execution pattern
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"virtual machine" vs "compute instance"'
+      terminology_domain: cloud
+      distinctness_criteria: function, structure, or typical use
+      domain_name: cloud infrastructure
+      domain_scope: virtual machines, containers, serverless, clusters, regions, availability zones, etc.
+      example_name: Virtual Machine
+      example_description: A compute resource that provides virtualized processing capacity for running applications and workloads, supporting general-purpose or specialized execution needs.
 
     storage_resources:
-      prompt: |-
-        Information about data storage systems, including object storage, block storage,
-        file systems, databases, data warehouses, and associated attributes such as capacity,
-        durability, replication, access patterns, and lifecycle policies.
+      concept_domain: storage resource
+      entry_count: 120
+      concept_unit: resource
+      concept_scope_examples: object storage type, block storage configuration, file system type, database storage model, or data access pattern
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"object storage" vs "blob storage"'
+      terminology_domain: cloud
+      distinctness_criteria: function, structure, or typical use
+      domain_name: cloud infrastructure
+      domain_scope: object storage, block storage, file systems, databases, data warehouses, etc.
+      example_name: Object Storage
+      example_description: A storage resource that manages data as objects within a flat address space, supporting scalable storage for unstructured data and archival use cases.
 
     networking_components:
-      prompt: |-
-        Information about network infrastructure and connectivity, including virtual networks,
-        subnets, load balancers, gateways, DNS, IP addressing, routing rules, firewalls,
-        and traffic management configurations.
+      concept_domain: networking component
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: virtual network type, subnet configuration, load balancing strategy, gateway type, routing rule, or traffic management function
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"virtual network" vs "cloud network"'
+      terminology_domain: cloud
+      distinctness_criteria: function, structure, or typical use
+      domain_name: cloud infrastructure
+      domain_scope: virtual networks, subnets, load balancers, gateways, DNS, routing, firewalls, etc.
+      example_name: Load Balancer
+      example_description: A networking component that distributes incoming traffic across multiple resources, supporting availability and efficient handling of application requests.
 
     deployment_events:
-      prompt: |-
-        Events related to the provisioning, deployment, scaling, and updating of infrastructure
-        and applications, including instance launches, container deployments, configuration
-        changes, autoscaling events, and rollout or rollback actions.
+      concept_domain: deployment event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: resource provisioning, application deployment, scaling action, configuration update, rollout, or rollback event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"deployment event" vs "release action"'
+      terminology_domain: cloud
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in deployment flow
+      domain_name: cloud infrastructure
+      domain_scope: provisioning, deployment, scaling, configuration management, release processes, etc.
+      example_name: Instance Launch
+      example_description: An event where a new compute resource is provisioned and made available for workload execution, enabling application deployment or scaling.
 
     observability_metrics:
-      prompt: |-
-        Metrics, logs, and traces used to monitor system health and performance, including
-        CPU and memory utilization, latency, throughput, error rates, log streams, and
-        distributed tracing data.
+      concept_domain: observability signal
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: performance metric, utilization metric, latency measure, error signal, log stream, or trace event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"cpu usage" vs "processor utilization"'
+      terminology_domain: cloud
+      distinctness_criteria: signal type, measurement focus, or role in system monitoring
+      domain_name: cloud infrastructure
+      domain_scope: metrics, logs, traces, monitoring, performance analysis, reliability, etc.
+      example_name: CPU Utilization
+      example_description: A metric representing the proportion of processing capacity in use, supporting monitoring of system performance and resource efficiency.
 
     access_identity_controls:
-      prompt: |-
-        Definitions and events related to identity and access management, including users,
-        roles, permissions, policies, authentication events, authorization decisions,
-        and service-to-service identity configurations.
+      concept_domain: identity and access control
+      entry_count: 120
+      concept_unit: control
+      concept_scope_examples: user identity type, role definition, permission model, policy rule, authentication method, or authorization mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access role" vs "permission role"'
+      terminology_domain: cloud
+      distinctness_criteria: control type, function, or role in access management
+      domain_name: cloud infrastructure
+      domain_scope: users, roles, permissions, policies, authentication, authorization, service identities, etc.
+      example_name: Role-Based Access Control
+      example_description: A control model that assigns permissions to roles rather than individuals, supporting structured and scalable access management.
 
     cost_usage_records:
-      prompt: |-
-        Records of resource consumption and associated costs, including usage metrics,
-        billing data, pricing tiers, cost allocation tags, and optimization signals for
-        infrastructure efficiency.
+      concept_domain: cost and usage record
+      entry_count: 120
+      concept_unit: record
+      concept_scope_examples: usage metric, billing record, pricing model, cost allocation method, or optimization signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"usage record" vs "consumption record"'
+      terminology_domain: cloud
+      distinctness_criteria: record type, measurement focus, or role in cost tracking
+      domain_name: cloud infrastructure
+      domain_scope: billing, usage tracking, pricing, cost allocation, optimization, etc.
+      example_name: Usage Metric
+      example_description: A record representing resource consumption over time, supporting cost tracking and optimization of infrastructure usage.
 
     security_events:
-      prompt: |-
-        Events related to infrastructure security, including intrusion detection,
-        vulnerability findings, configuration violations, access anomalies,
-        encryption status, and incident response activities.
+      concept_domain: security event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: intrusion detection event, vulnerability finding, configuration violation, access anomaly, encryption status change, or incident response action
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security alert" vs "security notification"'
+      terminology_domain: cloud
+      distinctness_criteria: event type, detection method, outcome, or role in security response
+      domain_name: cloud infrastructure
+      domain_scope: intrusion detection, vulnerability management, access monitoring, encryption, incident response, etc.
+      example_name: Intrusion Detection Alert
+      example_description: An event indicating potentially malicious activity within the system, supporting investigation and response to security threats.
 
     configuration_state:
-      prompt: |-
-        Snapshots or definitions of infrastructure configuration, including infrastructure-as-code,
-        resource specifications, environment variables, versioned configurations,
-        and system state representations.
+      concept_domain: configuration state
+      entry_count: 120
+      concept_unit: configuration
+      concept_scope_examples: infrastructure definition, resource specification, environment configuration, versioned state, or system configuration model
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"config file" vs "configuration definition"'
+      terminology_domain: cloud
+      distinctness_criteria: structure, representation, or role in system configuration
+      domain_name: cloud infrastructure
+      domain_scope: infrastructure-as-code, resource configuration, environment variables, system state, versioning, etc.
+      example_name: Infrastructure Configuration
+      example_description: A representation of system and resource settings, supporting consistent deployment and management of infrastructure environments.
 
     operational_incidents:
-      prompt: |-
-        Operational issues affecting infrastructure availability or performance, including
-        outages, degradation, failed deployments, resource exhaustion, networking failures,
-        and other disruptions in cloud environments.
-        
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: outage, performance degradation, failed deployment, resource exhaustion, networking failure, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "system downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: cloud infrastructure
+      domain_scope: availability, performance, deployment, networking, resource management, etc.
+      example_name: Service Outage
+      example_description: An incident where a system or application becomes unavailable, disrupting normal operations and requiring remediation.
+
 
 security_identity:
   tables:
+
     identities:
-      prompt: |-
-        Information about human users, service accounts, devices, and application identities,
-        including identifiers, attributes, lifecycle state, group membership, and relationships
-        used to represent actors in a security or identity system.
+      concept_domain: identity entity
+      entry_count: 120
+      concept_unit: identity
+      concept_scope_examples: user identity type, service account type, device identity, application identity, or identity relationship
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user account" vs "user identity"'
+      terminology_domain: security
+      distinctness_criteria: function, structure, or typical use
+      domain_name: identity and security
+      domain_scope: users, service accounts, devices, applications, identity providers, etc.
+      example_name: User Identity
+      example_description: An identity representing a human actor within a system, used to authenticate and authorize access to resources and services.
 
     credentials:
-      prompt: |-
-        Information about authentication factors and secrets, including passwords, keys,
-        certificates, tokens, passkeys, and related metadata such as issuance, expiration,
-        rotation status, and storage or binding characteristics.
+      concept_domain: authentication credential
+      entry_count: 120
+      concept_unit: credential
+      concept_scope_examples: password type, cryptographic key, certificate type, token format, passkey model, or secret storage method
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"api key" vs "access key"'
+      terminology_domain: security
+      distinctness_criteria: function, structure, or typical use
+      domain_name: identity and security
+      domain_scope: passwords, keys, certificates, tokens, passkeys, authentication factors, etc.
+      example_name: Password Credential
+      example_description: A secret value used to verify identity during authentication, supporting access to systems through knowledge-based verification.
 
     authentication_events:
-      prompt: |-
-        Events related to verifying identity, including login attempts, multi-factor challenges,
-        token issuance, session establishment, federation flows, single sign-on events,
-        and authentication successes or failures.
+      concept_domain: authentication event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: login attempt, multi-factor challenge, token issuance, session establishment, federation flow, or authentication outcome
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"login event" vs "authentication attempt"'
+      terminology_domain: security
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in authentication flow
+      domain_name: identity and security
+      domain_scope: login, MFA, SSO, federation, session management, authentication outcomes, etc.
+      example_name: Login Attempt
+      example_description: An event where credentials are presented to verify identity, determining whether access can be granted based on authentication checks.
 
     authorization_policies:
-      prompt: |-
-        Policies, rules, and permissions governing access to systems, applications, data,
-        and infrastructure, including roles, entitlements, privilege assignments,
-        policy conditions, and access control decisions.
+      concept_domain: authorization policy
+      entry_count: 120
+      concept_unit: policy
+      concept_scope_examples: role definition, permission assignment, entitlement model, policy condition, or access control rule
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access policy" vs "permission rule"'
+      terminology_domain: security
+      distinctness_criteria: control type, rule definition, or role in access decisions
+      domain_name: identity and security
+      domain_scope: roles, permissions, entitlements, access control, policy evaluation, etc.
+      example_name: Role-Based Access Policy
+      example_description: A policy that grants permissions based on assigned roles, controlling access to resources through structured authorization rules.
 
     access_events:
-      prompt: |-
-        Events recording access to systems, applications, resources, or data, including
-        requests, approvals, denials, privilege escalations, session activity,
-        and administrative actions performed by authenticated identities.
+      concept_domain: access event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: access request, approval action, denial event, privilege escalation, session activity, or administrative operation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access request" vs "resource access attempt"'
+      terminology_domain: security
+      distinctness_criteria: event type, action, outcome, or role in access flow
+      domain_name: identity and security
+      domain_scope: resource access, approvals, denials, session activity, administrative actions, etc.
+      example_name: Access Request
+      example_description: An event where an identity attempts to access a resource, triggering authorization checks to determine whether access is allowed.
 
     directory_objects:
-      prompt: |-
-        Information about directory-based entities and organizational structure, including
-        users, groups, roles, organizational units, domains, tenants, and identity provider
-        metadata used to manage identities at scale.
+      concept_domain: directory object
+      entry_count: 120
+      concept_unit: object
+      concept_scope_examples: user object, group structure, role object, organizational unit, domain entity, or tenant structure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user group" vs "group object"'
+      terminology_domain: security
+      distinctness_criteria: structure, representation, or role in identity organization
+      domain_name: identity and security
+      domain_scope: directory services, users, groups, roles, organizational units, identity providers, etc.
+      example_name: User Group
+      example_description: A directory object that aggregates multiple identities, supporting collective management of permissions and access control.
 
     security_findings:
-      prompt: |-
-        Findings, alerts, or detected issues related to security posture, including
-        vulnerabilities, misconfigurations, anomalous behavior, suspicious logins,
-        exposed credentials, policy violations, and threat detections.
+      concept_domain: security finding
+      entry_count: 120
+      concept_unit: finding
+      concept_scope_examples: vulnerability type, misconfiguration issue, anomaly detection, suspicious activity, exposed credential, or policy violation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security alert" vs "security finding"'
+      terminology_domain: security
+      distinctness_criteria: issue type, detection method, outcome, or role in risk assessment
+      domain_name: identity and security
+      domain_scope: vulnerabilities, misconfigurations, anomalies, threat detection, policy violations, etc.
+      example_name: Suspicious Login
+      example_description: A finding indicating an unusual or potentially risky authentication activity, signaling possible unauthorized access that requires investigation.
 
     device_posture:
-      prompt: |-
-        Information about the security state of endpoints and devices, including device identity,
-        operating system version, management status, compliance checks, encryption status,
-        patch levels, and trust signals used in access decisions.
+      concept_domain: device posture
+      entry_count: 120
+      concept_unit: posture
+      concept_scope_examples: device compliance state, operating system condition, patch status, encryption status, management state, or trust level
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"device compliance" vs "device health status"'
+      terminology_domain: security
+      distinctness_criteria: state type, attribute, or role in access decisions
+      domain_name: identity and security
+      domain_scope: endpoint security, device management, compliance checks, trust evaluation, etc.
+      example_name: Compliant Device State
+      example_description: A device posture indicating that security requirements are met, supporting trusted access to systems and resources.
 
     incident_response_events:
-      prompt: |-
-        Events related to the investigation, containment, remediation, and recovery of
-        security incidents, including alert triage, case updates, response actions,
-        evidence collection, and resolution status.
+      concept_domain: incident response event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: alert triage, investigation step, containment action, remediation task, evidence collection, or resolution update
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"incident update" vs "response event"'
+      terminology_domain: security
+      distinctness_criteria: lifecycle stage, action type, outcome, or role in incident handling
+      domain_name: identity and security
+      domain_scope: incident response, investigation, containment, remediation, recovery, etc.
+      example_name: Containment Action
+      example_description: An event where steps are taken to limit the impact of a security incident, preventing further spread or damage to systems.
 
     compliance_policies:
-      prompt: |-
-        Policies, controls, and regulatory requirements governing identity, access,
-        data protection, auditability, and security operations, including password standards,
-        retention rules, access reviews, segregation of duties, and control attestations.
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: password standard, retention rule, access review requirement, segregation of duties control, or audit policy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"password policy" vs "credential standard"'
+      terminology_domain: regulatory
+      distinctness_criteria: control type, regulatory requirement, or role in governance
+      domain_name: identity and security
+      domain_scope: identity governance, access control, audit, compliance, data protection, etc.
+      example_name: Password Policy
+      example_description: A policy defining requirements for credential strength and management, supporting secure authentication and regulatory compliance.
 
 
 hardware_semiconductor:
   tables:
+
     hardware_components:
-      prompt: |-
-        Information about physical computing components, including processors (CPU, GPU),
-        memory, storage devices, networking hardware, accelerators, and embedded systems,
-        along with specifications such as performance characteristics, architecture,
-        capacity, and form factor.
+      concept_domain: hardware component
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: processor type, memory type, storage device, networking hardware, accelerator, or embedded system architecture
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"central processor" vs "cpu unit"'
+      terminology_domain: hardware
+      distinctness_criteria: function, structure, or typical use
+      domain_name: hardware and semiconductor
+      domain_scope: CPUs, GPUs, memory, storage, networking devices, accelerators, embedded systems, etc.
+      example_name: Central Processing Unit
+      example_description: A hardware component that executes instructions and performs general-purpose processing tasks, serving as the primary compute engine in a system.
 
     semiconductor_products:
-      prompt: |-
-        Information about semiconductor devices and chips, including integrated circuits,
-        fabrication technologies, process nodes, chip designs, and product families used
-        in computing, networking, and electronic systems.
+      concept_domain: semiconductor product
+      entry_count: 120
+      concept_unit: product
+      concept_scope_examples: integrated circuit type, chip architecture, process node category, product family, or application-specific chip design
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"integrated circuit" vs "chip device"'
+      terminology_domain: semiconductor
+      distinctness_criteria: function, structure, or typical use
+      domain_name: hardware and semiconductor
+      domain_scope: ICs, processors, memory chips, ASICs, SoCs, fabrication technologies, etc.
+      example_name: System on Chip
+      example_description: A semiconductor product that integrates multiple functional components onto a single chip, supporting compact and efficient computing systems.
 
     manufacturing_processes:
-      prompt: |-
-        Information about semiconductor manufacturing and fabrication processes,
-        including foundries, process technologies, yields, supply chain stages,
-        and production lifecycle details.
+      concept_domain: semiconductor manufacturing process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: fabrication stage, process technology, lithography method, yield optimization step, or production lifecycle phase
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"fabrication process" vs "chip manufacturing process"'
+      terminology_domain: semiconductor
+      distinctness_criteria: process type, stage, or role in production flow
+      domain_name: hardware and semiconductor
+      domain_scope: foundries, fabrication, lithography, yields, supply chain stages, production lifecycle, etc.
+      example_name: Wafer Fabrication
+      example_description: A manufacturing process where semiconductor devices are built on silicon wafers through multiple processing steps, forming the basis of chip production.
 
     supply_chain_entities:
-      prompt: |-
-        Information about suppliers, manufacturers, distributors, and partners involved
-        in the production and delivery of hardware and semiconductor products,
-        including relationships, sourcing, and logistics.
+      concept_domain: supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: supplier type, manufacturer role, distributor function, logistics provider, or partner relationship
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"chip supplier" vs "component vendor"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in supply chain
+      domain_name: hardware and semiconductor
+      domain_scope: suppliers, manufacturers, distributors, partners, sourcing, logistics, etc.
+      example_name: Semiconductor Foundry
+      example_description: A supply chain entity that manufactures semiconductor devices on behalf of design companies, supporting chip production at scale.
 
     deployment_hardware:
-      prompt: |-
-        Information about deployed hardware systems, including servers, appliances,
-        edge devices, data center equipment, and configurations used to support
-        computing workloads.
+      concept_domain: deployed hardware system
+      entry_count: 120
+      concept_unit: system
+      concept_scope_examples: server type, appliance configuration, edge device, data center equipment, or workload deployment configuration
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"server system" vs "compute appliance"'
+      terminology_domain: hardware
+      distinctness_criteria: function, structure, or typical use
+      domain_name: hardware and semiconductor
+      domain_scope: servers, appliances, edge devices, data center equipment, deployment configurations, etc.
+      example_name: Application Server
+      example_description: A deployed hardware system configured to run application workloads, supporting compute, storage, and networking functions in an operational environment.
 
     performance_metrics:
-      prompt: |-
-        Metrics related to hardware performance and efficiency, including throughput,
-        latency, power consumption, thermal characteristics, utilization, and benchmarking data.
+      concept_domain: hardware performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: throughput measure, latency measure, power consumption metric, thermal characteristic, utilization metric, or benchmark category
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"processing speed" vs "compute throughput"'
+      terminology_domain: hardware
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: hardware and semiconductor
+      domain_scope: throughput, latency, power, thermal, utilization, benchmarking, etc.
+      example_name: Throughput
+      example_description: A performance metric representing the amount of work processed over time, used to evaluate the efficiency of hardware systems.
 
     firmware_software_interfaces:
-      prompt: |-
-        Information about low-level software interfaces to hardware, including firmware,
-        drivers, runtime libraries, and APIs that enable interaction between hardware
-        components and higher-level systems.
+      concept_domain: hardware software interface
+      entry_count: 120
+      concept_unit: interface
+      concept_scope_examples: firmware type, device driver, runtime interface, hardware API, or control interface
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"device driver" vs "hardware driver"'
+      terminology_domain: hardware
+      distinctness_criteria: function, interface type, or role in system interaction
+      domain_name: hardware and semiconductor
+      domain_scope: firmware, drivers, runtime libraries, APIs, hardware interfaces, etc.
+      example_name: Device Driver
+      example_description: A software interface that enables communication between operating systems and hardware components, allowing control and operation of devices.
 
     operational_events:
-      prompt: |-
-        Events related to hardware lifecycle and operations, including provisioning,
-        failures, maintenance, upgrades, diagnostics, and decommissioning.
+      concept_domain: hardware operational event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: provisioning event, failure event, maintenance action, upgrade step, diagnostic action, or decommissioning event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hardware failure" vs "device malfunction"'
+      terminology_domain: hardware
+      distinctness_criteria: event type, lifecycle stage, or role in operations
+      domain_name: hardware and semiconductor
+      domain_scope: provisioning, failures, maintenance, upgrades, diagnostics, decommissioning, etc.
+      example_name: Hardware Failure
+      example_description: An operational event where a component or system stops functioning as expected, requiring diagnosis and corrective action.
 
     security_features:
-      prompt: |-
-        Hardware-level security capabilities and events, including secure enclaves,
-        trusted execution environments, hardware root of trust, encryption modules,
-        and firmware integrity checks.
+      concept_domain: hardware security feature
+      entry_count: 120
+      concept_unit: feature
+      concept_scope_examples: secure enclave, trusted execution environment, root of trust, encryption module, firmware integrity mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"secure enclave" vs "trusted execution area"'
+      terminology_domain: hardware
+      distinctness_criteria: function, mechanism, or role in system security
+      domain_name: hardware and semiconductor
+      domain_scope: secure enclaves, trusted execution, encryption, firmware security, hardware trust, etc.
+      example_name: Trusted Execution Environment
+      example_description: A hardware security feature that isolates sensitive computations within a protected area, supporting secure processing and data protection.
 
     compliance_standards:
-      prompt: |-
-        Standards and certifications relevant to hardware and semiconductor systems,
-        including safety, interoperability, environmental, and regulatory compliance.
+      concept_domain: hardware compliance standard
+      entry_count: 100
+      concept_unit: standard
+      concept_scope_examples: safety standard, interoperability requirement, environmental certification, regulatory compliance, or quality standard
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"safety certification" vs "compliance standard"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or role in compliance
+      domain_name: hardware and semiconductor
+      domain_scope: safety, interoperability, environmental, regulatory compliance, certifications, etc.
+      example_name: Safety Certification
+      example_description: A compliance standard that ensures hardware meets defined safety requirements, supporting reliable and secure operation in regulated environments.
 
 
 media_gaming_platforms:
   tables:
+
     content_assets:
-      prompt: |-
-        Information about digital content, including video, audio, images, games,
-        streams, and user-generated content, along with metadata such as title,
-        creator, genre, format, duration, and rights ownership.
+      concept_domain: digital content asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: content type, media format, genre category, distribution format, or content use context
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"video content" vs "video asset"'
+      terminology_domain: media
+      distinctness_criteria: function, structure, or typical use
+      domain_name: media and gaming platforms
+      domain_scope: video, audio, images, games, streams, user-generated content, etc.
+      example_name: Video Content
+      example_description: A digital asset consisting of moving visual media, typically used for entertainment, education, or streaming consumption.
 
     user_profiles:
-      prompt: |-
-        Information about platform users, including identity, preferences,
-        subscriptions, viewing or gameplay history, social connections,
-        and engagement attributes.
+      concept_domain: user profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: identity attribute, preference category, engagement pattern, subscription type, or social relationship
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user profile" vs "user account"'
+      terminology_domain: platform
+      distinctness_criteria: attribute type, classification, or usage context
+      domain_name: media and gaming platforms
+      domain_scope: users, preferences, subscriptions, engagement, social connections, etc.
+      example_name: Subscriber Profile
+      example_description: A user profile representing an individual with an active subscription, supporting access to premium content and personalized experiences.
 
     content_interactions:
-      prompt: |-
-        Events representing user interactions with content, including views,
-        plays, likes, shares, comments, downloads, session activity,
-        and gameplay actions.
+      concept_domain: content interaction
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: view event, play action, like action, share action, comment activity, session behavior, or gameplay interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"video view" vs "content play"'
+      terminology_domain: platform
+      distinctness_criteria: action type, engagement behavior, or role in content consumption
+      domain_name: media and gaming platforms
+      domain_scope: viewing, playing, liking, sharing, commenting, gameplay, sessions, etc.
+      example_name: Content View
+      example_description: An interaction where a user accesses and consumes a piece of content, contributing to engagement and usage tracking.
 
     recommendation_signals:
-      prompt: |-
-        Data and signals used to personalize content discovery, including
-        user behavior, preferences, collaborative filtering inputs,
-        rankings, and recommendation outputs.
+      concept_domain: recommendation signal
+      entry_count: 120
+      concept_unit: signal
+      concept_scope_examples: user behavior signal, preference indicator, collaborative filtering input, ranking factor, or recommendation output
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"recommendation score" vs "ranking signal"'
+      terminology_domain: platform
+      distinctness_criteria: signal type, function, or role in recommendation flow
+      domain_name: media and gaming platforms
+      domain_scope: personalization, recommendations, rankings, behavioral data, etc.
+      example_name: Engagement Signal
+      example_description: A signal derived from user interactions with content, used to influence ranking and recommendation of similar items.
 
     monetization_events:
-      prompt: |-
-        Events related to revenue generation, including subscriptions,
-        in-app purchases, ad impressions, ad clicks, virtual goods,
-        and transaction records tied to content or gameplay.
+      concept_domain: monetization event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: subscription event, purchase action, ad impression, ad click, virtual goods transaction, or revenue interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"in-app purchase" vs "digital purchase event"'
+      terminology_domain: platform
+      distinctness_criteria: event type, revenue mechanism, or role in monetization flow
+      domain_name: media and gaming platforms
+      domain_scope: subscriptions, purchases, ads, virtual goods, transactions, etc.
+      example_name: Subscription Purchase
+      example_description: An event where a user pays for access to premium content or services, contributing to platform revenue.
 
     advertising_inventory:
-      prompt: |-
-        Information about ad placements and inventory, including slots,
-        targeting parameters, campaign metadata, creatives, and delivery
-        configurations within media or gaming environments.
+      concept_domain: advertising inventory
+      entry_count: 120
+      concept_unit: inventory
+      concept_scope_examples: ad slot type, placement location, targeting configuration, campaign structure, or creative format
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"ad slot" vs "ad placement"'
+      terminology_domain: advertising
+      distinctness_criteria: structure, function, or role in ad delivery
+      domain_name: media and gaming platforms
+      domain_scope: ad placements, targeting, campaigns, creatives, delivery configurations, etc.
+      example_name: Video Ad Slot
+      example_description: An advertising inventory unit where video advertisements are displayed during content playback, enabling monetization through ad delivery.
 
     creator_management:
-      prompt: |-
-        Information about content creators, publishers, or studios,
-        including profiles, content catalogs, revenue sharing terms,
-        performance metrics, and partnership agreements.
+      concept_domain: creator management entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: creator profile, publisher type, studio structure, revenue model, or partnership arrangement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"content creator" vs "media publisher"'
+      terminology_domain: media
+      distinctness_criteria: role, structure, or function in content production
+      domain_name: media and gaming platforms
+      domain_scope: creators, publishers, studios, partnerships, revenue sharing, content catalogs, etc.
+      example_name: Content Creator Profile
+      example_description: A representation of an individual or organization producing content, supporting management of content, performance, and monetization relationships.
 
     platform_moderation:
-      prompt: |-
-        Policies, actions, and events related to content moderation,
-        including flagging, review workflows, removals, bans,
-        community guidelines enforcement, and trust and safety operations.
+      concept_domain: moderation action or policy
+      entry_count: 120
+      concept_unit: moderation
+      concept_scope_examples: content flagging, review workflow, removal action, user ban, guideline enforcement, or trust and safety control
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"content removal" vs "content takedown"'
+      terminology_domain: platform
+      distinctness_criteria: action type, policy type, or role in moderation process
+      domain_name: media and gaming platforms
+      domain_scope: moderation, trust and safety, content review, enforcement actions, etc.
+      example_name: Content Removal
+      example_description: A moderation action where content is taken down due to policy violations, supporting platform safety and compliance.
 
     streaming_delivery:
-      prompt: |-
-        Information and events related to content distribution and delivery,
-        including streaming sessions, buffering, bitrate adaptation,
-        CDN usage, and playback performance metrics.
+      concept_domain: streaming delivery event or component
+      entry_count: 120
+      concept_unit: delivery
+      concept_scope_examples: streaming session, buffering event, bitrate adaptation, CDN usage, playback performance, or delivery mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"streaming session" vs "playback session"'
+      terminology_domain: media
+      distinctness_criteria: event type, performance aspect, or role in content delivery
+      domain_name: media and gaming platforms
+      domain_scope: streaming, playback, CDN, buffering, bitrate adaptation, performance metrics, etc.
+      example_name: Streaming Session
+      example_description: A delivery event representing continuous playback of content, supporting real-time consumption and performance monitoring.
 
     operational_incidents:
-      prompt: |-
-        Operational issues affecting platform availability or user experience,
-        including outages, latency issues, failed streams, service degradation,
-        and system disruptions.
-
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: outage, latency issue, failed stream, service degradation, system disruption, or performance failure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: media and gaming platforms
+      domain_scope: availability, performance, streaming, platform operations, user experience, etc.
+      example_name: Streaming Outage
+      example_description: An incident where content playback becomes unavailable, disrupting user experience and requiring remediation.
 
 
 blockchain_crypto:
   tables:
+
     blockchain_networks:
-      prompt: |-
-        Information about blockchain networks and protocols, including mainnets,
-        testnets, consensus mechanisms, validators, nodes, chain parameters,
-        and network-level characteristics such as throughput, latency, and security models.
+      concept_domain: blockchain network
+      entry_count: 120
+      concept_unit: network
+      concept_scope_examples: network type, consensus mechanism, node role, validator model, or network performance characteristic
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"blockchain network" vs "distributed ledger network"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: mainnets, testnets, consensus mechanisms, validators, nodes, network parameters, etc.
+      example_name: Proof of Stake Network
+      example_description: A blockchain network that validates transactions based on staked assets, supporting secure and energy-efficient consensus.
 
     digital_assets:
-      prompt: |-
-        Information about blockchain-based assets, including cryptocurrencies,
-        tokens (fungible and non-fungible), smart contract addresses, token standards,
-        supply metrics, and ownership or transfer attributes.
+      concept_domain: digital asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: cryptocurrency type, token standard, non-fungible asset, utility token, or governance token
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"crypto token" vs "digital token"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: cryptocurrencies, tokens, NFTs, smart contract assets, supply models, etc.
+      example_name: Fungible Token
+      example_description: A digital asset where each unit is interchangeable with another, commonly used for payments, utility, or value transfer.
 
     wallets_accounts:
-      prompt: |-
-        Information about blockchain wallets and accounts, including public/private key pairs,
-        addresses, custody models (self-custody, custodial), account balances,
-        and wallet metadata.
+      concept_domain: blockchain wallet or account
+      entry_count: 120
+      concept_unit: wallet
+      concept_scope_examples: custody model, key management type, wallet type, address structure, or account interaction model
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"crypto wallet" vs "digital wallet"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: wallets, accounts, key pairs, custody models, addresses, etc.
+      example_name: Self-Custody Wallet
+      example_description: A wallet where the user controls private keys directly, enabling independent management of digital assets and transactions.
 
     transaction_events:
-      prompt: |-
-        Events representing blockchain transactions, including transfers of assets,
-        contract interactions, gas usage, transaction status, confirmations,
-        and block inclusion details.
+      concept_domain: blockchain transaction event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: asset transfer, contract interaction, gas usage event, transaction confirmation, or block inclusion event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"transaction confirmation" vs "confirmed transaction"'
+      terminology_domain: blockchain
+      distinctness_criteria: event type, lifecycle stage, or role in transaction flow
+      domain_name: blockchain and crypto
+      domain_scope: transfers, contract calls, gas usage, confirmations, blocks, etc.
+      example_name: Asset Transfer
+      example_description: An event where digital assets move between addresses, recording ownership changes on the blockchain.
 
     smart_contracts:
-      prompt: |-
-        Information about deployed smart contracts, including code, interfaces (ABI),
-        contract functions, upgradeability patterns, and on-chain state.
+      concept_domain: smart contract
+      entry_count: 120
+      concept_unit: contract
+      concept_scope_examples: contract type, function interface, upgrade pattern, execution model, or state management approach
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"smart contract" vs "on-chain program"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: deployed contracts, ABIs, functions, upgradeability, on-chain state, etc.
+      example_name: Token Contract
+      example_description: A smart contract that defines rules for creating and managing digital tokens, supporting issuance and transfer of assets.
 
     protocol_interactions:
-      prompt: |-
-        Events and data related to interactions with decentralized protocols,
-        including staking, lending, liquidity provision, swaps, governance voting,
-        and other DeFi or on-chain application activities.
+      concept_domain: protocol interaction
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: staking action, lending activity, liquidity provision, token swap, governance vote, or DeFi operation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"token swap" vs "asset exchange"'
+      terminology_domain: blockchain
+      distinctness_criteria: action type, function, or role in protocol usage
+      domain_name: blockchain and crypto
+      domain_scope: DeFi, staking, lending, liquidity, governance, on-chain applications, etc.
+      example_name: Liquidity Provision
+      example_description: An interaction where assets are supplied to a protocol to enable trading or lending, supporting decentralized financial activity.
 
     identity_name_services:
-      prompt: |-
-        Information about blockchain-based identity and naming systems, including
-        domain services (e.g., ENS), decentralized identifiers (DIDs), and mappings
-        between human-readable names and blockchain addresses.
+      concept_domain: blockchain identity or naming service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: domain naming system, decentralized identifier type, name resolution method, or address mapping mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"blockchain domain" vs "crypto name service"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: ENS, DIDs, name services, identity mappings, etc.
+      example_name: Decentralized Name Service
+      example_description: A service that maps human-readable names to blockchain addresses, simplifying interactions with digital assets and applications.
 
     infrastructure_services:
-      prompt: |-
-        Information about supporting infrastructure for blockchain development and operation,
-        including node providers, RPC endpoints, indexing services, APIs, developer platforms,
-        and middleware used to access and interact with blockchain networks.
+      concept_domain: blockchain infrastructure service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: node provider type, RPC service, indexing service, API platform, or middleware layer
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"node service" vs "rpc provider"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, role, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: nodes, RPC endpoints, indexing, APIs, developer tools, middleware, etc.
+      example_name: RPC Endpoint
+      example_description: A service interface that allows applications to interact with blockchain nodes, enabling transaction submission and data queries.
 
     security_events:
-      prompt: |-
-        Events related to blockchain security, including key compromises, contract exploits,
-        anomalous transactions, validator slashing, and other incidents affecting
-        integrity and safety of assets or protocols.
+      concept_domain: blockchain security event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: key compromise, contract exploit, anomalous transaction, validator slashing, or protocol attack
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security breach" vs "security incident"'
+      terminology_domain: blockchain
+      distinctness_criteria: event type, detection method, or impact
+      domain_name: blockchain and crypto
+      domain_scope: exploits, anomalies, validator actions, attacks, asset security, etc.
+      example_name: Smart Contract Exploit
+      example_description: An event where vulnerabilities in contract code are used to manipulate behavior or extract value, affecting system integrity.
 
     governance_mechanisms:
-      prompt: |-
-        Information and events related to protocol governance, including proposals,
-        voting processes, token-based governance rights, upgrades, and community decisions.
-
+      concept_domain: governance mechanism
+      entry_count: 120
+      concept_unit: mechanism
+      concept_scope_examples: proposal type, voting process, token-based governance model, upgrade mechanism, or decision framework
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"governance vote" vs "protocol voting"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or role in governance
+      domain_name: blockchain and crypto
+      domain_scope: proposals, voting, governance tokens, upgrades, community decisions, etc.
+      example_name: Governance Proposal
+      example_description: A mechanism where participants submit and vote on changes to a protocol, supporting decentralized decision-making.
 
 
 professional_business_services:
