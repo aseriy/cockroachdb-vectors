@@ -41,7 +41,10 @@ def main_get_conn(pool) -> connection:
 
 
 
-def get_table_id(pool, table_name) -> int:
+def get_table_id(pool, schema_name, table_name) -> int:
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     conn = main_get_conn(pool)
     table_id = None
 
@@ -63,10 +66,13 @@ def get_table_id(pool, table_name) -> int:
 
 
 
-def get_index_id(pool, table_name, index_name = None) -> int | list[int]:
+def get_index_id(pool, schema_name, table_name, index_name = None) -> int | list[int]:
     conn = main_get_conn(pool)
-    table_id = get_table_id(pool, table_name)
+    table_id = get_table_id(pool, schema_name, table_name)
     index_id = None
+
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
 
     if table_id:
         query = f"""
