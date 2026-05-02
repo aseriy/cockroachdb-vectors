@@ -963,33 +963,288 @@ blockchain_crypto:
       example_description: A mechanism where participants submit and vote on changes to a protocol, supporting decentralized decision-making.
 
 
-professional_business_services:
+consumer_hospitality_retail:
   tables:
-    products:
-      prompt: |-
-        Generate {n} realistic financial services product records.
-        Cover savings accounts, loans, investment products, payment products, FX products,
-        trading instruments, insurance-linked products, credit facilities.
-        Descriptions: 1-3 sentences, specific and domain-accurate.
-        Return a JSON array of objects with keys: name, description.
-        No duplicates. Raw JSON only, no markdown.
+
+    digital_products_services:
+      concept_domain: digital product or service
+      entry_count: 150
+      concept_unit: product
+      concept_scope_examples: platform service, analytics product, content service, marketplace offering, or digital experience
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"digital service" vs "online service"'
+      terminology_domain: consumer
+      distinctness_criteria: function, category, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: analytics platforms, marketplaces, content services, digital experiences, etc.
+      example_name: Analytics Platform
+      example_description: A digital product that processes and analyzes consumer or operational data, supporting insights and decision-making.
+
+    customer_profiles:
+      concept_domain: consumer profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: demographic segment, behavioral segment, engagement pattern, preference type, or customer lifecycle stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"active user" vs "engaged customer"'
+      terminology_domain: consumer
+      distinctness_criteria: attribute type, segmentation, or behavior pattern
+      domain_name: consumer platforms and retail
+      domain_scope: end users, consumers, clients, behavioral segments, engagement data, etc.
+      example_name: Active User Profile
+      example_description: A profile representing a consumer who frequently interacts with a platform, indicating ongoing engagement and usage patterns.
+
+    content_assets:
+      concept_domain: digital content asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: image content, video content, generated media, user-generated content, or branded content
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"photo asset" vs "image content"'
+      terminology_domain: media
+      distinctness_criteria: format, function, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: photography, media assets, user-generated content, branded content, etc.
+      example_name: Digital Image Asset
+      example_description: A content asset consisting of visual media used for display, marketing, or user interaction within digital platforms.
+
+    platform_interactions:
+      concept_domain: platform interaction event
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: user action, content interaction, platform usage event, session activity, or engagement signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user action" vs "platform interaction"'
+      terminology_domain: platform
+      distinctness_criteria: action type, engagement behavior, or role in usage flow
+      domain_name: consumer platforms and retail
+      domain_scope: clicks, views, uploads, interactions, sessions, etc.
+      example_name: Content Upload Event
+      example_description: An interaction where a user submits content to the platform, contributing to available assets and engagement.
+
+    analytics_insights:
+      concept_domain: analytics insight
+      entry_count: 120
+      concept_unit: insight
+      concept_scope_examples: consumer behavior insight, performance metric, trend analysis, segmentation output, or predictive signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"data insight" vs "analytics finding"'
+      terminology_domain: analytics
+      distinctness_criteria: function, analytical focus, or usage context
+      domain_name: consumer platforms and retail
+      domain_scope: analytics, reporting, consumer insights, performance measurement, etc.
+      example_name: Engagement Insight
+      example_description: An analytical output that identifies patterns in user interaction, supporting optimization of content or services.
+
+    marketplace_listings:
+      concept_domain: marketplace listing
+      entry_count: 120
+      concept_unit: listing
+      concept_scope_examples: service listing, product listing, provider offering, booking option, or catalog entry
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service listing" vs "marketplace offering"'
+      terminology_domain: marketplace
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: service marketplaces, product catalogs, provider listings, etc.
+      example_name: Service Listing
+      example_description: A marketplace entry representing an offering available to consumers, enabling discovery and selection of services.
+
+    transactions:
+      concept_domain: consumer transaction
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: purchase type, booking transaction, service payment, marketplace transaction, or subscription payment
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"online purchase" vs "digital transaction"'
+      terminology_domain: consumer
+      distinctness_criteria: function, flow, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: purchases, bookings, payments, subscriptions, marketplace transactions, etc.
+      example_name: Service Purchase
+      example_description: A transaction where a consumer pays for a service offering, completing an exchange of value within a platform.
+
+    monetization_events:
+      concept_domain: monetization event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: payment event, subscription event, commission event, advertising revenue event, or transaction fee event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"payment event" vs "revenue event"'
+      terminology_domain: consumer
+      distinctness_criteria: event type, revenue mechanism, or role in monetization flow
+      domain_name: consumer platforms and retail
+      domain_scope: payments, commissions, subscriptions, advertising, platform revenue, etc.
+      example_name: Commission Event
+      example_description: An event where the platform earns a fee from a transaction, contributing to revenue through marketplace activity.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: data governance rule, ESG requirement, marketplace compliance rule, content policy, or regulatory obligation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"data policy" vs "data governance rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, control objective, or governance role
+      domain_name: consumer platforms and retail
+      domain_scope: data governance, ESG, marketplace rules, content compliance, etc.
+      example_name: Data Governance Policy
+      example_description: A policy defining how data is managed and protected, supporting compliance and responsible platform operation.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: service outage, data processing failure, platform degradation, marketplace disruption, or system failure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: consumer platforms and retail
+      domain_scope: platform operations, analytics systems, marketplaces, content services, etc.
+      example_name: Platform Outage
+      example_description: An incident where platform services become unavailable, disrupting user activity and requiring remediation.
 
 consumer_hospitality_retail:
   tables:
-    games_catalog:
-      prompt: |-
-        Generate {n} realistic online casino and gaming records.
-        Cover slots, table games, live dealer, crash games, poker variants, bingo, lottery.
-        Descriptions mention theme, mechanics, special features, volatility, jackpot type.
-        Return a JSON array of objects with keys: name, description.
-        No duplicates. Raw JSON only, no markdown.
 
-other:
-  tables:
-    shipment_types:
-      prompt: |-
-        Generate {n} realistic logistics shipment type records.
-        Cover air freight, ocean, road, rail, last-mile, cold chain, hazmat, oversized, express.
-        Descriptions explain handling requirements, transit characteristics, regulatory considerations.
-        Return a JSON array of objects with keys: name, description.
-        No duplicates. Raw JSON only, no markdown.
+    accommodations_inventory:
+      concept_domain: accommodation offering
+      entry_count: 120
+      concept_unit: offering
+      concept_scope_examples: hotel type, lodging category, room configuration, stay model, or hospitality experience
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hotel room" vs "lodging unit"'
+      terminology_domain: hospitality
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: hotels, rentals, resorts, rooms, stays, etc.
+      example_name: Hotel Room
+      example_description: An accommodation offering that provides temporary lodging, supporting overnight stays and travel experiences.
+
+    booking_reservations:
+      concept_domain: booking or reservation
+      entry_count: 120
+      concept_unit: booking
+      concept_scope_examples: reservation type, booking channel, service category, duration model, or usage context
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hotel booking" vs "room reservation"'
+      terminology_domain: hospitality
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: travel bookings, restaurant reservations, appointments, etc.
+      example_name: Hotel Reservation
+      example_description: A booking that secures accommodation for a defined stay period, supporting travel and lodging planning.
+
+    service_appointments:
+      concept_domain: service appointment
+      entry_count: 120
+      concept_unit: appointment
+      concept_scope_examples: personal service booking, time-slot reservation, service session, or recurring appointment
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"appointment booking" vs "service reservation"'
+      terminology_domain: consumer
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: salons, wellness, fitness, personal services, etc.
+      example_name: Salon Appointment
+      example_description: A scheduled service session reserved for a specific time, supporting delivery of personal or professional services.
+
+    experiences_offerings:
+      concept_domain: consumer experience offering
+      entry_count: 120
+      concept_unit: offering
+      concept_scope_examples: travel experience, service experience, fitness session, booking-based activity, or curated experience
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"travel experience" vs "trip activity"'
+      terminology_domain: consumer
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: travel, services, wellness, activities, bookings, etc.
+      example_name: Guided Experience
+      example_description: An offering that combines services or activities into a structured experience, supporting consumer engagement and participation.
+
+    fitness_services:
+      concept_domain: fitness or wellness service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: workout program, training session, wellness service, subscription fitness model, or guided class
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"fitness class" vs "workout session"'
+      terminology_domain: consumer
+      distinctness_criteria: function, delivery model, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: fitness, wellness, subscriptions, classes, training, etc.
+      example_name: Guided Workout Class
+      example_description: A fitness service where structured exercises are delivered through guided instruction, supporting physical activity and training routines.
+
+    customer_profiles:
+      concept_domain: consumer profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: traveler segment, service user type, fitness user type, preference pattern, or engagement behavior
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"frequent traveler" vs "regular traveler"'
+      terminology_domain: consumer
+      distinctness_criteria: attribute type, segmentation, or behavioral pattern
+      domain_name: consumer hospitality and retail
+      domain_scope: guests, users, subscribers, travelers, etc.
+      example_name: Frequent Traveler Profile
+      example_description: A consumer profile representing individuals who regularly book travel or lodging, characterized by recurring engagement patterns.
+
+    transactions:
+      concept_domain: consumer transaction
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: booking payment, service purchase, subscription payment, marketplace transaction, or retail purchase
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"booking payment" vs "reservation payment"'
+      terminology_domain: consumer
+      distinctness_criteria: function, flow, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: bookings, services, subscriptions, purchases, etc.
+      example_name: Booking Payment
+      example_description: A transaction where payment is made to secure a reservation or service, completing a consumer purchase action.
+
+    monetization_events:
+      concept_domain: monetization event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: booking revenue event, service payment, subscription fee, commission event, or platform fee
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"payment event" vs "revenue event"'
+      terminology_domain: consumer
+      distinctness_criteria: event type, revenue mechanism, or role in monetization flow
+      domain_name: consumer hospitality and retail
+      domain_scope: payments, subscriptions, bookings, commissions, platform revenue, etc.
+      example_name: Booking Revenue Event
+      example_description: An event where a platform generates revenue from a reservation or service transaction, supporting monetization of offerings.
+
+    loyalty_rewards:
+      concept_domain: loyalty or rewards program
+      entry_count: 120
+      concept_unit: reward
+      concept_scope_examples: loyalty tier, reward type, points system, incentive model, or membership benefit
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"reward points" vs "loyalty points"'
+      terminology_domain: consumer
+      distinctness_criteria: function, incentive type, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: travel rewards, subscriptions, memberships, incentives, etc.
+      example_name: Loyalty Points Program
+      example_description: A system where users accumulate points through activity, supporting incentives for repeat engagement and retention.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: booking failure, service disruption, platform outage, payment issue, or experience degradation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: consumer hospitality and retail
+      domain_scope: bookings, services, platforms, payments, user experience, etc.
+      example_name: Booking Failure
+      example_description: An incident where a reservation or service cannot be completed successfully, disrupting the consumer experience.
