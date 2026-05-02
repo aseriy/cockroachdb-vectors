@@ -145,46 +145,103 @@ financial_services:
 capital_markets:
   tables:
     instruments:
-      prompt: |-
-        Information about tradable financial instruments or securities, including identifiers,
-        product type, issuer, currency, maturity, coupon, strike, exchange, listing venue,
-        and other static reference attributes used to define the instrument.
+      concept_domain: financial instrument
+      entry_count: 120
+      concept_unit: instrument
+      concept_scope_examples: instrument type, asset class, issuer structure, payoff structure, or trading characteristics
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"equity security" vs "stock instrument"'
+      terminology_domain: capital markets
+      distinctness_criteria: function, structure, or typical use
+      domain_name: capital markets
+      domain_scope: equities, fixed income, derivatives, commodities, structured products, etc.
+      example_name: Equity Security
+      example_description: A financial instrument representing ownership in a company, typically traded on an exchange and used for capital appreciation and dividend income.
 
     trade_lifecycle_events:
-      prompt: |-
-        Events describing the progression of an order or trade through its lifecycle, including
-        order creation, routing, execution, allocation, confirmation, clearing, settlement,
-        amendment, cancellation, and exception handling.
+      concept_domain: trade lifecycle event
+      entry_count: 120
+      concept_unit: trade event
+      concept_scope_examples: order creation, routing, execution, allocation, confirmation, clearing, settlement, amendment, cancellation, or exception handling stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trade execution" vs "executed trade"'
+      terminology_domain: capital markets
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in the trading flow
+      domain_name: capital markets
+      domain_scope: order management, execution, post-trade processing, clearing, settlement, etc.
+      example_name: Trade Execution
+      example_description: An event where a buy or sell order is matched and executed in the market, establishing a binding transaction between counterparties.
 
     market_events:
-      prompt: |-
-        External events that affect market conditions or specific issuers, instruments, or sectors,
-        including earnings releases, economic data, central bank announcements, rating changes,
-        volatility shocks, trading halts, corporate actions, and other price-moving developments.
+      concept_domain: market event
+      entry_count: 120
+      concept_unit: market event
+      concept_scope_examples: earnings release, economic data publication, central bank announcement, rating change, volatility shift, trading halt, or corporate action
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"earnings announcement" vs "earnings release"'
+      terminology_domain: capital markets
+      distinctness_criteria: event type, impact scope, or role in market movement
+      domain_name: capital markets
+      domain_scope: macroeconomics, corporate actions, market structure, volatility, sector developments, etc.
+      example_name: Earnings Release
+      example_description: A scheduled disclosure of a company's financial performance, often influencing investor expectations and market prices.
 
     research_commentary:
-      prompt: |-
-        Analyst-produced or strategist-produced commentary, recommendations, forecasts, price targets,
-        thematic views, investment theses, and written interpretations of companies, sectors,
-        instruments, or macroeconomic conditions.
+      concept_domain: research commentary
+      entry_count: 120
+      concept_unit: commentary
+      concept_scope_examples: analyst report, investment thesis, recommendation type, forecast, sector view, or macroeconomic interpretation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"buy recommendation" vs "positive rating"'
+      terminology_domain: capital markets
+      distinctness_criteria: analysis type, perspective, or investment focus
+      domain_name: capital markets
+      domain_scope: equities research, macro research, strategy, sector analysis, thematic investing, etc.
+      example_name: Buy Recommendation
+      example_description: An analyst opinion indicating that an instrument is expected to outperform and is suitable for purchase based on underlying analysis.
 
     compliance_policies:
-      prompt: |-
-        Policies, rules, controls, and regulatory obligations governing trading activity, communications,
-        disclosures, surveillance, recordkeeping, suitability, restricted lists, information barriers,
-        best execution, and other compliance requirements in capital markets operations.
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: trading restriction, disclosure requirement, surveillance rule, recordkeeping obligation, suitability guideline, or information barrier control
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trading restriction" vs "restricted trading rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: regulatory requirement, control objective, obligation type, or role in compliance processes
+      domain_name: capital markets
+      domain_scope: trading compliance, communications, disclosures, surveillance, best execution, information barriers, etc.
+      example_name: Restricted List Policy
+      example_description: A policy defining instruments that cannot be traded due to conflicts of interest or regulatory constraints, ensuring adherence to compliance obligations.
 
     client_requests:
-      prompt: |-
-        Requests, inquiries, or instructions from clients related to trading, execution, reporting,
-        onboarding, account servicing, portfolio information, settlement status, documentation,
-        or issue resolution.
+      concept_domain: client request
+      entry_count: 150
+      concept_unit: request
+      concept_scope_examples: trade instruction, order inquiry, execution request, reporting request, onboarding request, or settlement inquiry
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trade inquiry" vs "order status request"'
+      terminology_domain: capital markets
+      distinctness_criteria: request intent, action type, service category, or role in servicing process
+      domain_name: capital markets
+      domain_scope: trading, execution, reporting, onboarding, settlement, account servicing, etc.
+      example_name: Trade Status Request
+      example_description: A request to obtain the current status of a trade, including execution, allocation, or settlement progress.
 
     operational_incidents:
-      prompt: |-
-        Operational problems, breaks, exceptions, outages, failed processes, reconciliation issues,
-        settlement failures, booking errors, system incidents, or workflow disruptions affecting
-        capital markets activities.
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, trade break, reconciliation issue, settlement failure, booking error, or workflow disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trade break" vs "reconciliation break"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: capital markets
+      domain_scope: trading systems, post-trade processing, settlement, reconciliation, infrastructure, etc.
+      example_name: Settlement Failure
+      example_description: An incident where a trade cannot be settled as expected, disrupting the transfer of securities or funds and requiring corrective action.
+
 
 cloud_infrastructure:
   tables:
