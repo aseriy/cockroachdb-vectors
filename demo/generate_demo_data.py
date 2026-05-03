@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 DOMAINS = None
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(BASE_DIR, "semantic_clusters.yaml"), "r") as file:
+with open(os.path.join(BASE_DIR, "semantic_domains.yaml"), "r") as file:
     DOMAINS = yaml.safe_load(file)
 
 # ── LLM generation ───────────────────────────────────────────────────────────
