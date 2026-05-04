@@ -19,12 +19,6 @@ import json
 #     "example_description": "A deposit account designed for frequent transactions such as payments, withdrawals, and transfers.",
 # }
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(BASE_DIR, "semantic_clusters.yaml"), "r") as file:
-    DOMAINS = yaml.safe_load(file)
-
-tmpl_vars = DOMAINS['financial_services']['tables']['accounts']
-
 prompt_tmpl = """
         You are generating a controlled vocabulary, not sample data.
 
@@ -60,6 +54,12 @@ prompt_tmpl = """
 
         Now generate the full list.
 """
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(BASE_DIR, "semantic_clusters.yaml"), "r") as file:
+    DOMAINS = yaml.safe_load(file)
+
+tmpl_vars = DOMAINS['financial_services']['tables']['accounts']
 
 template = Template(prompt_tmpl)
 prompt = textwrap.dedent(

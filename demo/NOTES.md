@@ -1,94 +1,151 @@
-Yes. With that schema shape, each table is effectively a **document/entity collection**: a UUID primary key, a concise `name`, and a richer `description`. That works well for semantic generation because the retrieval value will come almost entirely from the descriptions, while the names provide recognizable anchors. For Capital Markets, I’d keep the seven tables and size them so there is enough variety for semantic overlap without making the corpus feel random.
-
-**instruments**
-This table should contain the canonical financial products and tradable assets that show up across the rest of the cluster: equities, sovereign and corporate bonds, CDS indexes, interest rate swaps, FX forwards, commodity futures, structured notes, and ETFs. The `name` should look like a desk-friendly instrument label, while the `description` should capture issuer, asset class, region, tenor, liquidity profile, risk characteristics, and common trading context. You can project **800–1,500 unique rows** here.
-
-**trade_lifecycle_events**
-This table should represent the operational steps and state changes that occur as trades move through execution and post-trade processing: order capture, execution, allocation, affirmation, confirmation, novation, settlement, amendment, and cancellation. The descriptions should read like realistic lifecycle summaries with references to products, desks, counterparties, breaks, status changes, and timing issues. You can project **3,000–6,000 unique rows** here.
-
-**market_events**
-This table should capture external market-moving developments that affect pricing, flows, volatility, and positioning: earnings releases, central bank decisions, credit downgrades, geopolitical shocks, spread widening, index rebalances, and sector selloffs. The descriptions should explain what happened, which products or issuers were affected, and why market participants cared. You can project **1,200–2,500 unique rows** here.
-
-**research_commentary**
-This table should contain analyst-style writeups, desk notes, and market views on issuers, sectors, macro themes, and trade ideas. The descriptions should sound like internal or client-facing commentary with thesis language, catalysts, valuation views, downside risks, and scenario framing. This is one of the highest-value tables for semantic search, so it should have broad linguistic variation. You can project **1,500–3,000 unique rows** here.
-
-**compliance_policies**
-This table should store policy and control-oriented content relevant to Capital Markets operations: restricted list handling, communications retention, best execution expectations, surveillance coverage, personal account dealing, information barriers, and reporting obligations. The descriptions should read like condensed policy statements or procedural summaries rather than legal boilerplate. You can project **300–700 unique rows** here.
-
-**client_requests**
-This table should represent inbound asks from institutional clients or internal relationship teams about trades, exposure, execution, settlement, reporting, product availability, or market color. The descriptions should feel like realistic request narratives, sometimes brief and sometimes detailed, with natural ambiguity and references to instruments, timing, urgency, and service expectations. You can project **2,000–4,000 unique rows** here.
-
-**operational_incidents**
-This table should capture operational failures, control breaks, and production issues affecting trading and post-trade workflows: settlement fails, booking mismatches, stale market data, allocation breaks, missed confirmations, reporting gaps, and outage-driven delays. The descriptions should include symptom, impact, affected desk or product, likely cause, and resolution status. You can project **1,000–2,000 unique rows** here.
-
-A reasonable total for this cluster is **about 9,800 to 20,200 rows**. That is enough to feel substantial in search without becoming hard to control.
+```sql
+SELECT 'DELETE FROM ' || quote_ident(schema_name) || '.' || quote_ident(table_name) || ';' 
+FROM [show tables];
+```
 
 
+```sql
+SELECT 'SELECT count(*) FROM ' || quote_ident(schema_name) || '.' || quote_ident(table_name) || ';' 
+FROM [show tables];
+```
 
 
-Better prompt (strict version):
-
-Input: Use only the Account Name column
-Task: Select accounts that map to non-CM Financial Services ontologies (as defined earlier)
-Inclusion rule:
-Include only if the account name unambiguously indicates one of the following:
-broker-dealer / trading platform
-asset manager / investment firm
-exchange / market infrastructure
-custody / clearing / prime brokerage
-securities-focused fintech (explicitly trading/investing)
-Exclusion rule:
-Exclude if the name suggests:
-payments / card networks
-lending / consumer finance
-generic “finance” or “capital” without clear markets activity
-anything ambiguous
-Ambiguity handling:
-If uncertain → exclude
-Output:
-Return only the list of account names, no explanation
-
-USE: STRICT ALIGHMENT WITH THE FInancial SErvice ontology
-
-
-
-
-accounts
-Limited concept space: account types, states, features, ownership variants. You quickly exhaust meaningful distinctions.
-~50–200 rows before descriptions become repetitive or artificially granular.
-
-transactions
-Broader than accounts due to many transaction types and contexts (POS, ATM, P2P, bill pay, etc.), but still finite at the “concept” level.
-~100–300 rows.
-
-payment_events
-Highly structured lifecycle vocabulary (initiation → settlement → failure cases). Finite and well-defined.
-~50–150 rows.
-
-lending_lifecycle_events
-Very constrained lifecycle stages with some variations (e.g., delinquency types, restructuring).
-~50–150 rows.
-
-customer_profiles
-Attributes, segments, and classifications (demographic, behavioral, risk tiers). Some breadth but still bounded.
-~100–300 rows.
-
-fraud_risk_events
-Moderate variety: alert types, fraud patterns, signals, outcomes. Can stretch via different fraud typologies.
-~100–300 rows.
-
-compliance_policies
-Strictly limited by real regulatory constructs (KYC, AML, sanctions, reporting rules).
-~50–150 rows.
-
-client_requests
-High variability in intents (support, disputes, changes, inquiries). One of the broader spaces.
-~200–500 rows.
-
-operational_incidents
-Finite set of incident types (outages, failures, reconciliation issues), plus severity and cause categories.
-~100–300 rows.
-
-product_configurations
-Parameters and features (fees, limits, rates, rewards). Moderate breadth but still bounded.
-~100–300 rows.
+```sql
+DELETE FROM aerospace_defense.compliance_standards;
+DELETE FROM aerospace_defense.components_subsystems;
+DELETE FROM aerospace_defense.maintenance_lifecycle_events;
+DELETE FROM aerospace_defense.manufacturing_assembly;
+DELETE FROM aerospace_defense.missions_operations;
+DELETE FROM aerospace_defense.operational_incidents;
+DELETE FROM aerospace_defense.platforms_systems;
+DELETE FROM aerospace_defense.security_threat_events;
+DELETE FROM aerospace_defense.supply_chain_entities;
+DELETE FROM aerospace_defense.telemetry_sensor_data;
+DELETE FROM ai_customer_experience.ai_models_capabilities;
+DELETE FROM ai_customer_experience.analytics_metrics;
+DELETE FROM ai_customer_experience.automation_workflows;
+DELETE FROM ai_customer_experience.compliance_policies;
+DELETE FROM ai_customer_experience.customer_profiles;
+DELETE FROM ai_customer_experience.interaction_channels;
+DELETE FROM ai_customer_experience.interaction_events;
+DELETE FROM ai_customer_experience.knowledge_content;
+DELETE FROM ai_customer_experience.operational_incidents;
+DELETE FROM ai_customer_experience.recommendation_personalization;
+DELETE FROM automotive_ev.charging_infrastructure;
+DELETE FROM automotive_ev.compliance_standards;
+DELETE FROM automotive_ev.components_subsystems;
+DELETE FROM automotive_ev.manufacturing_processes;
+DELETE FROM automotive_ev.mobility_services;
+DELETE FROM automotive_ev.operational_incidents;
+DELETE FROM automotive_ev.software_systems;
+DELETE FROM automotive_ev.supply_chain_entities;
+DELETE FROM automotive_ev.telemetry_vehicle_data;
+DELETE FROM automotive_ev.vehicles_platforms;
+DELETE FROM blockchain_crypto.blockchain_networks;
+DELETE FROM blockchain_crypto.digital_assets;
+DELETE FROM blockchain_crypto.governance_mechanisms;
+DELETE FROM blockchain_crypto.identity_name_services;
+DELETE FROM blockchain_crypto.infrastructure_services;
+DELETE FROM blockchain_crypto.protocol_interactions;
+DELETE FROM blockchain_crypto.security_events;
+DELETE FROM blockchain_crypto.smart_contracts;
+DELETE FROM blockchain_crypto.transaction_events;
+DELETE FROM blockchain_crypto.wallets_accounts;
+DELETE FROM capital_markets.client_requests;
+DELETE FROM capital_markets.compliance_policies;
+DELETE FROM capital_markets.instruments;
+DELETE FROM capital_markets.market_events;
+DELETE FROM capital_markets.operational_incidents;
+DELETE FROM capital_markets.research_commentary;
+DELETE FROM capital_markets.trade_lifecycle_events;
+DELETE FROM cloud_infrastructure.access_identity_controls;
+DELETE FROM cloud_infrastructure.compute_resources;
+DELETE FROM cloud_infrastructure.configuration_state;
+DELETE FROM cloud_infrastructure.cost_usage_records;
+DELETE FROM cloud_infrastructure.deployment_events;
+DELETE FROM cloud_infrastructure.networking_components;
+DELETE FROM cloud_infrastructure.observability_metrics;
+DELETE FROM cloud_infrastructure.operational_incidents;
+DELETE FROM cloud_infrastructure.security_events;
+DELETE FROM cloud_infrastructure.storage_resources;
+DELETE FROM consumer_hospitality_retail.accommodations_inventory;
+DELETE FROM consumer_hospitality_retail.booking_reservations;
+DELETE FROM consumer_hospitality_retail.customer_profiles;
+DELETE FROM consumer_hospitality_retail.experiences_offerings;
+DELETE FROM consumer_hospitality_retail.fitness_services;
+DELETE FROM consumer_hospitality_retail.loyalty_rewards;
+DELETE FROM consumer_hospitality_retail.monetization_events;
+DELETE FROM consumer_hospitality_retail.operational_incidents;
+DELETE FROM consumer_hospitality_retail.service_appointments;
+DELETE FROM consumer_hospitality_retail.transactions;
+DELETE FROM education_edtech.analytics_metrics;
+DELETE FROM education_edtech.assessments_evaluations;
+DELETE FROM education_edtech.compliance_policies;
+DELETE FROM education_edtech.instructional_methods;
+DELETE FROM education_edtech.learners_profiles;
+DELETE FROM education_edtech.learning_content;
+DELETE FROM education_edtech.learning_interactions;
+DELETE FROM education_edtech.learning_programs;
+DELETE FROM education_edtech.operational_incidents;
+DELETE FROM education_edtech.platform_features;
+DELETE FROM enterprise_software_services.analytics_metrics;
+DELETE FROM enterprise_software_services.applications_services;
+DELETE FROM enterprise_software_services.compliance_policies;
+DELETE FROM enterprise_software_services.data_assets;
+DELETE FROM enterprise_software_services.integrations;
+DELETE FROM enterprise_software_services.operational_incidents;
+DELETE FROM enterprise_software_services.security_controls;
+DELETE FROM enterprise_software_services.system_events;
+DELETE FROM enterprise_software_services.user_identities;
+DELETE FROM enterprise_software_services.workflows_processes;
+DELETE FROM financial_services.accounts;
+DELETE FROM financial_services.client_requests;
+DELETE FROM financial_services.compliance_policies;
+DELETE FROM financial_services.customer_profiles;
+DELETE FROM financial_services.fraud_risk_events;
+DELETE FROM financial_services.lending_lifecycle_events;
+DELETE FROM financial_services.operational_incidents;
+DELETE FROM financial_services.payment_events;
+DELETE FROM financial_services.product_configurations;
+DELETE FROM financial_services.transactions;
+DELETE FROM government_public_sector.analytics_metrics;
+DELETE FROM government_public_sector.applications_requests;
+DELETE FROM government_public_sector.case_management;
+DELETE FROM government_public_sector.citizen_profiles;
+DELETE FROM government_public_sector.compliance_controls;
+DELETE FROM government_public_sector.data_records;
+DELETE FROM government_public_sector.financial_operations;
+DELETE FROM government_public_sector.operational_incidents;
+DELETE FROM government_public_sector.public_services;
+DELETE FROM government_public_sector.regulatory_policies;
+DELETE FROM hardware_semiconductor.compliance_standards;
+DELETE FROM hardware_semiconductor.deployment_hardware;
+DELETE FROM hardware_semiconductor.firmware_software_interfaces;
+DELETE FROM hardware_semiconductor.hardware_components;
+DELETE FROM hardware_semiconductor.manufacturing_processes;
+DELETE FROM hardware_semiconductor.operational_events;
+DELETE FROM hardware_semiconductor.performance_metrics;
+DELETE FROM hardware_semiconductor.security_features;
+DELETE FROM hardware_semiconductor.semiconductor_products;
+DELETE FROM hardware_semiconductor.supply_chain_entities;
+DELETE FROM healthcare_life_sciences.analytics_metrics;
+DELETE FROM healthcare_life_sciences.clinical_events;
+DELETE FROM healthcare_life_sciences.clinical_services;
+DELETE FROM healthcare_life_sciences.compliance_policies;
+DELETE FROM healthcare_life_sciences.healthcare_operations;
+DELETE FROM healthcare_life_sciences.medical_devices;
+DELETE FROM healthcare_life_sciences.operational_incidents;
+DELETE FROM healthcare_life_sciences.patient_profiles;
+DELETE FROM healthcare_life_sciences.pharmaceuticals_biologics;
+DELETE FROM healthcare_life_sciences.research_clinical_trials;
+DELETE FROM logistics.compliance_regulations;
+DELETE FROM logistics.cost_pricing;
+DELETE FROM logistics.inventory_assets;
+DELETE FROM logistics.operational_incidents;
+DELETE FROM logistics.routing_planning;
+DELETE FROM logistics.shipments_orders;
+DELETE FROM logistics.supply_chain_entities;
+DELETE FROM logistics.tracking_events;
+DELETE FROM logistics.transportation_modes;
+DELETE FROM logistics.warehouses_facilities;
+```
