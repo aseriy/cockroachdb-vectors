@@ -9,33 +9,42 @@ from rich.console import Console
 from rich.table import Table
 from rich.padding import Padding
 from rich.align import Align
+import statistics
 from .model import is_valid_model
 from .common import (
     build_conn_kwargs,
     main_get_conn,
     get_table_id,
     get_index_id,
-    get_column_type
+    get_column_type,
+    get_primary_key_column
 )
 
 
 
 def run_size(args: dict):
     verbose = args['verbose']
+    schema_name, table_name = args['schema'], args['table']
+
+    full_table_name = table_name
+    if schema_name is not None:
+        full_table_name = f"{schema_name}.{table_name}"
 
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    index_vector_name = f"{args['table']}_{args['embedding']}_idx"
-    index_vector_id = get_index_id(conn_pool, args['table'], index_vector_name)
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, schema_name, table_name) 
 
-    index_id_null_name = f"{args['table']}_{args['embedding']}_id_null_idx"
-    index_id_null_id = get_index_id(conn_pool, args['table'], index_id_null_name)
+    index_vector_name = f"{args['embedding']}_idx"
+    index_vector_id = get_index_id(conn_pool, schema_name, table_name, index_vector_name)
+\
+    index_pk_null_name = f"{args['embedding']}_{primary_key}_null_idx"
+    index_pk_null_id = get_index_id(conn_pool, schema_name, table_name, index_pk_null_name)
 
-    index_id_not_null_name = f"{args['table']}_{args['embedding']}_id_not_null_idx"
-    index_id_not_null_id = get_index_id(conn_pool, args['table'], index_id_not_null_name)
+    index_pk_not_null_name = f"{args['embedding']}_{primary_key}_not_null_idx"
+    index_pk_not_null_id = get_index_id(conn_pool, schema_name, table_name, index_pk_not_null_name)
 
-    v_col_type = get_column_type(conn_pool, args['table'], args['embedding'])
+    v_col_type = get_column_type(conn_pool, schema_name, table_name, args['embedding'])
     match = re.match(rf"^vector\((\d+)\)$", v_col_type)
     if not match:
         raise RuntimeError(f"Column {args['embedding']} is {v_col_type} but must be VECTOR().")
@@ -43,7 +52,8 @@ def run_size(args: dict):
     vector_dim = int(match.group(1))
 
     query = f"""
-            SELECT count(*) FROM {args['table']}
+            SELECT count(*) FROM {full_table_name}
+            WHERE {args['embedding']} IS NOT NULL
             """
 
     row_cnt = 0
@@ -53,9 +63,20 @@ def run_size(args: dict):
         row_cnt = cur.fetchone()[0]
     conn_pool.putconn(conn)
 
-    embedding_space = vector_dim * 4 * row_cnt
+    query = f"""
+            SELECT count(*) FROM {full_table_name}
+            """
 
-    table_space, index_space = calc_index_space(conn_pool, args['table'], index_vector_name)
+    row_total = 0
+    conn = main_get_conn(conn_pool)
+    with conn.cursor() as cur:
+        cur.execute(query)
+        row_total = cur.fetchone()[0]
+    conn_pool.putconn(conn)
+
+    table_space, index_space, compress_rate, repl_factor = calc_index_space(conn_pool, schema_name, table_name, index_vector_name)
+
+    embedding_space = round(float(vector_dim * 4 * row_cnt * repl_factor) / compress_rate )
 
     # Total extra space including the auxiliary indexes
     vector_space = embedding_space + index_space[index_vector_id]
@@ -63,8 +84,8 @@ def run_size(args: dict):
     # Table space before intrumenting with the toolkit
     init_table_space = table_space - (
             vector_space +
-            index_space[index_id_null_id] +
-            index_space[index_id_not_null_id]
+            index_space[index_pk_null_id] +
+            index_space[index_pk_not_null_id]
         )
 
     # Vector space as a percentage of the initial table space
@@ -72,7 +93,7 @@ def run_size(args: dict):
 
     display_results(
         (
-            args['table'],                                                  # table name
+            table_name,                                                     # table name
             humanize.naturalsize(init_table_space, gnu=True),               # init table sapce
             humanize.naturalsize(table_space, gnu=True)                     # resulting table space
         ),
@@ -83,15 +104,16 @@ def run_size(args: dict):
             humanize.naturalsize(index_space[index_vector_id], gnu=True)    # vector index
         ),
         (
-            index_id_null_name,
-            humanize.naturalsize(index_space[index_id_null_id], gnu=True),
-            index_id_not_null_name,
-            humanize.naturalsize(index_space[index_id_not_null_id], gnu=True)
+            index_pk_null_name,
+            humanize.naturalsize(index_space[index_pk_null_id], gnu=True),
+            index_pk_not_null_name,
+            humanize.naturalsize(index_space[index_pk_not_null_id], gnu=True)
         ),
         (
             f"{float(vector_space) / float(table_space):.1%}",
-            f"{float(index_space[index_id_null_id] + index_space[index_id_not_null_id]) / float(table_space):.1%}",
-        )
+            f"{float(index_space[index_pk_null_id] + index_space[index_pk_not_null_id]) / float(table_space):.1%}",
+        ),
+        compress_rate, repl_factor, float(row_cnt) / row_total
     )
     return
 
@@ -101,7 +123,10 @@ def display_results(
                         table: Tuple[str, str, str],
                         vector: Tuple[str, str, str, str],
                         toolkit: Tuple[str, str, str, str],
-                        overhead: Tuple[str, str]
+                        overhead: Tuple[str, str],
+                        compress_rate: float,
+                        repl_factor: int,
+                        rows_embedded: float
                     ):
 
     console = Console()
@@ -149,6 +174,21 @@ def display_results(
                 )
     report.add_row(
                     Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Rows embedded", align="right"), (0, 1, 0, 1)),
+                    Padding(f"{round(rows_embedded * 100)}%", (0, 0, 0, 6))
+                )
+    report.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Compression ratio", align="right"), (0, 1, 0, 1)),
+                    Padding(str(round(compress_rate, 2)), (0, 0, 0, 6))
+                )
+    report.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
+                    Padding(Align("Replication factor", align="right"), (0, 1, 0, 1)),
+                    Padding(str(repl_factor), (0, 0, 0, 6))
+                )
+    report.add_row(
+                    Padding(Align(">>>", align="right") , (0, 1, 0, 1)),
                     Padding(Align("Vector storage overhead", align="right"), (0, 1, 0, 1)),
                     Padding(overhead[0], (0, 0, 0, 6))
                 )
@@ -166,20 +206,26 @@ def display_results(
 
 def calc_index_space(
                     pool: SimpleConnectionPool,
+                    schema_name: str | None,
                     table_name: str,
                     index_vector_name: str,
-                ) -> str:
+                ):
 
-    index_vector_id = get_index_id(pool, table_name, index_vector_name)
+    full_table_name = table_name
+    if schema_name is not None:
+        full_table_name = f"{schema_name}.{table_name}"
+
 
     # Now pull the list of ranges with disk usage
     query = f"""
-        SELECT                                                  
+        SELECT
             start_key,
             end_key,
-            (span_stats::JSONB ->> 'approximate_disk_bytes')::INT
+            (span_stats::JSONB ->> 'approximate_disk_bytes')::INT,
+            (span_stats::JSONB ->> 'live_bytes')::INT,
+            array_length(replicas, 1)
         FROM
-            [SHOW RANGES FROM TABLE {table_name} WITH DETAILS]
+            [SHOW RANGES FROM TABLE {full_table_name} WITH DETAILS]
     """
 
     ranges = []
@@ -195,16 +241,14 @@ def calc_index_space(
     total = sum(r[2] for r in ranges)
 
     n_ranges = x_parser(ranges)
-    # for r in n_ranges:
-    #     print(r)
 
-    index_sizes = calc_index_bytes(
-        get_table_id(pool, table_name),
-        get_index_id(pool, table_name),
+    index_sizes, compress_rate, repl_factor = calc_index_bytes(
+        get_table_id(pool, schema_name, table_name),
+        get_index_id(pool, schema_name, table_name),
         n_ranges
-    ) 
+    )
 
-    return total, index_sizes
+    return total, index_sizes, compress_rate, repl_factor
 
 
 
@@ -257,10 +301,10 @@ def _normalize_key(key: str, fallback_table_id: int | None) -> list[int | None]:
 
 
 
-def x_parser(input: list[list[str, str, int]]) -> list[list[list[int | None], list[int | None], int]]:
+def x_parser(input: list[list[str, str, int, int]]) -> list[list[list[int | None], list[int | None], int]]:
     out = []
 
-    for from_key, to_key, value in input:
+    for from_key, to_key, size_physical, size_logical, repl_factor in input:
         # Pre-extract to get fallback context for symbolic boundaries
         from_table_id, _ = _extract_table_index(from_key)
         to_table_id, _ = _extract_table_index(to_key)
@@ -269,7 +313,7 @@ def x_parser(input: list[list[str, str, int]]) -> list[list[list[int | None], li
         from_boundary = _normalize_key(from_key, fallback_table_id=to_table_id)
         to_boundary = _normalize_key(to_key, fallback_table_id=from_table_id)
 
-        out.append([from_boundary, to_boundary, value])
+        out.append([from_boundary, to_boundary, size_physical, size_logical, repl_factor])
 
     return out
 
@@ -280,42 +324,52 @@ def calc_index_bytes(
         table_id: int,
         index_vector_ids: list[int],
         ranges: list[list] # [ [from_t, from_i], [to_t, to_i], size ]
-    ) -> dict[int, int]:
+    ):
+
+    # Compression rate
+    repl_factor = ranges[0][4] 
+    compress_rate = [float(r[3]) * repl_factor / float(r[2]) for r in ranges if r[3] > 0]
 
     out = {index_vector_id: 0 for index_vector_id in index_vector_ids}
 
-    for (from_table, from_idx), (to_table, to_idx), size in ranges:
+    for (from_table, from_idx), (to_table, to_idx), size_physical, size_logical, rf in ranges:
         matched = []
         
         # Treat None in the starting index as 0 (start of table)
         f_idx = from_idx if from_idx is not None else 0
 
-        # Case A: Range is entirely within our table
-        if from_table == table_id and to_table == table_id:
+        # Case A: The entire table is within a single range
+        if len(ranges) < 2:
+            matched = index_vector_ids
+
+        # Case B: Range is entirely within our table
+        elif from_table == table_id and to_table == table_id:
             if to_idx is None: # Ends at <TableMax>
                 matched = [i for i in index_vector_ids if i >= f_idx]
             else:
                 matched = [i for i in index_vector_ids if f_idx <= i <= to_idx]
 
-        # Case B: Range starts in our table but ends in another
+        # Case C: Range starts in our table but ends in another
         elif from_table == table_id:
             matched = [i for i in index_vector_ids if i >= f_idx]
 
-        # Case C: Range starts in a previous table but ends in ours
+        # Case D: Range starts in a previous table but ends in ours
         elif to_table == table_id:
             if to_idx is None: # Covers the whole table up to Max
                 matched = index_vector_ids
             else:
                 matched = [i for i in index_vector_ids if i <= to_idx]
 
-        # Case D: Super-range that completely swallows our table
+        # Case E: Super-range that completely swallows our table
         elif from_table < table_id < to_table:
             matched = index_vector_ids
 
-        for i in matched:
-            out[i] += size
+        if len(matched) > 0:
+            attribution = round(float(size_physical) / len(matched))
+            for i in matched:
+                out[i] += attribution
 
-    return out
+    return out, float(statistics.mean(compress_rate)), repl_factor
 
 
 

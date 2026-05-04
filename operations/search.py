@@ -37,6 +37,8 @@ emit_note = textwrap.dedent(emit_note).strip()
 def run_search(args: dict):
     verbose = args['verbose']
 
+    schema_name, table_name = args['schema'], args['table']
+
     if not is_valid_model(args['model']):
         raise RuntimeError(f"Invalid embedding model {args['model']}")
 
@@ -46,7 +48,7 @@ def run_search(args: dict):
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, schema_name, table_name)
     if verbose:
         print(f"[INFO] PK: {primary_key} ({primary_key_type})\n")
 
@@ -58,10 +60,13 @@ def run_search(args: dict):
     query_tmpl = search_tmpl.replace("{{ limit }}", "%s")
     query_tmpl = query_tmpl.replace("{{ query }}", "%s")
 
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     template = Template(query_tmpl)
     query = textwrap.dedent(
         template.render(
-            table = args['table'],
+            table = table_name,
             primary_key = primary_key,
             source = args['source'],
             embedding = args['embedding'],
@@ -69,12 +74,10 @@ def run_search(args: dict):
             idxop = idxop
         )
     )
-    print(f"{query}\n")
-    print(f"{emit_note}\n")
 
     conn = main_get_conn(conn_pool)
     with conn.cursor() as cur:
-        cur.execute(query, (vector_param,vector_param, args['limit']))
+        cur.execute(query, (vector_param, vector_param, args['limit']))
         result = cur.fetchall()
 
     for r in result:
@@ -92,6 +95,7 @@ def run_search(args: dict):
 def run_emit(args: dict):
     verbose = args['verbose']
     sample = args['sample']
+    schema_name, table_name = args['schema'], args['table']
 
     if not is_valid_model(args['model']):
         raise RuntimeError(f"Invalid embedding model {args['model']}")
@@ -102,7 +106,7 @@ def run_emit(args: dict):
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, schema_name, table_name )
 
     vector_param = None
     if sample:
@@ -119,10 +123,13 @@ def run_emit(args: dict):
         query_tmpl = search_tmpl.replace("{{ limit }}", "%s")
         query_tmpl = query_tmpl.replace("{{ query }}", "%s")
 
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     template = Template(query_tmpl)
     query = textwrap.dedent(
         template.render(
-            table = args['table'],
+            table = table_name,
             primary_key = primary_key,
             source = args['source'],
             embedding = args['embedding'],

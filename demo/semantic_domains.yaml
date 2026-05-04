@@ -1,0 +1,3269 @@
+aerospace_defense:
+  tables:
+
+    platforms_systems:
+      concept_domain: aerospace or defense platform
+      entry_count: 120
+      concept_unit: platform
+      concept_scope_examples: aircraft type, spacecraft system, defense system, unmanned system, or mission platform
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"military aircraft" vs "defense aircraft"'
+      terminology_domain: aerospace
+      distinctness_criteria: function, structure, or typical use
+      domain_name: aerospace and defense
+      domain_scope: aircraft, spacecraft, drones, defense systems, mission platforms, etc.
+      example_name: Unmanned Aerial Vehicle
+      example_description: An aerospace platform that operates without a human pilot onboard, supporting surveillance, reconnaissance, or mission-specific operations.
+
+    components_subsystems:
+      concept_domain: aerospace component or subsystem
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: propulsion system, avionics module, sensor system, structural component, or control system
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"flight control system" vs "control subsystem"'
+      terminology_domain: aerospace
+      distinctness_criteria: function, structure, or role in system
+      domain_name: aerospace and defense
+      domain_scope: engines, avionics, sensors, control systems, structures, etc.
+      example_name: Avionics System
+      example_description: A subsystem that manages electronic functions such as navigation and communication, supporting safe and efficient operation of aerospace platforms.
+
+    missions_operations:
+      concept_domain: mission or operation
+      entry_count: 120
+      concept_unit: mission
+      concept_scope_examples: surveillance mission, combat operation, transport mission, training exercise, or space mission
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"recon mission" vs "surveillance operation"'
+      terminology_domain: defense
+      distinctness_criteria: function, objective, or operational context
+      domain_name: aerospace and defense
+      domain_scope: military operations, space missions, logistics missions, training, etc.
+      example_name: Surveillance Mission
+      example_description: An operation focused on gathering information over a target area, supporting situational awareness and decision-making.
+
+    telemetry_sensor_data:
+      concept_domain: telemetry or sensor signal
+      entry_count: 120
+      concept_unit: signal
+      concept_scope_examples: flight telemetry, sensor reading, environmental measurement, tracking data, or diagnostic signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"sensor data" vs "telemetry signal"'
+      terminology_domain: aerospace
+      distinctness_criteria: signal type, measurement focus, or role in monitoring
+      domain_name: aerospace and defense
+      domain_scope: telemetry, sensors, tracking, diagnostics, environmental monitoring, etc.
+      example_name: Flight Telemetry
+      example_description: A signal capturing real-time performance and status of an aerospace platform, supporting monitoring and control.
+
+    manufacturing_assembly:
+      concept_domain: aerospace manufacturing process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: assembly stage, fabrication process, testing phase, quality control step, or integration process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"assembly process" vs "manufacturing stage"'
+      terminology_domain: industrial
+      distinctness_criteria: process type, stage, or role in production
+      domain_name: aerospace and defense
+      domain_scope: fabrication, assembly, testing, integration, quality control, etc.
+      example_name: System Integration
+      example_description: A manufacturing process where subsystems are combined into a complete platform, supporting final assembly and readiness.
+
+    maintenance_lifecycle_events:
+      concept_domain: maintenance event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: inspection event, repair action, overhaul, maintenance cycle, or lifecycle update
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"maintenance action" vs "repair event"'
+      terminology_domain: aerospace
+      distinctness_criteria: event type, lifecycle stage, or role in upkeep
+      domain_name: aerospace and defense
+      domain_scope: inspection, repair, overhaul, lifecycle management, etc.
+      example_name: Scheduled Inspection
+      example_description: A maintenance event where systems are examined at regular intervals, supporting reliability and operational safety.
+
+    supply_chain_entities:
+      concept_domain: supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: supplier role, manufacturer type, logistics provider, contractor, or partner organization
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"component supplier" vs "parts vendor"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in supply chain
+      domain_name: aerospace and defense
+      domain_scope: suppliers, manufacturers, contractors, logistics, partners, etc.
+      example_name: Defense Contractor
+      example_description: An entity that designs or manufactures systems for defense applications, supporting production and delivery of mission-critical equipment.
+
+    security_threat_events:
+      concept_domain: security or threat event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: cyber intrusion, system compromise, anomaly detection, threat alert, or security breach
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security alert" vs "threat notification"'
+      terminology_domain: security
+      distinctness_criteria: event type, detection method, or impact
+      domain_name: aerospace and defense
+      domain_scope: cybersecurity, system protection, threat detection, etc.
+      example_name: Intrusion Detection Event
+      example_description: A security event indicating unauthorized access attempts, supporting detection and response to threats.
+
+    compliance_standards:
+      concept_domain: compliance standard
+      entry_count: 100
+      concept_unit: standard
+      concept_scope_examples: safety standard, regulatory requirement, certification, operational guideline, or quality standard
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"safety standard" vs "compliance requirement"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: aerospace and defense
+      domain_scope: safety, certification, regulatory compliance, quality standards, etc.
+      example_name: Airworthiness Standard
+      example_description: A compliance standard ensuring that aerospace systems meet safety and operational requirements for flight readiness.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system failure, mission disruption, equipment malfunction, communication failure, or operational anomaly
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system failure" vs "equipment malfunction"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: aerospace and defense
+      domain_scope: operations, missions, systems, maintenance, communications, etc.
+      example_name: System Failure
+      example_description: An incident where a platform or subsystem stops functioning as expected, disrupting operations and requiring corrective action.
+
+
+ai_customer_experience:
+  tables:
+
+    interaction_channels:
+      concept_domain: customer interaction channel
+      entry_count: 120
+      concept_unit: channel
+      concept_scope_examples: chat interface, voice interface, messaging platform, email channel, or in-app interaction surface
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"chat interface" vs "chat channel"'
+      terminology_domain: customer experience
+      distinctness_criteria: function, structure, or typical use
+      domain_name: ai customer experience
+      domain_scope: chat, voice, messaging, email, in-app, omnichannel interfaces, etc.
+      example_name: Chat Interface
+      example_description: A channel that enables real-time text-based communication between users and systems, supporting conversational customer interactions.
+
+    customer_profiles:
+      concept_domain: customer profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: demographic segment, behavioral segment, preference pattern, engagement level, or lifecycle stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"active customer" vs "engaged user"'
+      terminology_domain: customer experience
+      distinctness_criteria: attribute type, segmentation, or behavior pattern
+      domain_name: ai customer experience
+      domain_scope: end users, customers, subscribers, engagement profiles, etc.
+      example_name: High Engagement Profile
+      example_description: A profile representing customers with frequent and sustained interaction patterns, supporting personalized engagement strategies.
+
+    interaction_events:
+      concept_domain: customer interaction event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: message exchange, voice interaction, session activity, click event, or support request
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user message" vs "customer interaction"'
+      terminology_domain: customer experience
+      distinctness_criteria: action type, engagement behavior, or role in interaction flow
+      domain_name: ai customer experience
+      domain_scope: conversations, clicks, sessions, support interactions, etc.
+      example_name: Message Exchange Event
+      example_description: An interaction event where a user sends or receives a message, supporting conversational engagement and communication tracking.
+
+    ai_models_capabilities:
+      concept_domain: ai capability
+      entry_count: 120
+      concept_unit: capability
+      concept_scope_examples: natural language understanding, intent detection, sentiment analysis, recommendation engine, or automation logic
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"nlp model" vs "language processing model"'
+      terminology_domain: ai
+      distinctness_criteria: function, capability, or typical use
+      domain_name: ai customer experience
+      domain_scope: NLP, recommendations, automation, analytics, personalization, etc.
+      example_name: Intent Detection
+      example_description: An AI capability that identifies the purpose behind user input, supporting accurate routing and response generation.
+
+    recommendation_personalization:
+      concept_domain: personalization signal or output
+      entry_count: 120
+      concept_unit: signal
+      concept_scope_examples: recommendation output, ranking signal, preference model, behavior signal, or personalization rule
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"recommendation result" vs "personalization output"'
+      terminology_domain: ai
+      distinctness_criteria: signal type, function, or role in personalization
+      domain_name: ai customer experience
+      domain_scope: recommendations, ranking, personalization, targeting, etc.
+      example_name: Recommendation Output
+      example_description: A personalized suggestion generated by AI based on user behavior, supporting relevant content or service discovery.
+
+    knowledge_content:
+      concept_domain: knowledge or support content
+      entry_count: 120
+      concept_unit: content
+      concept_scope_examples: FAQ entry, help article, knowledge base content, scripted response, or training content
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"help article" vs "support content"'
+      terminology_domain: customer support
+      distinctness_criteria: function, format, or typical use
+      domain_name: ai customer experience
+      domain_scope: FAQs, help centers, support articles, training data, etc.
+      example_name: FAQ Article
+      example_description: A knowledge asset that provides answers to common questions, supporting self-service and automated assistance.
+
+    automation_workflows:
+      concept_domain: automation workflow
+      entry_count: 120
+      concept_unit: workflow
+      concept_scope_examples: routing workflow, escalation process, task automation, conversational flow, or orchestration logic
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"automation flow" vs "workflow process"'
+      terminology_domain: automation
+      distinctness_criteria: function, structure, or role in process flow
+      domain_name: ai customer experience
+      domain_scope: routing, escalation, orchestration, automation, etc.
+      example_name: Escalation Workflow
+      example_description: An automated process that routes interactions to higher support levels, supporting resolution of complex customer issues.
+
+    analytics_metrics:
+      concept_domain: customer experience metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: engagement metric, response time, resolution rate, satisfaction measure, or conversion metric
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"response time" vs "reply latency"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: ai customer experience
+      domain_scope: engagement, performance, satisfaction, analytics, etc.
+      example_name: Response Time
+      example_description: A metric measuring how quickly a system responds to user input, supporting evaluation of interaction efficiency.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: data privacy rule, consent policy, usage guideline, communication compliance, or governance rule
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"privacy policy" vs "data protection rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, control objective, or governance role
+      domain_name: ai customer experience
+      domain_scope: privacy, data protection, communication compliance, governance, etc.
+      example_name: Data Privacy Policy
+      example_description: A policy defining how customer data is collected and used, supporting compliance and responsible data handling.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, response failure, routing error, degraded performance, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "system downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: ai customer experience
+      domain_scope: interactions, automation, AI services, support systems, etc.
+      example_name: Response Failure
+      example_description: An incident where the system fails to generate or deliver a response, disrupting customer interaction and requiring remediation.
+
+
+automotive_ev:
+  tables:
+
+    vehicles_platforms:
+      concept_domain: automotive or electric vehicle platform
+      entry_count: 120
+      concept_unit: platform
+      concept_scope_examples: passenger vehicle type, commercial vehicle, electric vehicle architecture, drivetrain configuration, or mobility platform
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"electric vehicle" vs "battery vehicle"'
+      terminology_domain: automotive
+      distinctness_criteria: function, structure, or typical use
+      domain_name: automotive and electric vehicles
+      domain_scope: cars, trucks, EVs, mobility platforms, vehicle architectures, etc.
+      example_name: Battery Electric Vehicle
+      example_description: A vehicle platform powered entirely by electric motors using onboard battery storage, supporting zero-emission transportation.
+
+    components_subsystems:
+      concept_domain: automotive component or subsystem
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: battery system, motor assembly, power electronics, charging system, or control module
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"battery pack" vs "energy storage system"'
+      terminology_domain: automotive
+      distinctness_criteria: function, structure, or role in system
+      domain_name: automotive and electric vehicles
+      domain_scope: batteries, motors, inverters, control systems, electronics, etc.
+      example_name: Battery Pack
+      example_description: A subsystem that stores electrical energy for propulsion, supporting vehicle operation and driving range.
+
+    charging_infrastructure:
+      concept_domain: charging infrastructure
+      entry_count: 120
+      concept_unit: system
+      concept_scope_examples: charging station type, charging network, connector standard, fast charging system, or home charging setup
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"charging station" vs "charging point"'
+      terminology_domain: automotive
+      distinctness_criteria: function, structure, or typical use
+      domain_name: automotive and electric vehicles
+      domain_scope: public charging, home charging, fast charging, networks, connectors, etc.
+      example_name: Fast Charging Station
+      example_description: A charging system that delivers high power to rapidly recharge vehicle batteries, supporting shorter charging times and long-distance travel.
+
+    telemetry_vehicle_data:
+      concept_domain: vehicle telemetry or sensor data
+      entry_count: 120
+      concept_unit: signal
+      concept_scope_examples: battery status signal, driving behavior data, location tracking, performance metric, or diagnostic reading
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"vehicle data" vs "telemetry signal"'
+      terminology_domain: automotive
+      distinctness_criteria: signal type, measurement focus, or role in monitoring
+      domain_name: automotive and electric vehicles
+      domain_scope: sensors, telemetry, diagnostics, performance monitoring, etc.
+      example_name: Battery Health Signal
+      example_description: A telemetry signal that reflects the condition and performance of the battery, supporting monitoring and maintenance decisions.
+
+    software_systems:
+      concept_domain: automotive software system
+      entry_count: 120
+      concept_unit: system
+      concept_scope_examples: vehicle control software, infotainment system, driver assistance system, connectivity platform, or update mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"vehicle software" vs "automotive software"'
+      terminology_domain: automotive
+      distinctness_criteria: function, capability, or typical use
+      domain_name: automotive and electric vehicles
+      domain_scope: control systems, infotainment, ADAS, connectivity, updates, etc.
+      example_name: Driver Assistance System
+      example_description: A software system that supports safe driving by providing automated assistance features such as lane keeping or collision avoidance.
+
+    manufacturing_processes:
+      concept_domain: automotive manufacturing process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: assembly stage, battery manufacturing, quality control step, integration process, or production lifecycle phase
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"assembly process" vs "production stage"'
+      terminology_domain: industrial
+      distinctness_criteria: process type, stage, or role in production
+      domain_name: automotive and electric vehicles
+      domain_scope: assembly, battery production, testing, quality control, etc.
+      example_name: Vehicle Assembly
+      example_description: A manufacturing process where components are combined into a complete vehicle, supporting production and delivery.
+
+    supply_chain_entities:
+      concept_domain: supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: supplier type, manufacturer role, distributor, logistics provider, or partner organization
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"parts supplier" vs "component vendor"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in supply chain
+      domain_name: automotive and electric vehicles
+      domain_scope: suppliers, OEMs, distributors, logistics, partners, etc.
+      example_name: Automotive Supplier
+      example_description: An entity that provides components or systems for vehicle manufacturing, supporting production and assembly processes.
+
+    mobility_services:
+      concept_domain: mobility service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: ride-sharing service, vehicle subscription, fleet service, charging service, or mobility platform
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"ride sharing" vs "ride hailing service"'
+      terminology_domain: mobility
+      distinctness_criteria: function, delivery model, or typical use
+      domain_name: automotive and electric vehicles
+      domain_scope: ride-sharing, subscriptions, fleets, charging services, etc.
+      example_name: Vehicle Subscription Service
+      example_description: A service that provides access to vehicles through recurring payments, supporting flexible ownership and usage models.
+
+    compliance_standards:
+      concept_domain: automotive compliance standard
+      entry_count: 100
+      concept_unit: standard
+      concept_scope_examples: safety regulation, emissions standard, battery compliance rule, certification requirement, or operational guideline
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"safety regulation" vs "compliance standard"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: automotive and electric vehicles
+      domain_scope: safety, emissions, battery regulations, certifications, etc.
+      example_name: Vehicle Safety Standard
+      example_description: A compliance requirement ensuring vehicles meet defined safety criteria, supporting safe operation and regulatory approval.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: vehicle malfunction, battery failure, charging issue, software fault, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system failure" vs "vehicle malfunction"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: automotive and electric vehicles
+      domain_scope: vehicles, charging, software, services, etc.
+      example_name: Battery Failure
+      example_description: An incident where the energy storage system does not function as expected, disrupting vehicle operation and requiring intervention.
+
+
+education_edtech:
+  tables:
+
+    learning_programs:
+      concept_domain: learning program or course
+      entry_count: 120
+      concept_unit: program
+      concept_scope_examples: course type, curriculum structure, subject area, delivery format, or learning objective
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"online course" vs "digital course"'
+      terminology_domain: education
+      distinctness_criteria: function, structure, or typical use
+      domain_name: education and edtech
+      domain_scope: courses, curricula, certifications, training programs, etc.
+      example_name: Online Course
+      example_description: A structured learning program delivered through digital platforms, supporting remote education and flexible learning.
+
+    learning_content:
+      concept_domain: educational content asset
+      entry_count: 120
+      concept_unit: content
+      concept_scope_examples: video lesson, interactive module, reading material, assessment content, or multimedia resource
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"video lesson" vs "instructional video"'
+      terminology_domain: education
+      distinctness_criteria: format, function, or typical use
+      domain_name: education and edtech
+      domain_scope: videos, quizzes, readings, interactive modules, etc.
+      example_name: Video Lesson
+      example_description: An instructional content asset delivered through video, supporting visual and guided learning experiences.
+
+    learners_profiles:
+      concept_domain: learner profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: student segment, skill level, learning preference, engagement pattern, or achievement level
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"student profile" vs "learner profile"'
+      terminology_domain: education
+      distinctness_criteria: attribute type, segmentation, or behavior pattern
+      domain_name: education and edtech
+      domain_scope: students, learners, professionals, engagement profiles, etc.
+      example_name: Beginner Learner Profile
+      example_description: A learner profile representing individuals with limited prior knowledge, supporting tailored introductory learning experiences.
+
+    learning_interactions:
+      concept_domain: learning interaction event
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: lesson view, quiz attempt, assignment submission, discussion activity, or session engagement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"quiz attempt" vs "assessment attempt"'
+      terminology_domain: education
+      distinctness_criteria: action type, engagement behavior, or role in learning flow
+      domain_name: education and edtech
+      domain_scope: lessons, quizzes, assignments, discussions, sessions, etc.
+      example_name: Quiz Attempt
+      example_description: An interaction where a learner engages with an assessment, supporting evaluation of knowledge and progress.
+
+    assessments_evaluations:
+      concept_domain: assessment or evaluation
+      entry_count: 120
+      concept_unit: assessment
+      concept_scope_examples: test type, grading method, evaluation model, certification assessment, or feedback mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"exam" vs "test assessment"'
+      terminology_domain: education
+      distinctness_criteria: function, structure, or typical use
+      domain_name: education and edtech
+      domain_scope: exams, quizzes, grading, certifications, evaluations, etc.
+      example_name: Certification Exam
+      example_description: An assessment used to evaluate mastery of a subject, supporting credentialing and formal recognition of skills.
+
+    instructional_methods:
+      concept_domain: instructional method
+      entry_count: 120
+      concept_unit: method
+      concept_scope_examples: self-paced learning, instructor-led training, blended learning, adaptive learning, or collaborative learning
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"self paced learning" vs "independent study"'
+      terminology_domain: education
+      distinctness_criteria: function, delivery model, or typical use
+      domain_name: education and edtech
+      domain_scope: teaching methods, delivery formats, learning strategies, etc.
+      example_name: Self-Paced Learning
+      example_description: An instructional method where learners progress at their own speed, supporting flexible and individualized education.
+
+    platform_features:
+      concept_domain: edtech platform feature
+      entry_count: 120
+      concept_unit: feature
+      concept_scope_examples: progress tracking, content recommendation, collaboration tool, assessment engine, or learning analytics feature
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"learning dashboard" vs "progress dashboard"'
+      terminology_domain: education
+      distinctness_criteria: function, capability, or typical use
+      domain_name: education and edtech
+      domain_scope: LMS features, analytics, collaboration, personalization, etc.
+      example_name: Progress Tracking
+      example_description: A platform feature that monitors learner advancement, supporting visibility into learning outcomes and engagement.
+
+    analytics_metrics:
+      concept_domain: learning analytics metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: completion rate, engagement level, assessment score, retention metric, or performance indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"completion rate" vs "course completion metric"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: education and edtech
+      domain_scope: engagement, performance, completion, retention, analytics, etc.
+      example_name: Completion Rate
+      example_description: A metric representing the proportion of learners who finish a course, supporting evaluation of program effectiveness.
+
+    compliance_policies:
+      concept_domain: education compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: data privacy rule, accreditation requirement, accessibility standard, academic integrity rule, or governance policy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"privacy policy" vs "data protection rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: education and edtech
+      domain_scope: privacy, accreditation, accessibility, governance, compliance, etc.
+      example_name: Academic Integrity Policy
+      example_description: A policy defining standards for honest academic behavior, supporting fairness and credibility in learning environments.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: platform outage, content access issue, assessment failure, system error, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: education and edtech
+      domain_scope: learning platforms, content delivery, assessments, user access, etc.
+      example_name: Platform Outage
+      example_description: An incident where the learning system becomes unavailable, disrupting access to courses and educational activities.
+
+
+enterprise_software_services:
+  tables:
+
+    applications_services:
+      concept_domain: enterprise application or service
+      entry_count: 150
+      concept_unit: application
+      concept_scope_examples: business application type, SaaS service, platform capability, workflow system, or enterprise function
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"business application" vs "enterprise app"'
+      terminology_domain: enterprise
+      distinctness_criteria: function, capability, or typical use
+      domain_name: enterprise software and services
+      domain_scope: CRM, ERP, HR systems, collaboration tools, SaaS platforms, etc.
+      example_name: Customer Relationship Management System
+      example_description: An enterprise application used to manage customer interactions and data, supporting sales, marketing, and service operations.
+
+    data_assets:
+      concept_domain: enterprise data asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: dataset type, transactional data, analytical dataset, master data, or reporting data
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"data set" vs "data asset"'
+      terminology_domain: data
+      distinctness_criteria: structure, usage, or analytical purpose
+      domain_name: enterprise software and services
+      domain_scope: operational data, analytics data, reporting, data platforms, etc.
+      example_name: Customer Dataset
+      example_description: A data asset containing structured information about customers, supporting analysis and business decision-making.
+
+    workflows_processes:
+      concept_domain: enterprise workflow or process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: approval workflow, business process, automation flow, orchestration process, or task sequence
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"business workflow" vs "process flow"'
+      terminology_domain: enterprise
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: enterprise software and services
+      domain_scope: approvals, automation, orchestration, business processes, etc.
+      example_name: Approval Workflow
+      example_description: A structured process that routes tasks for validation and approval, supporting governance and operational efficiency.
+
+    user_identities:
+      concept_domain: enterprise user identity
+      entry_count: 120
+      concept_unit: identity
+      concept_scope_examples: employee identity, contractor identity, system user, service identity, or role-based identity
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user account" vs "user identity"'
+      terminology_domain: enterprise
+      distinctness_criteria: function, structure, or typical use
+      domain_name: enterprise software and services
+      domain_scope: employees, contractors, service accounts, system users, etc.
+      example_name: Employee Identity
+      example_description: An identity representing a workforce member, used to access enterprise systems and perform assigned tasks.
+
+    system_events:
+      concept_domain: enterprise system event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: user action, system trigger, API call, workflow execution, or application interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system event" vs "application event"'
+      terminology_domain: enterprise
+      distinctness_criteria: event type, function, or role in system flow
+      domain_name: enterprise software and services
+      domain_scope: user actions, automation triggers, integrations, workflows, etc.
+      example_name: API Call Event
+      example_description: An event where one system interacts with another through an interface, supporting integration and data exchange.
+
+    integrations:
+      concept_domain: enterprise system integration
+      entry_count: 120
+      concept_unit: integration
+      concept_scope_examples: API integration, data pipeline, connector, middleware service, or system interface
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"api integration" vs "system integration"'
+      terminology_domain: enterprise
+      distinctness_criteria: function, structure, or interaction model
+      domain_name: enterprise software and services
+      domain_scope: APIs, connectors, middleware, data exchange, etc.
+      example_name: API Integration
+      example_description: A connection enabling systems to exchange data and functionality, supporting interoperability across applications.
+
+    analytics_metrics:
+      concept_domain: enterprise performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: usage metric, performance metric, efficiency measure, business KPI, or system performance indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"usage metric" vs "performance metric"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: enterprise software and services
+      domain_scope: system usage, performance, business KPIs, analytics, etc.
+      example_name: System Utilization Metric
+      example_description: A metric representing how much of a system’s capacity is used, supporting performance monitoring and optimization.
+
+    security_controls:
+      concept_domain: enterprise security control
+      entry_count: 120
+      concept_unit: control
+      concept_scope_examples: access control, authentication method, authorization rule, data protection mechanism, or security policy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access control" vs "security control"'
+      terminology_domain: security
+      distinctness_criteria: function, rule type, or role in protection
+      domain_name: enterprise software and services
+      domain_scope: identity, access, data security, system protection, etc.
+      example_name: Role-Based Access Control
+      example_description: A security control that restricts system access based on user roles, supporting secure and scalable permission management.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: data governance rule, regulatory requirement, audit policy, security policy, or operational guideline
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"compliance rule" vs "regulatory policy"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: enterprise software and services
+      domain_scope: governance, audit, security, compliance, regulations, etc.
+      example_name: Data Governance Policy
+      example_description: A policy defining how data is managed and protected, supporting compliance and responsible use.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, integration failure, workflow error, performance degradation, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system outage" vs "service downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: enterprise software and services
+      domain_scope: applications, integrations, workflows, systems, etc.
+      example_name: System Outage
+      example_description: An incident where enterprise applications become unavailable, disrupting operations and requiring remediation.
+
+
+financial_services:
+  tables:
+    accounts:
+      concept_domain: financial account
+      entry_count: 120
+      concept_unit: account
+      concept_scope_examples: account type, ownership model, status, structural variant, primary financial use, or savings and liquidity purpose
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"basic checking account" vs "standard checking account"'
+      terminology_domain: financial
+      distinctness_criteria: function, structure, or typical use
+      domain_name: financial services
+      domain_scope: retail, business, payments, digital wallets, etc.
+      example_name: Checking Account
+      example_description: A deposit account designed for frequent transactions such as payments, withdrawals, and transfers, supporting everyday spending, bill payments, and direct access to funds.
+
+    transactions:
+      concept_domain: financial transaction
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: payment type, transfer type, funding mechanism, channel-specific transaction, settlement form, or primary money movement use
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"online payment" vs "internet payment"'
+      terminology_domain: financial
+      distinctness_criteria: function, flow, mechanism, or typical use
+      domain_name: financial services
+      domain_scope: retail, business, payments, cards, transfers, etc.
+      example_name: Card Purchase
+      example_description: A transaction where a payment card is used to pay a merchant for goods or services, typically supporting routine purchases at physical or digital points of sale.
+
+    payment_events:
+      payment_events:
+      concept_domain: payment lifecycle event
+      entry_count: 120
+      concept_unit: payment event
+      concept_scope_examples: initiation, authorization, routing, clearing, settlement, reversal, exception, failure stage, or role in payment processing flow across payment rails
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"payment approval" vs "approved payment"'
+      terminology_domain: payment
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in the overall payment flow
+      domain_name: payment systems
+      domain_scope: cards, ACH, wires, real-time payments, wallets, etc.
+      example_name: Payment Authorization
+      example_description: An event where a payment request is approved or declined by the issuing institution based on available funds and risk checks, determining whether a transaction can proceed.
+
+    lending_lifecycle_events:
+      lending_lifecycle_events:
+      concept_domain: lending lifecycle event
+      entry_count: 120
+      concept_unit: lending event
+      concept_scope_examples: application, underwriting, approval, origination, disbursement, repayment, delinquency, restructuring, closure stage, or role in the lending process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"loan approval" vs "approved loan"'
+      terminology_domain: lending
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in the overall lending flow
+      domain_name: lending services
+      domain_scope: consumer lending, mortgages, credit cards, business loans, servicing, collections, etc.
+      example_name: Loan Origination
+      example_description: An event where a loan agreement is finalized and the credit facility is established, marking the formal creation of a borrowing arrangement.
+
+    customer_profiles:
+      concept_domain: customer profile
+      entry_count: 120
+      concept_unit: customer profile
+      concept_scope_examples: identity attribute, demographic segment, relationship classification, risk category, KYC attribute, or role in financial interactions
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"high value customer" vs "premium customer"'
+      terminology_domain: financial
+      distinctness_criteria: attribute type, classification, segmentation, or role in financial behavior
+      domain_name: financial services
+      domain_scope: retail, business, onboarding, KYC, risk, segmentation, etc.
+      example_name: Individual Customer
+      example_description: A profile representing a single natural person with associated identity, demographic, and relationship attributes, used to characterize interactions with financial products and services.
+
+    fraud_risk_events:
+      concept_domain: fraud risk event
+      entry_count: 120
+      concept_unit: fraud event
+      concept_scope_examples: alert type, risk signal, anomaly detection, verification outcome, chargeback event, monitoring trigger, or role in fraud detection flow
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"fraud alert" vs "fraud notification"'
+      terminology_domain: financial
+      distinctness_criteria: risk signal, detection method, outcome, or role in the fraud assessment process
+      domain_name: financial services
+      domain_scope: payments, cards, transactions, identity verification, fraud detection, AML, etc.
+      example_name: Suspicious Transaction Alert
+      example_description: An event where a transaction is flagged by monitoring systems as potentially fraudulent based on risk indicators, indicating elevated risk requiring further review or action.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: KYC requirement, AML rule, sanctions screening policy, reporting obligation, data retention rule, or role in regulatory compliance framework
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"AML policy" vs "anti money laundering policy"'
+      terminology_domain: regulatory
+      distinctness_criteria: regulatory requirement, control objective, obligation type, or role in compliance processes
+      domain_name: financial services
+      domain_scope: KYC, AML, sanctions, reporting, consumer protection, data governance, etc.
+      example_name: KYC Policy
+      example_description: A policy defining requirements for verifying identity during onboarding and ongoing monitoring, establishing controls to meet regulatory compliance obligations.
+
+    client_requests:
+      concept_domain: client request
+      entry_count: 150
+      concept_unit: request
+      concept_scope_examples: account inquiry, payment instruction, dispute request, card management action, documentation request, or role in service interaction flow
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"balance inquiry" vs "account balance request"'
+      terminology_domain: financial
+      distinctness_criteria: request intent, action type, service category, or role in servicing process
+      domain_name: financial services
+      domain_scope: support, servicing, onboarding, payments, disputes, account management, etc.
+      example_name: Payment Dispute Request
+      example_description: A request to challenge or investigate a previously processed payment transaction, typically initiating a review or dispute handling process.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, processing failure, reconciliation break, data error, workflow disruption, or role in operational impact and recovery
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system outage" vs "service downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: financial services
+      domain_scope: payments processing, core banking, infrastructure, reconciliation, data pipelines, etc.
+      example_name: Payment Processing Failure
+      example_description: An incident where a payment cannot be completed due to a system or processing error, disrupting normal transaction processing and requiring remediation.
+
+    product_configurations:
+      concept_domain: financial product configuration
+      entry_count: 120
+      concept_unit: configuration
+      concept_scope_examples: fee structure, interest rate rule, limit setting, eligibility criterion, rewards parameter, or role in product behavior and pricing
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"monthly fee" vs "monthly charge"'
+      terminology_domain: financial
+      distinctness_criteria: parameter type, rule definition, product feature, or role in product configuration
+      domain_name: financial services
+      domain_scope: accounts, cards, loans, pricing, limits, rewards, eligibility, etc.
+      example_name: Interest Rate Rule
+      example_description: A configuration defining how interest is calculated and applied to a financial product, determining how costs or returns are accrued over time.
+
+
+government_public_sector:
+  tables:
+
+    public_services:
+      concept_domain: public service offering
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: citizen service, regulatory service, administrative process, social service, or government program
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"government service" vs "public service"'
+      terminology_domain: government
+      distinctness_criteria: function, structure, or typical use
+      domain_name: government and public sector
+      domain_scope: licensing, benefits, permits, public programs, administrative services, etc.
+      example_name: Permit Application Service
+      example_description: A public service that enables individuals or organizations to request authorization for regulated activities, supporting governance and compliance.
+
+    citizen_profiles:
+      concept_domain: citizen or constituent profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: demographic segment, eligibility group, residency status, service usage pattern, or engagement profile
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"citizen profile" vs "constituent profile"'
+      terminology_domain: government
+      distinctness_criteria: attribute type, segmentation, or behavior pattern
+      domain_name: government and public sector
+      domain_scope: residents, taxpayers, beneficiaries, constituents, etc.
+      example_name: Eligible Beneficiary Profile
+      example_description: A profile representing individuals who qualify for specific public programs, supporting service delivery and eligibility determination.
+
+    applications_requests:
+      concept_domain: government application or request
+      entry_count: 150
+      concept_unit: request
+      concept_scope_examples: permit request, benefit application, service request, compliance filing, or inquiry
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"application request" vs "service request"'
+      terminology_domain: government
+      distinctness_criteria: function, intent, or role in service flow
+      domain_name: government and public sector
+      domain_scope: applications, filings, requests, inquiries, etc.
+      example_name: Benefit Application
+      example_description: A request submitted to access government-provided assistance, supporting evaluation and service allocation.
+
+    case_management:
+      concept_domain: case or workflow
+      entry_count: 120
+      concept_unit: case
+      concept_scope_examples: service case, enforcement case, investigation, administrative case, or review process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service case" vs "case record"'
+      terminology_domain: government
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: government and public sector
+      domain_scope: service delivery, enforcement, investigations, administrative workflows, etc.
+      example_name: Service Case
+      example_description: A case representing an ongoing service request or issue, supporting tracking and resolution of public services.
+
+    regulatory_policies:
+      concept_domain: regulatory policy or rule
+      entry_count: 120
+      concept_unit: policy
+      concept_scope_examples: law, regulation, compliance rule, enforcement guideline, or policy framework
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"regulation" vs "policy rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: government and public sector
+      domain_scope: laws, regulations, compliance frameworks, enforcement policies, etc.
+      example_name: Regulatory Compliance Rule
+      example_description: A policy that defines obligations for adherence to laws or standards, supporting governance and enforcement.
+
+    data_records:
+      concept_domain: public sector data record
+      entry_count: 120
+      concept_unit: record
+      concept_scope_examples: registry record, filing record, administrative data, public dataset, or reporting record
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"public record" vs "government record"'
+      terminology_domain: data
+      distinctness_criteria: structure, usage, or administrative role
+      domain_name: government and public sector
+      domain_scope: registries, filings, administrative systems, reporting, etc.
+      example_name: Registry Record
+      example_description: A structured data record maintained by a public authority, supporting official tracking and documentation.
+
+    financial_operations:
+      concept_domain: public sector financial operation
+      entry_count: 120
+      concept_unit: operation
+      concept_scope_examples: tax collection, benefit disbursement, grant funding, budget allocation, or procurement activity
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"tax collection" vs "revenue collection"'
+      terminology_domain: government
+      distinctness_criteria: function, flow, or typical use
+      domain_name: government and public sector
+      domain_scope: taxes, benefits, grants, budgets, procurement, etc.
+      example_name: Tax Collection
+      example_description: A financial operation where government authorities collect revenue from individuals or organizations, supporting public funding.
+
+    analytics_metrics:
+      concept_domain: public sector performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: service efficiency metric, compliance rate, processing time, utilization measure, or outcome indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"processing time" vs "service latency"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or evaluation role
+      domain_name: government and public sector
+      domain_scope: service delivery, compliance, efficiency, outcomes, etc.
+      example_name: Processing Time Metric
+      example_description: A metric representing how long it takes to complete a service request, supporting efficiency analysis.
+
+    compliance_controls:
+      concept_domain: compliance control
+      entry_count: 120
+      concept_unit: control
+      concept_scope_examples: audit control, access control, reporting requirement, oversight mechanism, or governance control
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"audit control" vs "compliance control"'
+      terminology_domain: regulatory
+      distinctness_criteria: control type, function, or governance role
+      domain_name: government and public sector
+      domain_scope: audit, oversight, compliance, governance, etc.
+      example_name: Audit Control
+      example_description: A control mechanism that ensures activities are reviewed and compliant with regulations, supporting accountability and transparency.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: service outage, system failure, processing delay, data issue, or operational disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "system downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: government and public sector
+      domain_scope: service delivery, systems, data, operations, etc.
+      example_name: Service Outage
+      example_description: An incident where public services become unavailable, disrupting access for citizens and requiring remediation.
+
+
+capital_markets:
+  tables:
+    instruments:
+      concept_domain: financial instrument
+      entry_count: 120
+      concept_unit: instrument
+      concept_scope_examples: instrument type, asset class, issuer structure, payoff structure, or trading characteristics
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"equity security" vs "stock instrument"'
+      terminology_domain: capital markets
+      distinctness_criteria: function, structure, or typical use
+      domain_name: capital markets
+      domain_scope: equities, fixed income, derivatives, commodities, structured products, etc.
+      example_name: Equity Security
+      example_description: A financial instrument representing ownership in a company, typically traded on an exchange and used for capital appreciation and dividend income.
+
+    trade_lifecycle_events:
+      concept_domain: trade lifecycle event
+      entry_count: 120
+      concept_unit: trade event
+      concept_scope_examples: order creation, routing, execution, allocation, confirmation, clearing, settlement, amendment, cancellation, or exception handling stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trade execution" vs "executed trade"'
+      terminology_domain: capital markets
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in the trading flow
+      domain_name: capital markets
+      domain_scope: order management, execution, post-trade processing, clearing, settlement, etc.
+      example_name: Trade Execution
+      example_description: An event where a buy or sell order is matched and executed in the market, establishing a binding transaction between counterparties.
+
+    market_events:
+      concept_domain: market event
+      entry_count: 120
+      concept_unit: market event
+      concept_scope_examples: earnings release, economic data publication, central bank announcement, rating change, volatility shift, trading halt, or corporate action
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"earnings announcement" vs "earnings release"'
+      terminology_domain: capital markets
+      distinctness_criteria: event type, impact scope, or role in market movement
+      domain_name: capital markets
+      domain_scope: macroeconomics, corporate actions, market structure, volatility, sector developments, etc.
+      example_name: Earnings Release
+      example_description: A scheduled disclosure of a company's financial performance, often influencing investor expectations and market prices.
+
+    research_commentary:
+      concept_domain: research commentary
+      entry_count: 120
+      concept_unit: commentary
+      concept_scope_examples: analyst report, investment thesis, recommendation type, forecast, sector view, or macroeconomic interpretation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"buy recommendation" vs "positive rating"'
+      terminology_domain: capital markets
+      distinctness_criteria: analysis type, perspective, or investment focus
+      domain_name: capital markets
+      domain_scope: equities research, macro research, strategy, sector analysis, thematic investing, etc.
+      example_name: Buy Recommendation
+      example_description: An analyst opinion indicating that an instrument is expected to outperform and is suitable for purchase based on underlying analysis.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: trading restriction, disclosure requirement, surveillance rule, recordkeeping obligation, suitability guideline, or information barrier control
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trading restriction" vs "restricted trading rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: regulatory requirement, control objective, obligation type, or role in compliance processes
+      domain_name: capital markets
+      domain_scope: trading compliance, communications, disclosures, surveillance, best execution, information barriers, etc.
+      example_name: Restricted List Policy
+      example_description: A policy defining instruments that cannot be traded due to conflicts of interest or regulatory constraints, ensuring adherence to compliance obligations.
+
+    client_requests:
+      concept_domain: client request
+      entry_count: 150
+      concept_unit: request
+      concept_scope_examples: trade instruction, order inquiry, execution request, reporting request, onboarding request, or settlement inquiry
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trade inquiry" vs "order status request"'
+      terminology_domain: capital markets
+      distinctness_criteria: request intent, action type, service category, or role in servicing process
+      domain_name: capital markets
+      domain_scope: trading, execution, reporting, onboarding, settlement, account servicing, etc.
+      example_name: Trade Status Request
+      example_description: A request to obtain the current status of a trade, including execution, allocation, or settlement progress.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, trade break, reconciliation issue, settlement failure, booking error, or workflow disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"trade break" vs "reconciliation break"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: capital markets
+      domain_scope: trading systems, post-trade processing, settlement, reconciliation, infrastructure, etc.
+      example_name: Settlement Failure
+      example_description: An incident where a trade cannot be settled as expected, disrupting the transfer of securities or funds and requiring corrective action.
+
+
+cloud_infrastructure:
+  tables:
+
+    compute_resources:
+      concept_domain: compute resource
+      entry_count: 120
+      concept_unit: resource
+      concept_scope_examples: virtual machine type, container runtime, serverless execution model, cluster configuration, or workload execution pattern
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"virtual machine" vs "compute instance"'
+      terminology_domain: cloud
+      distinctness_criteria: function, structure, or typical use
+      domain_name: cloud infrastructure
+      domain_scope: virtual machines, containers, serverless, clusters, regions, availability zones, etc.
+      example_name: Virtual Machine
+      example_description: A compute resource that provides virtualized processing capacity for running applications and workloads, supporting general-purpose or specialized execution needs.
+
+    storage_resources:
+      concept_domain: storage resource
+      entry_count: 120
+      concept_unit: resource
+      concept_scope_examples: object storage type, block storage configuration, file system type, database storage model, or data access pattern
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"object storage" vs "blob storage"'
+      terminology_domain: cloud
+      distinctness_criteria: function, structure, or typical use
+      domain_name: cloud infrastructure
+      domain_scope: object storage, block storage, file systems, databases, data warehouses, etc.
+      example_name: Object Storage
+      example_description: A storage resource that manages data as objects within a flat address space, supporting scalable storage for unstructured data and archival use cases.
+
+    networking_components:
+      concept_domain: networking component
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: virtual network type, subnet configuration, load balancing strategy, gateway type, routing rule, or traffic management function
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"virtual network" vs "cloud network"'
+      terminology_domain: cloud
+      distinctness_criteria: function, structure, or typical use
+      domain_name: cloud infrastructure
+      domain_scope: virtual networks, subnets, load balancers, gateways, DNS, routing, firewalls, etc.
+      example_name: Load Balancer
+      example_description: A networking component that distributes incoming traffic across multiple resources, supporting availability and efficient handling of application requests.
+
+    deployment_events:
+      concept_domain: deployment event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: resource provisioning, application deployment, scaling action, configuration update, rollout, or rollback event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"deployment event" vs "release action"'
+      terminology_domain: cloud
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in deployment flow
+      domain_name: cloud infrastructure
+      domain_scope: provisioning, deployment, scaling, configuration management, release processes, etc.
+      example_name: Instance Launch
+      example_description: An event where a new compute resource is provisioned and made available for workload execution, enabling application deployment or scaling.
+
+    observability_metrics:
+      concept_domain: observability signal
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: performance metric, utilization metric, latency measure, error signal, log stream, or trace event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"cpu usage" vs "processor utilization"'
+      terminology_domain: cloud
+      distinctness_criteria: signal type, measurement focus, or role in system monitoring
+      domain_name: cloud infrastructure
+      domain_scope: metrics, logs, traces, monitoring, performance analysis, reliability, etc.
+      example_name: CPU Utilization
+      example_description: A metric representing the proportion of processing capacity in use, supporting monitoring of system performance and resource efficiency.
+
+    access_identity_controls:
+      concept_domain: identity and access control
+      entry_count: 120
+      concept_unit: control
+      concept_scope_examples: user identity type, role definition, permission model, policy rule, authentication method, or authorization mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access role" vs "permission role"'
+      terminology_domain: cloud
+      distinctness_criteria: control type, function, or role in access management
+      domain_name: cloud infrastructure
+      domain_scope: users, roles, permissions, policies, authentication, authorization, service identities, etc.
+      example_name: Role-Based Access Control
+      example_description: A control model that assigns permissions to roles rather than individuals, supporting structured and scalable access management.
+
+    cost_usage_records:
+      concept_domain: cost and usage record
+      entry_count: 120
+      concept_unit: record
+      concept_scope_examples: usage metric, billing record, pricing model, cost allocation method, or optimization signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"usage record" vs "consumption record"'
+      terminology_domain: cloud
+      distinctness_criteria: record type, measurement focus, or role in cost tracking
+      domain_name: cloud infrastructure
+      domain_scope: billing, usage tracking, pricing, cost allocation, optimization, etc.
+      example_name: Usage Metric
+      example_description: A record representing resource consumption over time, supporting cost tracking and optimization of infrastructure usage.
+
+    security_events:
+      concept_domain: security event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: intrusion detection event, vulnerability finding, configuration violation, access anomaly, encryption status change, or incident response action
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security alert" vs "security notification"'
+      terminology_domain: cloud
+      distinctness_criteria: event type, detection method, outcome, or role in security response
+      domain_name: cloud infrastructure
+      domain_scope: intrusion detection, vulnerability management, access monitoring, encryption, incident response, etc.
+      example_name: Intrusion Detection Alert
+      example_description: An event indicating potentially malicious activity within the system, supporting investigation and response to security threats.
+
+    configuration_state:
+      concept_domain: configuration state
+      entry_count: 120
+      concept_unit: configuration
+      concept_scope_examples: infrastructure definition, resource specification, environment configuration, versioned state, or system configuration model
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"config file" vs "configuration definition"'
+      terminology_domain: cloud
+      distinctness_criteria: structure, representation, or role in system configuration
+      domain_name: cloud infrastructure
+      domain_scope: infrastructure-as-code, resource configuration, environment variables, system state, versioning, etc.
+      example_name: Infrastructure Configuration
+      example_description: A representation of system and resource settings, supporting consistent deployment and management of infrastructure environments.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: outage, performance degradation, failed deployment, resource exhaustion, networking failure, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "system downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: cloud infrastructure
+      domain_scope: availability, performance, deployment, networking, resource management, etc.
+      example_name: Service Outage
+      example_description: An incident where a system or application becomes unavailable, disrupting normal operations and requiring remediation.
+
+
+security_identity:
+  tables:
+
+    identities:
+      concept_domain: identity entity
+      entry_count: 120
+      concept_unit: identity
+      concept_scope_examples: user identity type, service account type, device identity, application identity, or identity relationship
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user account" vs "user identity"'
+      terminology_domain: security
+      distinctness_criteria: function, structure, or typical use
+      domain_name: identity and security
+      domain_scope: users, service accounts, devices, applications, identity providers, etc.
+      example_name: User Identity
+      example_description: An identity representing a human actor within a system, used to authenticate and authorize access to resources and services.
+
+    credentials:
+      concept_domain: authentication credential
+      entry_count: 120
+      concept_unit: credential
+      concept_scope_examples: password type, cryptographic key, certificate type, token format, passkey model, or secret storage method
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"api key" vs "access key"'
+      terminology_domain: security
+      distinctness_criteria: function, structure, or typical use
+      domain_name: identity and security
+      domain_scope: passwords, keys, certificates, tokens, passkeys, authentication factors, etc.
+      example_name: Password Credential
+      example_description: A secret value used to verify identity during authentication, supporting access to systems through knowledge-based verification.
+
+    authentication_events:
+      concept_domain: authentication event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: login attempt, multi-factor challenge, token issuance, session establishment, federation flow, or authentication outcome
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"login event" vs "authentication attempt"'
+      terminology_domain: security
+      distinctness_criteria: lifecycle stage, processing step, outcome, or role in authentication flow
+      domain_name: identity and security
+      domain_scope: login, MFA, SSO, federation, session management, authentication outcomes, etc.
+      example_name: Login Attempt
+      example_description: An event where credentials are presented to verify identity, determining whether access can be granted based on authentication checks.
+
+    authorization_policies:
+      concept_domain: authorization policy
+      entry_count: 120
+      concept_unit: policy
+      concept_scope_examples: role definition, permission assignment, entitlement model, policy condition, or access control rule
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access policy" vs "permission rule"'
+      terminology_domain: security
+      distinctness_criteria: control type, rule definition, or role in access decisions
+      domain_name: identity and security
+      domain_scope: roles, permissions, entitlements, access control, policy evaluation, etc.
+      example_name: Role-Based Access Policy
+      example_description: A policy that grants permissions based on assigned roles, controlling access to resources through structured authorization rules.
+
+    access_events:
+      concept_domain: access event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: access request, approval action, denial event, privilege escalation, session activity, or administrative operation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"access request" vs "resource access attempt"'
+      terminology_domain: security
+      distinctness_criteria: event type, action, outcome, or role in access flow
+      domain_name: identity and security
+      domain_scope: resource access, approvals, denials, session activity, administrative actions, etc.
+      example_name: Access Request
+      example_description: An event where an identity attempts to access a resource, triggering authorization checks to determine whether access is allowed.
+
+    directory_objects:
+      concept_domain: directory object
+      entry_count: 120
+      concept_unit: object
+      concept_scope_examples: user object, group structure, role object, organizational unit, domain entity, or tenant structure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user group" vs "group object"'
+      terminology_domain: security
+      distinctness_criteria: structure, representation, or role in identity organization
+      domain_name: identity and security
+      domain_scope: directory services, users, groups, roles, organizational units, identity providers, etc.
+      example_name: User Group
+      example_description: A directory object that aggregates multiple identities, supporting collective management of permissions and access control.
+
+    security_findings:
+      concept_domain: security finding
+      entry_count: 120
+      concept_unit: finding
+      concept_scope_examples: vulnerability type, misconfiguration issue, anomaly detection, suspicious activity, exposed credential, or policy violation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security alert" vs "security finding"'
+      terminology_domain: security
+      distinctness_criteria: issue type, detection method, outcome, or role in risk assessment
+      domain_name: identity and security
+      domain_scope: vulnerabilities, misconfigurations, anomalies, threat detection, policy violations, etc.
+      example_name: Suspicious Login
+      example_description: A finding indicating an unusual or potentially risky authentication activity, signaling possible unauthorized access that requires investigation.
+
+    device_posture:
+      concept_domain: device posture
+      entry_count: 120
+      concept_unit: posture
+      concept_scope_examples: device compliance state, operating system condition, patch status, encryption status, management state, or trust level
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"device compliance" vs "device health status"'
+      terminology_domain: security
+      distinctness_criteria: state type, attribute, or role in access decisions
+      domain_name: identity and security
+      domain_scope: endpoint security, device management, compliance checks, trust evaluation, etc.
+      example_name: Compliant Device State
+      example_description: A device posture indicating that security requirements are met, supporting trusted access to systems and resources.
+
+    incident_response_events:
+      concept_domain: incident response event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: alert triage, investigation step, containment action, remediation task, evidence collection, or resolution update
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"incident update" vs "response event"'
+      terminology_domain: security
+      distinctness_criteria: lifecycle stage, action type, outcome, or role in incident handling
+      domain_name: identity and security
+      domain_scope: incident response, investigation, containment, remediation, recovery, etc.
+      example_name: Containment Action
+      example_description: An event where steps are taken to limit the impact of a security incident, preventing further spread or damage to systems.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: password standard, retention rule, access review requirement, segregation of duties control, or audit policy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"password policy" vs "credential standard"'
+      terminology_domain: regulatory
+      distinctness_criteria: control type, regulatory requirement, or role in governance
+      domain_name: identity and security
+      domain_scope: identity governance, access control, audit, compliance, data protection, etc.
+      example_name: Password Policy
+      example_description: A policy defining requirements for credential strength and management, supporting secure authentication and regulatory compliance.
+
+
+hardware_semiconductor:
+  tables:
+
+    hardware_components:
+      concept_domain: hardware component
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: processor type, memory type, storage device, networking hardware, accelerator, or embedded system architecture
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"central processor" vs "cpu unit"'
+      terminology_domain: hardware
+      distinctness_criteria: function, structure, or typical use
+      domain_name: hardware and semiconductor
+      domain_scope: CPUs, GPUs, memory, storage, networking devices, accelerators, embedded systems, etc.
+      example_name: Central Processing Unit
+      example_description: A hardware component that executes instructions and performs general-purpose processing tasks, serving as the primary compute engine in a system.
+
+    semiconductor_products:
+      concept_domain: semiconductor product
+      entry_count: 120
+      concept_unit: product
+      concept_scope_examples: integrated circuit type, chip architecture, process node category, product family, or application-specific chip design
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"integrated circuit" vs "chip device"'
+      terminology_domain: semiconductor
+      distinctness_criteria: function, structure, or typical use
+      domain_name: hardware and semiconductor
+      domain_scope: ICs, processors, memory chips, ASICs, SoCs, fabrication technologies, etc.
+      example_name: System on Chip
+      example_description: A semiconductor product that integrates multiple functional components onto a single chip, supporting compact and efficient computing systems.
+
+    manufacturing_processes:
+      concept_domain: semiconductor manufacturing process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: fabrication stage, process technology, lithography method, yield optimization step, or production lifecycle phase
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"fabrication process" vs "chip manufacturing process"'
+      terminology_domain: semiconductor
+      distinctness_criteria: process type, stage, or role in production flow
+      domain_name: hardware and semiconductor
+      domain_scope: foundries, fabrication, lithography, yields, supply chain stages, production lifecycle, etc.
+      example_name: Wafer Fabrication
+      example_description: A manufacturing process where semiconductor devices are built on silicon wafers through multiple processing steps, forming the basis of chip production.
+
+    supply_chain_entities:
+      concept_domain: supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: supplier type, manufacturer role, distributor function, logistics provider, or partner relationship
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"chip supplier" vs "component vendor"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in supply chain
+      domain_name: hardware and semiconductor
+      domain_scope: suppliers, manufacturers, distributors, partners, sourcing, logistics, etc.
+      example_name: Semiconductor Foundry
+      example_description: A supply chain entity that manufactures semiconductor devices on behalf of design companies, supporting chip production at scale.
+
+    deployment_hardware:
+      concept_domain: deployed hardware system
+      entry_count: 120
+      concept_unit: system
+      concept_scope_examples: server type, appliance configuration, edge device, data center equipment, or workload deployment configuration
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"server system" vs "compute appliance"'
+      terminology_domain: hardware
+      distinctness_criteria: function, structure, or typical use
+      domain_name: hardware and semiconductor
+      domain_scope: servers, appliances, edge devices, data center equipment, deployment configurations, etc.
+      example_name: Application Server
+      example_description: A deployed hardware system configured to run application workloads, supporting compute, storage, and networking functions in an operational environment.
+
+    performance_metrics:
+      concept_domain: hardware performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: throughput measure, latency measure, power consumption metric, thermal characteristic, utilization metric, or benchmark category
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"processing speed" vs "compute throughput"'
+      terminology_domain: hardware
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: hardware and semiconductor
+      domain_scope: throughput, latency, power, thermal, utilization, benchmarking, etc.
+      example_name: Throughput
+      example_description: A performance metric representing the amount of work processed over time, used to evaluate the efficiency of hardware systems.
+
+    firmware_software_interfaces:
+      concept_domain: hardware software interface
+      entry_count: 120
+      concept_unit: interface
+      concept_scope_examples: firmware type, device driver, runtime interface, hardware API, or control interface
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"device driver" vs "hardware driver"'
+      terminology_domain: hardware
+      distinctness_criteria: function, interface type, or role in system interaction
+      domain_name: hardware and semiconductor
+      domain_scope: firmware, drivers, runtime libraries, APIs, hardware interfaces, etc.
+      example_name: Device Driver
+      example_description: A software interface that enables communication between operating systems and hardware components, allowing control and operation of devices.
+
+    operational_events:
+      concept_domain: hardware operational event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: provisioning event, failure event, maintenance action, upgrade step, diagnostic action, or decommissioning event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hardware failure" vs "device malfunction"'
+      terminology_domain: hardware
+      distinctness_criteria: event type, lifecycle stage, or role in operations
+      domain_name: hardware and semiconductor
+      domain_scope: provisioning, failures, maintenance, upgrades, diagnostics, decommissioning, etc.
+      example_name: Hardware Failure
+      example_description: An operational event where a component or system stops functioning as expected, requiring diagnosis and corrective action.
+
+    security_features:
+      concept_domain: hardware security feature
+      entry_count: 120
+      concept_unit: feature
+      concept_scope_examples: secure enclave, trusted execution environment, root of trust, encryption module, firmware integrity mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"secure enclave" vs "trusted execution area"'
+      terminology_domain: hardware
+      distinctness_criteria: function, mechanism, or role in system security
+      domain_name: hardware and semiconductor
+      domain_scope: secure enclaves, trusted execution, encryption, firmware security, hardware trust, etc.
+      example_name: Trusted Execution Environment
+      example_description: A hardware security feature that isolates sensitive computations within a protected area, supporting secure processing and data protection.
+
+    compliance_standards:
+      concept_domain: hardware compliance standard
+      entry_count: 100
+      concept_unit: standard
+      concept_scope_examples: safety standard, interoperability requirement, environmental certification, regulatory compliance, or quality standard
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"safety certification" vs "compliance standard"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or role in compliance
+      domain_name: hardware and semiconductor
+      domain_scope: safety, interoperability, environmental, regulatory compliance, certifications, etc.
+      example_name: Safety Certification
+      example_description: A compliance standard that ensures hardware meets defined safety requirements, supporting reliable and secure operation in regulated environments.
+
+
+media_gaming_platforms:
+  tables:
+
+    content_assets:
+      concept_domain: digital content asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: content type, media format, genre category, distribution format, or content use context
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"video content" vs "video asset"'
+      terminology_domain: media
+      distinctness_criteria: function, structure, or typical use
+      domain_name: media and gaming platforms
+      domain_scope: video, audio, images, games, streams, user-generated content, etc.
+      example_name: Video Content
+      example_description: A digital asset consisting of moving visual media, typically used for entertainment, education, or streaming consumption.
+
+    user_profiles:
+      concept_domain: user profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: identity attribute, preference category, engagement pattern, subscription type, or social relationship
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user profile" vs "user account"'
+      terminology_domain: platform
+      distinctness_criteria: attribute type, classification, or usage context
+      domain_name: media and gaming platforms
+      domain_scope: users, preferences, subscriptions, engagement, social connections, etc.
+      example_name: Subscriber Profile
+      example_description: A user profile representing an individual with an active subscription, supporting access to premium content and personalized experiences.
+
+    content_interactions:
+      concept_domain: content interaction
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: view event, play action, like action, share action, comment activity, session behavior, or gameplay interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"video view" vs "content play"'
+      terminology_domain: platform
+      distinctness_criteria: action type, engagement behavior, or role in content consumption
+      domain_name: media and gaming platforms
+      domain_scope: viewing, playing, liking, sharing, commenting, gameplay, sessions, etc.
+      example_name: Content View
+      example_description: An interaction where a user accesses and consumes a piece of content, contributing to engagement and usage tracking.
+
+    recommendation_signals:
+      concept_domain: recommendation signal
+      entry_count: 120
+      concept_unit: signal
+      concept_scope_examples: user behavior signal, preference indicator, collaborative filtering input, ranking factor, or recommendation output
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"recommendation score" vs "ranking signal"'
+      terminology_domain: platform
+      distinctness_criteria: signal type, function, or role in recommendation flow
+      domain_name: media and gaming platforms
+      domain_scope: personalization, recommendations, rankings, behavioral data, etc.
+      example_name: Engagement Signal
+      example_description: A signal derived from user interactions with content, used to influence ranking and recommendation of similar items.
+
+    monetization_events:
+      concept_domain: monetization event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: subscription event, purchase action, ad impression, ad click, virtual goods transaction, or revenue interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"in-app purchase" vs "digital purchase event"'
+      terminology_domain: platform
+      distinctness_criteria: event type, revenue mechanism, or role in monetization flow
+      domain_name: media and gaming platforms
+      domain_scope: subscriptions, purchases, ads, virtual goods, transactions, etc.
+      example_name: Subscription Purchase
+      example_description: An event where a user pays for access to premium content or services, contributing to platform revenue.
+
+    advertising_inventory:
+      concept_domain: advertising inventory
+      entry_count: 120
+      concept_unit: inventory
+      concept_scope_examples: ad slot type, placement location, targeting configuration, campaign structure, or creative format
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"ad slot" vs "ad placement"'
+      terminology_domain: advertising
+      distinctness_criteria: structure, function, or role in ad delivery
+      domain_name: media and gaming platforms
+      domain_scope: ad placements, targeting, campaigns, creatives, delivery configurations, etc.
+      example_name: Video Ad Slot
+      example_description: An advertising inventory unit where video advertisements are displayed during content playback, enabling monetization through ad delivery.
+
+    creator_management:
+      concept_domain: creator management entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: creator profile, publisher type, studio structure, revenue model, or partnership arrangement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"content creator" vs "media publisher"'
+      terminology_domain: media
+      distinctness_criteria: role, structure, or function in content production
+      domain_name: media and gaming platforms
+      domain_scope: creators, publishers, studios, partnerships, revenue sharing, content catalogs, etc.
+      example_name: Content Creator Profile
+      example_description: A representation of an individual or organization producing content, supporting management of content, performance, and monetization relationships.
+
+    platform_moderation:
+      concept_domain: moderation action or policy
+      entry_count: 120
+      concept_unit: moderation
+      concept_scope_examples: content flagging, review workflow, removal action, user ban, guideline enforcement, or trust and safety control
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"content removal" vs "content takedown"'
+      terminology_domain: platform
+      distinctness_criteria: action type, policy type, or role in moderation process
+      domain_name: media and gaming platforms
+      domain_scope: moderation, trust and safety, content review, enforcement actions, etc.
+      example_name: Content Removal
+      example_description: A moderation action where content is taken down due to policy violations, supporting platform safety and compliance.
+
+    streaming_delivery:
+      concept_domain: streaming delivery event or component
+      entry_count: 120
+      concept_unit: delivery
+      concept_scope_examples: streaming session, buffering event, bitrate adaptation, CDN usage, playback performance, or delivery mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"streaming session" vs "playback session"'
+      terminology_domain: media
+      distinctness_criteria: event type, performance aspect, or role in content delivery
+      domain_name: media and gaming platforms
+      domain_scope: streaming, playback, CDN, buffering, bitrate adaptation, performance metrics, etc.
+      example_name: Streaming Session
+      example_description: A delivery event representing continuous playback of content, supporting real-time consumption and performance monitoring.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: outage, latency issue, failed stream, service degradation, system disruption, or performance failure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: media and gaming platforms
+      domain_scope: availability, performance, streaming, platform operations, user experience, etc.
+      example_name: Streaming Outage
+      example_description: An incident where content playback becomes unavailable, disrupting user experience and requiring remediation.
+
+
+blockchain_crypto:
+  tables:
+
+    blockchain_networks:
+      concept_domain: blockchain network
+      entry_count: 120
+      concept_unit: network
+      concept_scope_examples: network type, consensus mechanism, node role, validator model, or network performance characteristic
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"blockchain network" vs "distributed ledger network"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: mainnets, testnets, consensus mechanisms, validators, nodes, network parameters, etc.
+      example_name: Proof of Stake Network
+      example_description: A blockchain network that validates transactions based on staked assets, supporting secure and energy-efficient consensus.
+
+    digital_assets:
+      concept_domain: digital asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: cryptocurrency type, token standard, non-fungible asset, utility token, or governance token
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"crypto token" vs "digital token"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: cryptocurrencies, tokens, NFTs, smart contract assets, supply models, etc.
+      example_name: Fungible Token
+      example_description: A digital asset where each unit is interchangeable with another, commonly used for payments, utility, or value transfer.
+
+    wallets_accounts:
+      concept_domain: blockchain wallet or account
+      entry_count: 120
+      concept_unit: wallet
+      concept_scope_examples: custody model, key management type, wallet type, address structure, or account interaction model
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"crypto wallet" vs "digital wallet"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: wallets, accounts, key pairs, custody models, addresses, etc.
+      example_name: Self-Custody Wallet
+      example_description: A wallet where the user controls private keys directly, enabling independent management of digital assets and transactions.
+
+    transaction_events:
+      concept_domain: blockchain transaction event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: asset transfer, contract interaction, gas usage event, transaction confirmation, or block inclusion event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"transaction confirmation" vs "confirmed transaction"'
+      terminology_domain: blockchain
+      distinctness_criteria: event type, lifecycle stage, or role in transaction flow
+      domain_name: blockchain and crypto
+      domain_scope: transfers, contract calls, gas usage, confirmations, blocks, etc.
+      example_name: Asset Transfer
+      example_description: An event where digital assets move between addresses, recording ownership changes on the blockchain.
+
+    smart_contracts:
+      concept_domain: smart contract
+      entry_count: 120
+      concept_unit: contract
+      concept_scope_examples: contract type, function interface, upgrade pattern, execution model, or state management approach
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"smart contract" vs "on-chain program"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: deployed contracts, ABIs, functions, upgradeability, on-chain state, etc.
+      example_name: Token Contract
+      example_description: A smart contract that defines rules for creating and managing digital tokens, supporting issuance and transfer of assets.
+
+    protocol_interactions:
+      concept_domain: protocol interaction
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: staking action, lending activity, liquidity provision, token swap, governance vote, or DeFi operation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"token swap" vs "asset exchange"'
+      terminology_domain: blockchain
+      distinctness_criteria: action type, function, or role in protocol usage
+      domain_name: blockchain and crypto
+      domain_scope: DeFi, staking, lending, liquidity, governance, on-chain applications, etc.
+      example_name: Liquidity Provision
+      example_description: An interaction where assets are supplied to a protocol to enable trading or lending, supporting decentralized financial activity.
+
+    identity_name_services:
+      concept_domain: blockchain identity or naming service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: domain naming system, decentralized identifier type, name resolution method, or address mapping mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"blockchain domain" vs "crypto name service"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: ENS, DIDs, name services, identity mappings, etc.
+      example_name: Decentralized Name Service
+      example_description: A service that maps human-readable names to blockchain addresses, simplifying interactions with digital assets and applications.
+
+    infrastructure_services:
+      concept_domain: blockchain infrastructure service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: node provider type, RPC service, indexing service, API platform, or middleware layer
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"node service" vs "rpc provider"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, role, or typical use
+      domain_name: blockchain and crypto
+      domain_scope: nodes, RPC endpoints, indexing, APIs, developer tools, middleware, etc.
+      example_name: RPC Endpoint
+      example_description: A service interface that allows applications to interact with blockchain nodes, enabling transaction submission and data queries.
+
+    security_events:
+      concept_domain: blockchain security event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: key compromise, contract exploit, anomalous transaction, validator slashing, or protocol attack
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"security breach" vs "security incident"'
+      terminology_domain: blockchain
+      distinctness_criteria: event type, detection method, or impact
+      domain_name: blockchain and crypto
+      domain_scope: exploits, anomalies, validator actions, attacks, asset security, etc.
+      example_name: Smart Contract Exploit
+      example_description: An event where vulnerabilities in contract code are used to manipulate behavior or extract value, affecting system integrity.
+
+    governance_mechanisms:
+      concept_domain: governance mechanism
+      entry_count: 120
+      concept_unit: mechanism
+      concept_scope_examples: proposal type, voting process, token-based governance model, upgrade mechanism, or decision framework
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"governance vote" vs "protocol voting"'
+      terminology_domain: blockchain
+      distinctness_criteria: function, structure, or role in governance
+      domain_name: blockchain and crypto
+      domain_scope: proposals, voting, governance tokens, upgrades, community decisions, etc.
+      example_name: Governance Proposal
+      example_description: A mechanism where participants submit and vote on changes to a protocol, supporting decentralized decision-making.
+
+
+consumer_hospitality_retail:
+  tables:
+
+    digital_products_services:
+      concept_domain: digital product or service
+      entry_count: 150
+      concept_unit: product
+      concept_scope_examples: platform service, analytics product, content service, marketplace offering, or digital experience
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"digital service" vs "online service"'
+      terminology_domain: consumer
+      distinctness_criteria: function, category, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: analytics platforms, marketplaces, content services, digital experiences, etc.
+      example_name: Analytics Platform
+      example_description: A digital product that processes and analyzes consumer or operational data, supporting insights and decision-making.
+
+    customer_profiles:
+      concept_domain: consumer profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: demographic segment, behavioral segment, engagement pattern, preference type, or customer lifecycle stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"active user" vs "engaged customer"'
+      terminology_domain: consumer
+      distinctness_criteria: attribute type, segmentation, or behavior pattern
+      domain_name: consumer platforms and retail
+      domain_scope: end users, consumers, clients, behavioral segments, engagement data, etc.
+      example_name: Active User Profile
+      example_description: A profile representing a consumer who frequently interacts with a platform, indicating ongoing engagement and usage patterns.
+
+    content_assets:
+      concept_domain: digital content asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: image content, video content, generated media, user-generated content, or branded content
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"photo asset" vs "image content"'
+      terminology_domain: media
+      distinctness_criteria: format, function, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: photography, media assets, user-generated content, branded content, etc.
+      example_name: Digital Image Asset
+      example_description: A content asset consisting of visual media used for display, marketing, or user interaction within digital platforms.
+
+    platform_interactions:
+      concept_domain: platform interaction event
+      entry_count: 150
+      concept_unit: interaction
+      concept_scope_examples: user action, content interaction, platform usage event, session activity, or engagement signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"user action" vs "platform interaction"'
+      terminology_domain: platform
+      distinctness_criteria: action type, engagement behavior, or role in usage flow
+      domain_name: consumer platforms and retail
+      domain_scope: clicks, views, uploads, interactions, sessions, etc.
+      example_name: Content Upload Event
+      example_description: An interaction where a user submits content to the platform, contributing to available assets and engagement.
+
+    analytics_insights:
+      concept_domain: analytics insight
+      entry_count: 120
+      concept_unit: insight
+      concept_scope_examples: consumer behavior insight, performance metric, trend analysis, segmentation output, or predictive signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"data insight" vs "analytics finding"'
+      terminology_domain: analytics
+      distinctness_criteria: function, analytical focus, or usage context
+      domain_name: consumer platforms and retail
+      domain_scope: analytics, reporting, consumer insights, performance measurement, etc.
+      example_name: Engagement Insight
+      example_description: An analytical output that identifies patterns in user interaction, supporting optimization of content or services.
+
+    marketplace_listings:
+      concept_domain: marketplace listing
+      entry_count: 120
+      concept_unit: listing
+      concept_scope_examples: service listing, product listing, provider offering, booking option, or catalog entry
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service listing" vs "marketplace offering"'
+      terminology_domain: marketplace
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: service marketplaces, product catalogs, provider listings, etc.
+      example_name: Service Listing
+      example_description: A marketplace entry representing an offering available to consumers, enabling discovery and selection of services.
+
+    transactions:
+      concept_domain: consumer transaction
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: purchase type, booking transaction, service payment, marketplace transaction, or subscription payment
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"online purchase" vs "digital transaction"'
+      terminology_domain: consumer
+      distinctness_criteria: function, flow, or typical use
+      domain_name: consumer platforms and retail
+      domain_scope: purchases, bookings, payments, subscriptions, marketplace transactions, etc.
+      example_name: Service Purchase
+      example_description: A transaction where a consumer pays for a service offering, completing an exchange of value within a platform.
+
+    monetization_events:
+      concept_domain: monetization event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: payment event, subscription event, commission event, advertising revenue event, or transaction fee event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"payment event" vs "revenue event"'
+      terminology_domain: consumer
+      distinctness_criteria: event type, revenue mechanism, or role in monetization flow
+      domain_name: consumer platforms and retail
+      domain_scope: payments, commissions, subscriptions, advertising, platform revenue, etc.
+      example_name: Commission Event
+      example_description: An event where the platform earns a fee from a transaction, contributing to revenue through marketplace activity.
+
+    compliance_policies:
+      concept_domain: compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: data governance rule, ESG requirement, marketplace compliance rule, content policy, or regulatory obligation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"data policy" vs "data governance rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, control objective, or governance role
+      domain_name: consumer platforms and retail
+      domain_scope: data governance, ESG, marketplace rules, content compliance, etc.
+      example_name: Data Governance Policy
+      example_description: A policy defining how data is managed and protected, supporting compliance and responsible platform operation.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: service outage, data processing failure, platform degradation, marketplace disruption, or system failure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: consumer platforms and retail
+      domain_scope: platform operations, analytics systems, marketplaces, content services, etc.
+      example_name: Platform Outage
+      example_description: An incident where platform services become unavailable, disrupting user activity and requiring remediation.
+
+
+consumer_hospitality_retail:
+  tables:
+
+    accommodations_inventory:
+      concept_domain: accommodation offering
+      entry_count: 120
+      concept_unit: offering
+      concept_scope_examples: hotel type, lodging category, room configuration, stay model, or hospitality experience
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hotel room" vs "lodging unit"'
+      terminology_domain: hospitality
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: hotels, rentals, resorts, rooms, stays, etc.
+      example_name: Hotel Room
+      example_description: An accommodation offering that provides temporary lodging, supporting overnight stays and travel experiences.
+
+    booking_reservations:
+      concept_domain: booking or reservation
+      entry_count: 120
+      concept_unit: booking
+      concept_scope_examples: reservation type, booking channel, service category, duration model, or usage context
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hotel booking" vs "room reservation"'
+      terminology_domain: hospitality
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: travel bookings, restaurant reservations, appointments, etc.
+      example_name: Hotel Reservation
+      example_description: A booking that secures accommodation for a defined stay period, supporting travel and lodging planning.
+
+    service_appointments:
+      concept_domain: service appointment
+      entry_count: 120
+      concept_unit: appointment
+      concept_scope_examples: personal service booking, time-slot reservation, service session, or recurring appointment
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"appointment booking" vs "service reservation"'
+      terminology_domain: consumer
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: salons, wellness, fitness, personal services, etc.
+      example_name: Salon Appointment
+      example_description: A scheduled service session reserved for a specific time, supporting delivery of personal or professional services.
+
+    experiences_offerings:
+      concept_domain: consumer experience offering
+      entry_count: 120
+      concept_unit: offering
+      concept_scope_examples: travel experience, service experience, fitness session, booking-based activity, or curated experience
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"travel experience" vs "trip activity"'
+      terminology_domain: consumer
+      distinctness_criteria: function, structure, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: travel, services, wellness, activities, bookings, etc.
+      example_name: Guided Experience
+      example_description: An offering that combines services or activities into a structured experience, supporting consumer engagement and participation.
+
+    fitness_services:
+      concept_domain: fitness or wellness service
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: workout program, training session, wellness service, subscription fitness model, or guided class
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"fitness class" vs "workout session"'
+      terminology_domain: consumer
+      distinctness_criteria: function, delivery model, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: fitness, wellness, subscriptions, classes, training, etc.
+      example_name: Guided Workout Class
+      example_description: A fitness service where structured exercises are delivered through guided instruction, supporting physical activity and training routines.
+
+    customer_profiles:
+      concept_domain: consumer profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: traveler segment, service user type, fitness user type, preference pattern, or engagement behavior
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"frequent traveler" vs "regular traveler"'
+      terminology_domain: consumer
+      distinctness_criteria: attribute type, segmentation, or behavioral pattern
+      domain_name: consumer hospitality and retail
+      domain_scope: guests, users, subscribers, travelers, etc.
+      example_name: Frequent Traveler Profile
+      example_description: A consumer profile representing individuals who regularly book travel or lodging, characterized by recurring engagement patterns.
+
+    transactions:
+      concept_domain: consumer transaction
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: booking payment, service purchase, subscription payment, marketplace transaction, or retail purchase
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"booking payment" vs "reservation payment"'
+      terminology_domain: consumer
+      distinctness_criteria: function, flow, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: bookings, services, subscriptions, purchases, etc.
+      example_name: Booking Payment
+      example_description: A transaction where payment is made to secure a reservation or service, completing a consumer purchase action.
+
+    monetization_events:
+      concept_domain: monetization event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: booking revenue event, service payment, subscription fee, commission event, or platform fee
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"payment event" vs "revenue event"'
+      terminology_domain: consumer
+      distinctness_criteria: event type, revenue mechanism, or role in monetization flow
+      domain_name: consumer hospitality and retail
+      domain_scope: payments, subscriptions, bookings, commissions, platform revenue, etc.
+      example_name: Booking Revenue Event
+      example_description: An event where a platform generates revenue from a reservation or service transaction, supporting monetization of offerings.
+
+    loyalty_rewards:
+      concept_domain: loyalty or rewards program
+      entry_count: 120
+      concept_unit: reward
+      concept_scope_examples: loyalty tier, reward type, points system, incentive model, or membership benefit
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"reward points" vs "loyalty points"'
+      terminology_domain: consumer
+      distinctness_criteria: function, incentive type, or typical use
+      domain_name: consumer hospitality and retail
+      domain_scope: travel rewards, subscriptions, memberships, incentives, etc.
+      example_name: Loyalty Points Program
+      example_description: A system where users accumulate points through activity, supporting incentives for repeat engagement and retention.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: booking failure, service disruption, platform outage, payment issue, or experience degradation
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service outage" vs "platform downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in service disruption and resolution
+      domain_name: consumer hospitality and retail
+      domain_scope: bookings, services, platforms, payments, user experience, etc.
+      example_name: Booking Failure
+      example_description: An incident where a reservation or service cannot be completed successfully, disrupting the consumer experience.
+
+
+healthcare_life_sciences:
+  tables:
+
+    clinical_services:
+      concept_domain: healthcare service or procedure
+      entry_count: 120
+      concept_unit: service
+      concept_scope_examples: diagnostic procedure, treatment type, care delivery model, clinical workflow, or therapeutic intervention
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"medical procedure" vs "clinical procedure"'
+      terminology_domain: healthcare
+      distinctness_criteria: function, structure, or typical use
+      domain_name: healthcare and life sciences
+      domain_scope: diagnostics, treatments, care delivery, clinical services, etc.
+      example_name: Diagnostic Imaging Procedure
+      example_description: A healthcare service that uses imaging techniques to identify conditions, supporting diagnosis and clinical decision-making.
+
+    patient_profiles:
+      concept_domain: patient or subject profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: demographic segment, clinical condition group, risk category, treatment cohort, or health status classification
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"patient profile" vs "patient record"'
+      terminology_domain: healthcare
+      distinctness_criteria: attribute type, classification, or clinical relevance
+      domain_name: healthcare and life sciences
+      domain_scope: patients, cohorts, clinical groups, health profiles, etc.
+      example_name: Chronic Condition Profile
+      example_description: A patient profile representing individuals with ongoing health conditions, supporting long-term care and monitoring.
+
+    clinical_events:
+      concept_domain: clinical event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: diagnosis event, treatment administration, lab test event, clinical observation, or care interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"treatment event" vs "clinical intervention"'
+      terminology_domain: healthcare
+      distinctness_criteria: event type, function, or role in care delivery
+      domain_name: healthcare and life sciences
+      domain_scope: diagnosis, treatment, monitoring, care interactions, etc.
+      example_name: Treatment Administration Event
+      example_description: A clinical event where a therapy or medication is delivered, supporting patient care and treatment progression.
+
+    pharmaceuticals_biologics:
+      concept_domain: pharmaceutical or biologic product
+      entry_count: 120
+      concept_unit: product
+      concept_scope_examples: drug type, biologic therapy, compound class, treatment category, or therapeutic mechanism
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"drug product" vs "pharmaceutical compound"'
+      terminology_domain: life sciences
+      distinctness_criteria: function, structure, or therapeutic use
+      domain_name: healthcare and life sciences
+      domain_scope: drugs, biologics, therapies, compounds, etc.
+      example_name: Biologic Therapy
+      example_description: A medical product derived from biological sources, used to treat diseases through targeted therapeutic mechanisms.
+
+    research_clinical_trials:
+      concept_domain: research or clinical trial element
+      entry_count: 120
+      concept_unit: trial
+      concept_scope_examples: trial phase, study design, cohort group, endpoint definition, or experimental protocol
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"clinical trial" vs "research study"'
+      terminology_domain: life sciences
+      distinctness_criteria: structure, function, or role in research
+      domain_name: healthcare and life sciences
+      domain_scope: clinical trials, studies, research protocols, cohorts, etc.
+      example_name: Phase Clinical Trial
+      example_description: A structured study designed to evaluate safety and efficacy of a treatment, supporting regulatory approval and medical advancement.
+
+    healthcare_operations:
+      concept_domain: healthcare operational process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: patient intake, care coordination, billing process, scheduling workflow, or administrative process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"patient intake" vs "admission process"'
+      terminology_domain: healthcare
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: healthcare and life sciences
+      domain_scope: administration, scheduling, billing, coordination, etc.
+      example_name: Patient Intake Process
+      example_description: An operational workflow that gathers patient information and initiates care, supporting efficient service delivery.
+
+    medical_devices:
+      concept_domain: medical device or equipment
+      entry_count: 120
+      concept_unit: device
+      concept_scope_examples: diagnostic device, monitoring device, therapeutic equipment, surgical tool, or wearable device
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"medical device" vs "healthcare device"'
+      terminology_domain: healthcare
+      distinctness_criteria: function, structure, or typical use
+      domain_name: healthcare and life sciences
+      domain_scope: diagnostics, monitoring, treatment devices, equipment, etc.
+      example_name: Monitoring Device
+      example_description: A device used to track patient health metrics, supporting continuous observation and clinical decision-making.
+
+    analytics_metrics:
+      concept_domain: healthcare performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: clinical outcome metric, operational efficiency, treatment effectiveness, utilization measure, or quality indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"outcome metric" vs "performance indicator"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, clinical relevance, or evaluation role
+      domain_name: healthcare and life sciences
+      domain_scope: outcomes, performance, quality, efficiency, analytics, etc.
+      example_name: Treatment Outcome Metric
+      example_description: A metric evaluating the effectiveness of a therapy, supporting clinical assessment and improvement.
+
+    compliance_policies:
+      concept_domain: healthcare compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: data privacy rule, clinical regulation, safety standard, reporting requirement, or governance policy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"privacy policy" vs "data protection rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: healthcare and life sciences
+      domain_scope: privacy, safety, clinical regulations, governance, etc.
+      example_name: Patient Data Privacy Policy
+      example_description: A policy defining how patient information is protected, supporting compliance and secure handling of sensitive data.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: system outage, treatment delay, equipment failure, data issue, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"system outage" vs "service disruption"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: healthcare and life sciences
+      domain_scope: clinical systems, operations, devices, services, etc.
+      example_name: Equipment Failure
+      example_description: An incident where medical equipment stops functioning as expected, disrupting care delivery and requiring intervention.
+
+
+logistics:
+  tables:
+
+    shipments_orders:
+      concept_domain: shipment or logistics order
+      entry_count: 150
+      concept_unit: shipment
+      concept_scope_examples: shipment type, delivery model, order type, fulfillment model, or transport mode
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"delivery order" vs "shipment order"'
+      terminology_domain: logistics
+      distinctness_criteria: function, structure, or typical use
+      domain_name: logistics and supply chain
+      domain_scope: shipping, deliveries, freight, fulfillment, orders, etc.
+      example_name: Delivery Shipment
+      example_description: A logistics order representing the movement of goods from origin to destination, supporting fulfillment and distribution.
+
+    transportation_modes:
+      concept_domain: transportation mode
+      entry_count: 120
+      concept_unit: mode
+      concept_scope_examples: road transport, air freight, sea freight, rail transport, or last-mile delivery
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"air shipping" vs "air freight"'
+      terminology_domain: logistics
+      distinctness_criteria: function, structure, or typical use
+      domain_name: logistics and supply chain
+      domain_scope: road, air, sea, rail, multimodal transport, etc.
+      example_name: Air Freight
+      example_description: A transportation mode where goods are shipped by air, supporting fast delivery over long distances.
+
+    warehouses_facilities:
+      concept_domain: warehouse or logistics facility
+      entry_count: 120
+      concept_unit: facility
+      concept_scope_examples: distribution center, fulfillment center, storage warehouse, cross-dock facility, or logistics hub
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"warehouse facility" vs "storage facility"'
+      terminology_domain: logistics
+      distinctness_criteria: function, structure, or typical use
+      domain_name: logistics and supply chain
+      domain_scope: warehouses, distribution centers, hubs, storage facilities, etc.
+      example_name: Distribution Center
+      example_description: A logistics facility that stores and distributes goods, supporting efficient order fulfillment and delivery.
+
+    inventory_assets:
+      concept_domain: inventory or goods asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: product category, inventory type, stored goods, stock classification, or packaging type
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"inventory item" vs "stock item"'
+      terminology_domain: logistics
+      distinctness_criteria: structure, usage, or role in supply chain
+      domain_name: logistics and supply chain
+      domain_scope: goods, inventory, stock, packaging, etc.
+      example_name: Inventory Item
+      example_description: A unit of goods stored and managed within a supply chain, supporting tracking and fulfillment operations.
+
+    tracking_events:
+      concept_domain: shipment tracking event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: pickup event, transit update, delivery attempt, status update, or location tracking event
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"delivery update" vs "shipment status event"'
+      terminology_domain: logistics
+      distinctness_criteria: event type, lifecycle stage, or role in tracking flow
+      domain_name: logistics and supply chain
+      domain_scope: tracking, status updates, delivery events, etc.
+      example_name: Delivery Attempt Event
+      example_description: A tracking event indicating an attempt to deliver goods, supporting visibility into shipment progress.
+
+    routing_planning:
+      concept_domain: routing or planning process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: route optimization, delivery scheduling, load planning, network planning, or dispatch process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"route planning" vs "delivery routing"'
+      terminology_domain: logistics
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: logistics and supply chain
+      domain_scope: routing, scheduling, optimization, dispatch, planning, etc.
+      example_name: Route Optimization
+      example_description: A planning process that determines efficient delivery paths, supporting cost reduction and timely fulfillment.
+
+    supply_chain_entities:
+      concept_domain: supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: carrier type, logistics provider, supplier role, distributor, or partner organization
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"shipping carrier" vs "transport provider"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in supply chain
+      domain_name: logistics and supply chain
+      domain_scope: carriers, suppliers, logistics providers, distributors, etc.
+      example_name: Shipping Carrier
+      example_description: An entity responsible for transporting goods, supporting movement across the supply chain.
+
+    cost_pricing:
+      concept_domain: logistics cost or pricing model
+      entry_count: 120
+      concept_unit: model
+      concept_scope_examples: shipping cost model, pricing tier, delivery fee structure, cost allocation, or billing model
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"shipping cost" vs "delivery fee"'
+      terminology_domain: logistics
+      distinctness_criteria: function, structure, or role in cost management
+      domain_name: logistics and supply chain
+      domain_scope: pricing, billing, cost allocation, fees, etc.
+      example_name: Delivery Fee Structure
+      example_description: A pricing model defining how delivery charges are calculated, supporting billing and cost management.
+
+    compliance_regulations:
+      concept_domain: logistics compliance regulation
+      entry_count: 100
+      concept_unit: regulation
+      concept_scope_examples: transport regulation, safety rule, customs requirement, environmental standard, or compliance guideline
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"transport rule" vs "shipping regulation"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: logistics and supply chain
+      domain_scope: safety, customs, environmental regulations, compliance, etc.
+      example_name: Customs Regulation
+      example_description: A compliance requirement governing cross-border movement of goods, supporting legal and regulatory adherence.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: delivery delay, shipment loss, system outage, routing failure, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"delivery delay" vs "shipment delay"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: logistics and supply chain
+      domain_scope: shipments, routing, tracking, systems, operations, etc.
+      example_name: Delivery Delay
+      example_description: An incident where goods are not delivered within the expected timeframe, disrupting fulfillment and customer expectations.
+
+
+niche_industrial_tech:
+  tables:
+
+    products_systems:
+      concept_domain: industrial technology product or system
+      entry_count: 120
+      concept_unit: system
+      concept_scope_examples: automation system, industrial device, control system, embedded system, or specialized equipment
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"industrial system" vs "industrial solution"'
+      terminology_domain: industrial
+      distinctness_criteria: function, structure, or typical use
+      domain_name: niche industrial technology
+      domain_scope: automation, robotics, sensors, control systems, industrial devices, etc.
+      example_name: Industrial Control System
+      example_description: A system used to monitor and control industrial processes, supporting automation and operational efficiency.
+
+    components_subsystems:
+      concept_domain: industrial component or subsystem
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: sensor module, actuator, controller, embedded board, or interface component
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"sensor module" vs "sensing component"'
+      terminology_domain: industrial
+      distinctness_criteria: function, structure, or role in system
+      domain_name: niche industrial technology
+      domain_scope: sensors, actuators, controllers, embedded systems, etc.
+      example_name: Sensor Module
+      example_description: A component that detects environmental or system conditions, supporting monitoring and control in industrial systems.
+
+    operational_processes:
+      concept_domain: industrial process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: manufacturing process, automation workflow, quality control step, inspection process, or production stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"manufacturing process" vs "production workflow"'
+      terminology_domain: industrial
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: niche industrial technology
+      domain_scope: manufacturing, automation, inspection, quality control, etc.
+      example_name: Quality Inspection Process
+      example_description: A process that evaluates product quality during production, supporting compliance and defect reduction.
+
+    telemetry_sensor_data:
+      concept_domain: industrial telemetry or sensor signal
+      entry_count: 120
+      concept_unit: signal
+      concept_scope_examples: machine telemetry, sensor reading, environmental measurement, performance data, or diagnostic signal
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"sensor data" vs "telemetry signal"'
+      terminology_domain: industrial
+      distinctness_criteria: signal type, measurement focus, or role in monitoring
+      domain_name: niche industrial technology
+      domain_scope: sensors, telemetry, monitoring, diagnostics, etc.
+      example_name: Machine Telemetry Signal
+      example_description: A signal representing operational data from equipment, supporting monitoring and performance analysis.
+
+    software_interfaces:
+      concept_domain: industrial software interface
+      entry_count: 120
+      concept_unit: interface
+      concept_scope_examples: control software, embedded interface, industrial API, firmware interface, or integration layer
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"control interface" vs "software interface"'
+      terminology_domain: industrial
+      distinctness_criteria: function, structure, or role in interaction
+      domain_name: niche industrial technology
+      domain_scope: firmware, control software, APIs, integration layers, etc.
+      example_name: Control Interface
+      example_description: A software interface that enables interaction with industrial systems, supporting control and automation.
+
+    analytics_metrics:
+      concept_domain: industrial performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: efficiency metric, throughput measure, downtime indicator, utilization metric, or quality metric
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"efficiency metric" vs "performance indicator"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: niche industrial technology
+      domain_scope: performance, efficiency, quality, utilization, analytics, etc.
+      example_name: Throughput Metric
+      example_description: A metric measuring the amount of output produced over time, supporting evaluation of system efficiency.
+
+    supply_chain_entities:
+      concept_domain: industrial supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: supplier type, manufacturer role, distributor, integrator, or partner organization
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"component supplier" vs "parts vendor"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in supply chain
+      domain_name: niche industrial technology
+      domain_scope: suppliers, manufacturers, integrators, distributors, etc.
+      example_name: Industrial Supplier
+      example_description: An entity that provides components or systems for industrial applications, supporting production and operations.
+
+    compliance_standards:
+      concept_domain: industrial compliance standard
+      entry_count: 100
+      concept_unit: standard
+      concept_scope_examples: safety standard, quality certification, environmental regulation, operational guideline, or compliance requirement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"safety standard" vs "compliance requirement"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: niche industrial technology
+      domain_scope: safety, quality, environmental, compliance, etc.
+      example_name: Safety Certification
+      example_description: A standard ensuring industrial systems meet defined safety requirements, supporting safe operation and compliance.
+
+    maintenance_events:
+      concept_domain: maintenance or lifecycle event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: inspection event, repair action, maintenance cycle, upgrade event, or diagnostic check
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"maintenance event" vs "repair action"'
+      terminology_domain: industrial
+      distinctness_criteria: event type, lifecycle stage, or role in upkeep
+      domain_name: niche industrial technology
+      domain_scope: inspection, repair, maintenance, upgrades, diagnostics, etc.
+      example_name: Maintenance Inspection
+      example_description: An event where systems are evaluated for performance and safety, supporting reliability and lifecycle management.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: equipment failure, system malfunction, production disruption, downtime event, or operational anomaly
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"equipment failure" vs "system malfunction"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: niche industrial technology
+      domain_scope: systems, equipment, production, operations, etc.
+      example_name: Equipment Failure
+      example_description: An incident where industrial equipment stops functioning as expected, disrupting operations and requiring corrective action.
+
+
+professional_business_services:
+  tables:
+
+    service_offerings:
+      concept_domain: professional service offering
+      entry_count: 150
+      concept_unit: service
+      concept_scope_examples: consulting service, advisory service, outsourcing service, managed service, or project-based service
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"consulting service" vs "advisory service"'
+      terminology_domain: business
+      distinctness_criteria: function, delivery model, or typical use
+      domain_name: professional business services
+      domain_scope: consulting, legal, accounting, outsourcing, managed services, etc.
+      example_name: Management Consulting Service
+      example_description: A service that provides expert guidance on business strategy and operations, supporting organizational improvement and decision-making.
+
+    client_profiles:
+      concept_domain: business client profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: industry segment, company size category, service usage pattern, engagement level, or client type
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"enterprise client" vs "large business client"'
+      terminology_domain: business
+      distinctness_criteria: attribute type, segmentation, or engagement pattern
+      domain_name: professional business services
+      domain_scope: enterprises, SMEs, industries, engagement profiles, etc.
+      example_name: Enterprise Client Profile
+      example_description: A profile representing large organizations with complex service needs, supporting tailored service delivery and engagement.
+
+    engagements_projects:
+      concept_domain: engagement or project
+      entry_count: 120
+      concept_unit: project
+      concept_scope_examples: consulting engagement, audit project, advisory assignment, outsourcing contract, or service engagement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"client project" vs "service engagement"'
+      terminology_domain: business
+      distinctness_criteria: function, structure, or role in service delivery
+      domain_name: professional business services
+      domain_scope: consulting, audits, advisory, outsourcing, projects, etc.
+      example_name: Consulting Engagement
+      example_description: A project where professional services are delivered to a client, supporting problem-solving and business improvement.
+
+    deliverables_outputs:
+      concept_domain: service deliverable
+      entry_count: 120
+      concept_unit: deliverable
+      concept_scope_examples: report type, analysis output, recommendation document, audit finding, or strategic plan
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"final report" vs "project report"'
+      terminology_domain: business
+      distinctness_criteria: function, format, or typical use
+      domain_name: professional business services
+      domain_scope: reports, analyses, plans, recommendations, etc.
+      example_name: Advisory Report
+      example_description: A deliverable that provides insights and recommendations based on analysis, supporting informed decision-making.
+
+    workflows_processes:
+      concept_domain: service workflow or process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: engagement workflow, approval process, delivery process, review cycle, or client onboarding process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service workflow" vs "delivery process"'
+      terminology_domain: business
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: professional business services
+      domain_scope: delivery, approvals, onboarding, execution processes, etc.
+      example_name: Client Onboarding Process
+      example_description: A workflow that establishes new client relationships, supporting service initiation and engagement setup.
+
+    billing_revenue:
+      concept_domain: billing or revenue model
+      entry_count: 120
+      concept_unit: model
+      concept_scope_examples: hourly billing, subscription model, retainer agreement, project-based pricing, or performance-based fee
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"hourly billing" vs "time based billing"'
+      terminology_domain: business
+      distinctness_criteria: function, structure, or role in monetization
+      domain_name: professional business services
+      domain_scope: billing, pricing, contracts, revenue models, etc.
+      example_name: Retainer Agreement
+      example_description: A billing model where clients pay a recurring fee for ongoing services, supporting predictable revenue and continuous engagement.
+
+    compliance_policies:
+      concept_domain: compliance or governance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: audit standard, regulatory compliance rule, ethical guideline, reporting requirement, or governance policy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"compliance policy" vs "governance rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: professional business services
+      domain_scope: audit, legal, regulatory, governance, ethics, etc.
+      example_name: Audit Compliance Policy
+      example_description: A policy that ensures adherence to auditing standards and regulations, supporting accountability and transparency.
+
+    analytics_metrics:
+      concept_domain: service performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: utilization rate, project efficiency, client satisfaction, revenue metric, or delivery performance indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"utilization rate" vs "resource utilization metric"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or evaluation role
+      domain_name: professional business services
+      domain_scope: performance, efficiency, satisfaction, revenue, analytics, etc.
+      example_name: Utilization Rate
+      example_description: A metric measuring how effectively resources are used, supporting operational efficiency and capacity planning.
+
+    knowledge_assets:
+      concept_domain: professional knowledge asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: best practice, methodology, template, framework, or intellectual property
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"best practice" vs "standard approach"'
+      terminology_domain: business
+      distinctness_criteria: function, format, or typical use
+      domain_name: professional business services
+      domain_scope: frameworks, methodologies, templates, knowledge bases, etc.
+      example_name: Consulting Framework
+      example_description: A structured approach used to analyze and solve business problems, supporting consistent and effective service delivery.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: project delay, service failure, delivery issue, system outage, or operational disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"project delay" vs "delivery delay"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: professional business services
+      domain_scope: engagements, delivery, billing, systems, operations, etc.
+      example_name: Project Delay
+      example_description: An incident where a service engagement is not completed within expected timelines, impacting delivery and client satisfaction.
+
+
+rail_freight_infrastructure:
+  tables:
+
+    rail_networks:
+      concept_domain: rail network or corridor
+      entry_count: 120
+      concept_unit: network
+      concept_scope_examples: freight corridor, rail line type, intermodal route, regional network, or cross-border network
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"rail corridor" vs "freight route"'
+      terminology_domain: rail
+      distinctness_criteria: function, structure, or typical use
+      domain_name: rail freight and infrastructure
+      domain_scope: rail lines, corridors, intermodal routes, national networks, etc.
+      example_name: Freight Rail Corridor
+      example_description: A designated rail route optimized for transporting goods, supporting efficient long-distance freight movement.
+
+    rolling_stock:
+      concept_domain: rail rolling stock
+      entry_count: 120
+      concept_unit: equipment
+      concept_scope_examples: freight wagon type, locomotive class, intermodal car, specialized cargo car, or maintenance vehicle
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"freight wagon" vs "rail car"'
+      terminology_domain: rail
+      distinctness_criteria: function, structure, or typical use
+      domain_name: rail freight and infrastructure
+      domain_scope: locomotives, wagons, railcars, maintenance vehicles, etc.
+      example_name: Freight Wagon
+      example_description: A rail vehicle designed to transport goods, supporting bulk and containerized freight operations.
+
+    freight_shipments:
+      concept_domain: rail freight shipment
+      entry_count: 150
+      concept_unit: shipment
+      concept_scope_examples: bulk shipment, containerized shipment, intermodal shipment, hazardous goods transport, or scheduled freight
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"freight shipment" vs "cargo transport"'
+      terminology_domain: rail
+      distinctness_criteria: function, structure, or typical use
+      domain_name: rail freight and infrastructure
+      domain_scope: cargo movement, intermodal logistics, bulk goods, etc.
+      example_name: Intermodal Shipment
+      example_description: A shipment that uses multiple transportation modes, with rail as a primary segment, supporting efficient cargo transfer.
+
+    infrastructure_assets:
+      concept_domain: rail infrastructure asset
+      entry_count: 120
+      concept_unit: asset
+      concept_scope_examples: track segment, signaling system, rail yard, terminal facility, or bridge structure
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"rail yard" vs "train yard"'
+      terminology_domain: rail
+      distinctness_criteria: function, structure, or role in network
+      domain_name: rail freight and infrastructure
+      domain_scope: tracks, yards, terminals, signals, bridges, etc.
+      example_name: Rail Yard
+      example_description: An infrastructure asset used for assembling, disassembling, and storing trains, supporting freight operations.
+
+    scheduling_dispatch:
+      concept_domain: rail scheduling or dispatch process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: train scheduling, dispatch coordination, routing assignment, capacity planning, or timetable management
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"train scheduling" vs "rail dispatch planning"'
+      terminology_domain: rail
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: rail freight and infrastructure
+      domain_scope: scheduling, dispatch, routing, capacity planning, etc.
+      example_name: Train Dispatch Process
+      example_description: A process that coordinates train movements across the network, supporting safe and efficient rail operations.
+
+    tracking_events:
+      concept_domain: rail tracking event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: departure event, arrival event, location update, delay notification, or status update
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"arrival event" vs "train arrival update"'
+      terminology_domain: rail
+      distinctness_criteria: event type, lifecycle stage, or role in tracking
+      domain_name: rail freight and infrastructure
+      domain_scope: tracking, status updates, logistics events, etc.
+      example_name: Arrival Event
+      example_description: A tracking event indicating that a train or shipment has reached a location, supporting visibility into operations.
+
+    maintenance_lifecycle:
+      concept_domain: rail maintenance or lifecycle event
+      entry_count: 120
+      concept_unit: event
+      concept_scope_examples: inspection event, track maintenance, equipment repair, overhaul process, or lifecycle update
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"track maintenance" vs "rail repair"'
+      terminology_domain: rail
+      distinctness_criteria: event type, lifecycle stage, or role in upkeep
+      domain_name: rail freight and infrastructure
+      domain_scope: inspection, repair, maintenance, lifecycle management, etc.
+      example_name: Track Inspection
+      example_description: A maintenance event where rail tracks are examined for safety and integrity, supporting reliable operations.
+
+    supply_chain_entities:
+      concept_domain: rail supply chain entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: rail operator, logistics provider, infrastructure owner, freight customer, or maintenance contractor
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"rail operator" vs "train operator"'
+      terminology_domain: supply chain
+      distinctness_criteria: role, function, or position in ecosystem
+      domain_name: rail freight and infrastructure
+      domain_scope: operators, customers, contractors, logistics partners, etc.
+      example_name: Rail Operator
+      example_description: An entity responsible for running train services, supporting movement of freight across the network.
+
+    compliance_regulations:
+      concept_domain: rail compliance regulation
+      entry_count: 100
+      concept_unit: regulation
+      concept_scope_examples: safety regulation, transport rule, environmental standard, operational guideline, or certification requirement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"safety rule" vs "transport regulation"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: rail freight and infrastructure
+      domain_scope: safety, environmental, operational compliance, etc.
+      example_name: Rail Safety Standard
+      example_description: A regulation ensuring safe operation of rail systems, supporting compliance and risk mitigation.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: train delay, derailment, signal failure, track issue, or service disruption
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"train delay" vs "rail delay"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: rail freight and infrastructure
+      domain_scope: trains, infrastructure, scheduling, operations, etc.
+      example_name: Train Delay
+      example_description: An incident where a train does not arrive or depart as scheduled, disrupting freight movement and logistics.
+
+
+real_estate_construction:
+  tables:
+
+    properties_assets:
+      concept_domain: real estate property or asset
+      entry_count: 120
+      concept_unit: property
+      concept_scope_examples: residential property, commercial property, land parcel, mixed-use development, or real estate asset type
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"real estate asset" vs "property asset"'
+      terminology_domain: real estate
+      distinctness_criteria: function, structure, or typical use
+      domain_name: real estate and construction
+      domain_scope: residential, commercial, land, developments, etc.
+      example_name: Residential Property
+      example_description: A property designed for housing individuals or families, supporting living and occupancy use cases.
+
+    construction_projects:
+      concept_domain: construction project
+      entry_count: 120
+      concept_unit: project
+      concept_scope_examples: building project, infrastructure project, renovation project, development phase, or construction lifecycle stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"construction project" vs "building project"'
+      terminology_domain: construction
+      distinctness_criteria: function, structure, or lifecycle stage
+      domain_name: real estate and construction
+      domain_scope: development, building, renovation, infrastructure, etc.
+      example_name: Building Construction Project
+      example_description: A project focused on constructing a physical structure, supporting development and expansion of real estate assets.
+
+    design_planning:
+      concept_domain: design or planning process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: architectural design, site planning, zoning compliance, blueprint development, or feasibility analysis
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"site planning" vs "project planning"'
+      terminology_domain: construction
+      distinctness_criteria: function, structure, or role in development
+      domain_name: real estate and construction
+      domain_scope: architecture, planning, zoning, feasibility, etc.
+      example_name: Architectural Design
+      example_description: A planning process that defines the structure and layout of a building, supporting construction and development.
+
+    transactions_leases:
+      concept_domain: real estate transaction or lease
+      entry_count: 150
+      concept_unit: transaction
+      concept_scope_examples: property sale, lease agreement, rental contract, financing transaction, or property transfer
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"lease agreement" vs "rental contract"'
+      terminology_domain: real estate
+      distinctness_criteria: function, flow, or typical use
+      domain_name: real estate and construction
+      domain_scope: sales, leases, rentals, financing, property transfers, etc.
+      example_name: Lease Agreement
+      example_description: A contract allowing use of a property for a defined period, supporting occupancy and rental arrangements.
+
+    property_management:
+      concept_domain: property management process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: tenant management, maintenance coordination, rent collection, facility management, or service management
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"property management" vs "facility management"'
+      terminology_domain: real estate
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: real estate and construction
+      domain_scope: tenant services, maintenance, facilities, operations, etc.
+      example_name: Tenant Management Process
+      example_description: A process that manages tenant relationships and services, supporting occupancy and property operations.
+
+    construction_materials:
+      concept_domain: construction material or resource
+      entry_count: 120
+      concept_unit: material
+      concept_scope_examples: building material type, structural component, finishing material, resource category, or supply type
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"building material" vs "construction material"'
+      terminology_domain: construction
+      distinctness_criteria: function, structure, or typical use
+      domain_name: real estate and construction
+      domain_scope: materials, components, supplies, resources, etc.
+      example_name: Structural Material
+      example_description: A material used to support the framework of a building, contributing to strength and stability.
+
+    contractors_entities:
+      concept_domain: construction or real estate entity
+      entry_count: 120
+      concept_unit: entity
+      concept_scope_examples: contractor type, developer role, supplier, subcontractor, or service provider
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"construction contractor" vs "building contractor"'
+      terminology_domain: construction
+      distinctness_criteria: role, function, or position in project
+      domain_name: real estate and construction
+      domain_scope: developers, contractors, suppliers, subcontractors, etc.
+      example_name: General Contractor
+      example_description: An entity responsible for overseeing construction activities, coordinating resources and project execution.
+
+    analytics_metrics:
+      concept_domain: real estate or construction metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: occupancy rate, project cost metric, construction efficiency, utilization measure, or financial performance indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"occupancy rate" vs "occupancy metric"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: real estate and construction
+      domain_scope: performance, cost, utilization, occupancy, analytics, etc.
+      example_name: Occupancy Rate
+      example_description: A metric representing the proportion of occupied space, supporting evaluation of property utilization.
+
+    compliance_regulations:
+      concept_domain: real estate or construction regulation
+      entry_count: 100
+      concept_unit: regulation
+      concept_scope_examples: zoning regulation, building code, safety standard, environmental compliance, or permitting requirement
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"building code" vs "construction regulation"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: real estate and construction
+      domain_scope: zoning, safety, environmental, compliance, permitting, etc.
+      example_name: Building Code
+      example_description: A regulation defining construction standards, supporting safety and compliance in building projects.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: construction delay, structural issue, maintenance failure, service disruption, or operational problem
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"construction delay" vs "project delay"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: real estate and construction
+      domain_scope: construction, property management, operations, etc.
+      example_name: Construction Delay
+      example_description: An incident where project timelines are extended, impacting delivery and operational planning.
+
+
+retail_ecommerce:
+  tables:
+
+    product_catalog:
+      concept_domain: retail product
+      entry_count: 150
+      concept_unit: product
+      concept_scope_examples: product category, brand type, assortment grouping, merchandising category, or use context
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"consumer product" vs "retail item"'
+      terminology_domain: retail
+      distinctness_criteria: function, category, or typical use
+      domain_name: retail and ecommerce
+      domain_scope: apparel, electronics, home goods, groceries, digital goods, etc.
+      example_name: Apparel Product
+      example_description: A retail item designed for personal wear, supporting everyday consumer purchasing and use.
+
+    customer_profiles:
+      concept_domain: retail customer profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: demographic segment, purchase behavior, loyalty tier, preference pattern, or lifecycle stage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"repeat customer" vs "loyal customer"'
+      terminology_domain: retail
+      distinctness_criteria: attribute type, segmentation, or behavioral pattern
+      domain_name: retail and ecommerce
+      domain_scope: shoppers, buyers, subscribers, engagement segments, etc.
+      example_name: Repeat Buyer Profile
+      example_description: A profile representing customers who make recurring purchases, supporting targeted marketing and retention strategies.
+
+    orders_transactions:
+      concept_domain: retail order or transaction
+      entry_count: 150
+      concept_unit: order
+      concept_scope_examples: online order, in-store purchase, subscription order, return transaction, or exchange process
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"online order" vs "ecommerce order"'
+      terminology_domain: retail
+      distinctness_criteria: function, flow, or typical use
+      domain_name: retail and ecommerce
+      domain_scope: purchases, orders, returns, exchanges, subscriptions, etc.
+      example_name: Ecommerce Order
+      example_description: A transaction where products are purchased through a digital channel, supporting online retail operations.
+
+    inventory_management:
+      concept_domain: inventory or stock process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: stock tracking, replenishment process, inventory allocation, warehouse stock control, or demand planning
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"stock management" vs "inventory control"'
+      terminology_domain: retail
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: retail and ecommerce
+      domain_scope: stock, warehousing, replenishment, fulfillment, etc.
+      example_name: Inventory Replenishment Process
+      example_description: A process that restocks products based on demand, supporting continuous product availability.
+
+    fulfillment_shipping:
+      concept_domain: fulfillment or shipping process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: order fulfillment, picking and packing, last-mile delivery, shipping method, or delivery model
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"order fulfillment" vs "delivery process"'
+      terminology_domain: retail
+      distinctness_criteria: function, structure, or typical use
+      domain_name: retail and ecommerce
+      domain_scope: fulfillment centers, shipping, delivery, logistics, etc.
+      example_name: Order Fulfillment Process
+      example_description: A process that prepares and delivers products to customers, supporting completion of retail transactions.
+
+    merchandising_pricing:
+      concept_domain: merchandising or pricing strategy
+      entry_count: 120
+      concept_unit: strategy
+      concept_scope_examples: pricing model, discount strategy, promotion type, bundling approach, or assortment planning
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"discount strategy" vs "promotion strategy"'
+      terminology_domain: retail
+      distinctness_criteria: function, structure, or role in sales
+      domain_name: retail and ecommerce
+      domain_scope: pricing, promotions, merchandising, assortment, etc.
+      example_name: Discount Promotion
+      example_description: A strategy that reduces product prices temporarily, supporting increased sales and customer engagement.
+
+    marketing_campaigns:
+      concept_domain: marketing or campaign activity
+      entry_count: 120
+      concept_unit: campaign
+      concept_scope_examples: email campaign, digital marketing, promotional event, advertising campaign, or targeting strategy
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"marketing campaign" vs "promotion campaign"'
+      terminology_domain: marketing
+      distinctness_criteria: function, delivery model, or typical use
+      domain_name: retail and ecommerce
+      domain_scope: email, ads, promotions, targeting, campaigns, etc.
+      example_name: Email Marketing Campaign
+      example_description: A campaign that delivers promotional content to customers via email, supporting engagement and sales conversion.
+
+    analytics_metrics:
+      concept_domain: retail performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: conversion rate, average order value, customer lifetime value, sales metric, or engagement indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"conversion rate" vs "purchase rate"'
+      terminology_domain: analytics
+      distinctness_criteria: measurement type, performance focus, or evaluation role
+      domain_name: retail and ecommerce
+      domain_scope: sales, engagement, conversion, retention, analytics, etc.
+      example_name: Conversion Rate
+      example_description: A metric representing the proportion of visitors who make a purchase, supporting evaluation of sales effectiveness.
+
+    compliance_policies:
+      concept_domain: retail compliance policy
+      entry_count: 100
+      concept_unit: policy
+      concept_scope_examples: consumer protection rule, data privacy policy, payment compliance, product regulation, or governance guideline
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"consumer policy" vs "retail compliance rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: retail and ecommerce
+      domain_scope: privacy, payments, product regulations, compliance, etc.
+      example_name: Consumer Protection Policy
+      example_description: A policy ensuring fair treatment of customers, supporting compliance and trust in retail operations.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: order failure, inventory issue, shipping delay, payment error, or system outage
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"order failure" vs "transaction failure"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: retail and ecommerce
+      domain_scope: orders, inventory, fulfillment, payments, systems, etc.
+      example_name: Order Failure
+      example_description: An incident where a purchase cannot be completed successfully, disrupting the customer experience.
+
+
+telecom_communications:
+  tables:
+
+    network_infrastructure:
+      concept_domain: telecom network infrastructure
+      entry_count: 120
+      concept_unit: component
+      concept_scope_examples: access network type, core network element, transmission system, radio infrastructure, or connectivity layer
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"network node" vs "network element"'
+      terminology_domain: telecom
+      distinctness_criteria: function, structure, or typical use
+      domain_name: telecom and communications
+      domain_scope: mobile networks, fiber, core, radio, transmission, etc.
+      example_name: Radio Access Network
+      example_description: A network infrastructure component that connects user devices to the core network, supporting wireless communication services.
+
+    subscriber_profiles:
+      concept_domain: subscriber or user profile
+      entry_count: 120
+      concept_unit: profile
+      concept_scope_examples: customer segment, usage pattern, subscription type, device usage, or engagement behavior
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"subscriber profile" vs "customer profile"'
+      terminology_domain: telecom
+      distinctness_criteria: attribute type, segmentation, or behavioral pattern
+      domain_name: telecom and communications
+      domain_scope: subscribers, users, plans, usage patterns, etc.
+      example_name: High Data Usage Profile
+      example_description: A subscriber profile representing users with significant data consumption, supporting targeted service plans and optimization.
+
+    service_plans_products:
+      concept_domain: telecom service plan or product
+      entry_count: 150
+      concept_unit: plan
+      concept_scope_examples: mobile plan type, broadband service, prepaid plan, postpaid plan, or bundled offering
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"mobile plan" vs "wireless plan"'
+      terminology_domain: telecom
+      distinctness_criteria: function, structure, or typical use
+      domain_name: telecom and communications
+      domain_scope: mobile, broadband, prepaid, postpaid, bundles, etc.
+      example_name: Mobile Data Plan
+      example_description: A service product that provides data connectivity for mobile devices, supporting internet access and communication.
+
+    usage_events:
+      concept_domain: telecom usage event
+      entry_count: 150
+      concept_unit: event
+      concept_scope_examples: call event, data session, SMS message, roaming activity, or service usage interaction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"call event" vs "voice usage event"'
+      terminology_domain: telecom
+      distinctness_criteria: event type, function, or role in service usage
+      domain_name: telecom and communications
+      domain_scope: voice, data, messaging, roaming, sessions, etc.
+      example_name: Data Session Event
+      example_description: A usage event representing internet activity on a network, supporting billing and performance tracking.
+
+    billing_revenue:
+      concept_domain: telecom billing or revenue model
+      entry_count: 120
+      concept_unit: model
+      concept_scope_examples: usage-based billing, subscription billing, prepaid credit model, roaming charges, or bundle pricing
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"usage billing" vs "consumption billing"'
+      terminology_domain: telecom
+      distinctness_criteria: function, structure, or role in monetization
+      domain_name: telecom and communications
+      domain_scope: billing, charging, subscriptions, pricing, etc.
+      example_name: Usage-Based Billing
+      example_description: A billing model where charges are calculated based on actual service consumption, supporting flexible pricing structures.
+
+    network_performance_metrics:
+      concept_domain: network performance metric
+      entry_count: 120
+      concept_unit: metric
+      concept_scope_examples: latency measure, throughput metric, signal strength, packet loss rate, or quality of service indicator
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"network latency" vs "response delay"'
+      terminology_domain: telecom
+      distinctness_criteria: measurement type, performance focus, or role in evaluation
+      domain_name: telecom and communications
+      domain_scope: performance, quality, reliability, analytics, etc.
+      example_name: Network Latency
+      example_description: A metric measuring the delay in data transmission, supporting evaluation of network responsiveness.
+
+    devices_endpoints:
+      concept_domain: telecom device or endpoint
+      entry_count: 120
+      concept_unit: device
+      concept_scope_examples: mobile device, modem, router, IoT device, or communication endpoint
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"mobile device" vs "communication device"'
+      terminology_domain: telecom
+      distinctness_criteria: function, structure, or typical use
+      domain_name: telecom and communications
+      domain_scope: smartphones, routers, IoT devices, endpoints, etc.
+      example_name: Mobile Device
+      example_description: An endpoint used to access telecom services, supporting voice, data, and messaging communication.
+
+    service_operations:
+      concept_domain: telecom operational process
+      entry_count: 120
+      concept_unit: process
+      concept_scope_examples: service provisioning, network configuration, activation process, maintenance workflow, or fault management
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"service provisioning" vs "service activation"'
+      terminology_domain: telecom
+      distinctness_criteria: function, structure, or role in operations
+      domain_name: telecom and communications
+      domain_scope: provisioning, activation, configuration, maintenance, etc.
+      example_name: Service Provisioning Process
+      example_description: A process that activates telecom services for subscribers, supporting service availability and connectivity.
+
+    compliance_regulations:
+      concept_domain: telecom compliance regulation
+      entry_count: 100
+      concept_unit: regulation
+      concept_scope_examples: spectrum regulation, data privacy rule, service obligation, interconnection standard, or regulatory guideline
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"telecom regulation" vs "communication rule"'
+      terminology_domain: regulatory
+      distinctness_criteria: requirement type, scope, or governance role
+      domain_name: telecom and communications
+      domain_scope: spectrum, privacy, service obligations, compliance, etc.
+      example_name: Data Privacy Regulation
+      example_description: A regulation governing the protection of user data, supporting compliance and secure handling of communications information.
+
+    operational_incidents:
+      concept_domain: operational incident
+      entry_count: 120
+      concept_unit: incident
+      concept_scope_examples: network outage, service disruption, call failure, data issue, or system malfunction
+      instance_exclusion_rules: no IDs, no numbers, no dates, no people, no balances
+      trivial_variant_example: '"network outage" vs "service downtime"'
+      terminology_domain: operational
+      distinctness_criteria: incident type, root cause, impact category, or role in disruption
+      domain_name: telecom and communications
+      domain_scope: networks, services, billing, operations, etc.
+      example_name: Network Outage
+      example_description: An incident where communication services become unavailable, disrupting connectivity and requiring remediation.
+

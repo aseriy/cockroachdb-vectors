@@ -52,27 +52,34 @@ def worker_put_conn(conn):
 
 
 
-def get_null_vector_row_count(pool, table_name, output_column, primary_key):
-    count = 0
-    conn = main_get_conn(pool)
-    with conn.cursor() as cur:
-        cur.execute(f'SELECT COUNT("{primary_key}") FROM "{table_name}" WHERE "{output_column}" IS NULL')
-        count = cur.fetchone()[0]
+# def get_null_vector_row_count(pool, schema_name, table_name, output_column, primary_key):
+#     if schema_name is not None:
+#         table_name = f"{schema_name}.{table_name}"
 
-    pool.putconn(conn)
-    return count
+#     count = 0
+#     conn = main_get_conn(pool)
+#     with conn.cursor() as cur:
+#         cur.execute(f'SELECT COUNT({primary_key}) FROM "{table_name}" WHERE "{output_column}" IS NULL')
+#         count = cur.fetchone()[0]
+
+#     pool.putconn(conn)
+#     return count
 
 
-def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, verbose=False):
+def fetch_null_vector_ids(pool, schema_name, table_name, output_column, primary_key, limit, verbose=False):
     max_retries = 10
     ids = None
+
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     for attempt in range(1, max_retries + 1):
         try:
             conn = main_get_conn(pool)
             with conn.cursor() as cur:
                 cur.execute(f"""
-                            SELECT "{primary_key}" FROM "{table_name}"
-                            WHERE "{output_column}" IS NULL
+                            SELECT {primary_key} FROM {table_name}
+                            WHERE {output_column} IS NULL
                             LIMIT %s
                             """,
                             (limit,))
@@ -93,10 +100,14 @@ def fetch_null_vector_ids(pool, table_name, output_column, primary_key, limit, v
 
 def batch_embed(
                 db_url,
-                table_name, input_column,
+                schema_name, table_name,
+                input_column,
                 primary_key, ids,
                 dry_run, verbose, batch_index=0
                 ):
+
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
     
     if not ids:
         return None
@@ -108,9 +119,9 @@ def batch_embed(
         placeholders = ','.join(['%s'] * len(ids))
         cur.execute(
             f'''
-                SELECT "{primary_key}", "{input_column}"
-                FROM "{table_name}"
-                WHERE "{primary_key}" IN ({placeholders})
+                SELECT {primary_key}, {input_column}
+                FROM {table_name}
+                WHERE {primary_key} IN ({placeholders})
             ''', ids)
         batch = cur.fetchall()
     
@@ -131,11 +142,14 @@ def batch_embed(
 
 
 def batch_update(
-                pool, table_name, output_column,
+                pool, schema_name, table_name, output_column,
                 primary_key, primary_key_type,
                 values,
                 dry_run, verbose, batch_index=0
                 ):
+
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
 
     warnings = []
     errors = []
@@ -148,10 +162,10 @@ def batch_update(
             try:
                 with conn.cursor() as cur:
                     sql = f'''
-                        UPDATE "{table_name}" AS t
-                        SET "{output_column}" = v.embedding
-                        FROM (VALUES %s) AS v("{primary_key}", embedding)
-                        WHERE t."{primary_key}" = v."{primary_key}"::"{primary_key_type}"
+                        UPDATE {table_name} AS t
+                        SET {output_column} = v.embedding
+                        FROM (VALUES %s) AS v({primary_key}, embedding)
+                        WHERE t.{primary_key} = v.{primary_key}::{primary_key_type}
                     '''
                     execute_values(cur, sql, values, template="(%s, %s)")
                 conn.commit()
@@ -173,7 +187,7 @@ def batch_update(
 def process_single_batch(
     executor: ProcessPoolExecutor,
     conn_pool: SimpleConnectionPool,
-    url: str, table: str,
+    url: str, schema: str | None, table: str,
     primary_key: str, primary_key_type: str,
     source_column: str, vector_column: str,
     ids: list,
@@ -203,7 +217,7 @@ def process_single_batch(
         fut = executor.submit(
             batch_embed,
             url,
-            table, source_column,
+            schema, table, source_column,
             primary_key, id_chunk,
             dry_run, verbose, batch_counter
         )
@@ -217,7 +231,7 @@ def process_single_batch(
         embeddings.extend(fut.result())
 
     update_count, worker_errors, worker_warnings = batch_update(
-        conn_pool, table, vector_column,
+        conn_pool, schema, table, vector_column,
         primary_key, primary_key_type,
         embeddings,
         dry_run, verbose, batch_counter
@@ -230,7 +244,7 @@ def process_single_batch(
 def run_embed_follow(
     executor: ProcessPoolExecutor,
     conn_pool: SimpleConnectionPool,
-    url: str, table: str,
+    url: str, schema: str | None, table: str,
     primary_key: str, primary_key_type: str,
     source_column: str, vector_column: str,
     batch_size,
@@ -247,7 +261,7 @@ def run_embed_follow(
         
     while True:
         # Fetch one batchfull of IDs (no wait on start or after successful work)
-        ids = fetch_null_vector_ids(conn_pool, table, vector_column, primary_key, batch_size)
+        ids = fetch_null_vector_ids(conn_pool, schema, table, vector_column, primary_key, batch_size)
 
         if ids:
             # Got work!!! Reset the current idle_time
@@ -257,7 +271,7 @@ def run_embed_follow(
             update_count, worker_errors, worker_warnings = process_single_batch(
                 executor,
                 conn_pool,
-                url, table,
+                url, schema, table,
                 primary_key, primary_key_type,
                 source_column, vector_column,
                 ids,
@@ -299,7 +313,7 @@ def run_embed_follow(
 def run_embed_n_batches(
     executor: ProcessPoolExecutor,
     conn_pool: SimpleConnectionPool,
-    url: str, table: str,
+    url: str, schema: str | None, table: str,
     primary_key: str, primary_key_type: str,
     source_column: str, vector_column: str,
     batch_size, num_batches,
@@ -337,7 +351,7 @@ def run_embed_n_batches(
 
     for batch in range(1, num_batches+1):
         # Fetch one batchfull of IDs (no wait on start or after successful work)
-        ids = fetch_null_vector_ids(conn_pool, table, vector_column, primary_key, batch_size)
+        ids = fetch_null_vector_ids(conn_pool, schema, table, vector_column, primary_key, batch_size)
 
         if not ids:
             if verbose:
@@ -349,7 +363,7 @@ def run_embed_n_batches(
             update_count, worker_errors, worker_warnings = process_single_batch(
                 executor,
                 conn_pool,
-                url, table,
+                url, schema, table,
                 primary_key, primary_key_type,
                 source_column, vector_column,
                 ids,
@@ -409,13 +423,14 @@ def run_embed(args):
     conn_pool = SimpleConnectionPool(minconn=0, maxconn=args['workers'], **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['schema'], args['table'])
 
     # Check if the specified vector column exist.
     # If it doesn't, recommend running "instrument"
     if not is_vector_column(
                     conn_pool,
-                    args['table'], args['output'],
+                    args['schema'], args['table'],
+                    args['output'],
                     model.embedding_dim(),
                     not args['progress']
             ):
@@ -438,7 +453,7 @@ def run_embed(args):
         run_embed_follow(
             executor,
             conn_pool,
-            args['url'], args['table'],
+            args['url'], args['schema'], args['table'],
             primary_key, primary_key_type,
             args['input'], args['output'],
             args['batch_size'],
@@ -451,7 +466,7 @@ def run_embed(args):
         run_embed_n_batches(
             executor,
             conn_pool,
-            args['url'], args['table'],
+            args['url'], args['schema'], args['table'],
             primary_key, primary_key_type,
             args['input'], args['output'],
             args['batch_size'], args['num_batches'],

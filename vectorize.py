@@ -27,6 +27,24 @@ class OperationGroup(click.Group):
 
 
 
+def parse_table_name(table: str) -> tuple[str,str]:
+    # Split by the dot to separate schema and table
+    parts = table.split('.')
+    
+    if len(parts) > 2:
+        raise ValueError(f"Invalid table identifier format: {table}")
+
+    schema = None
+    if len(parts) > 1:
+        schema, table = parts
+    else:
+        table = parts[0] 
+
+    return schema, table
+
+
+
+
 @click.group(
     cls=OperationGroup,
     options_metavar="[OPTIONS]",
@@ -93,9 +111,11 @@ def embed(
         verbose = True
         progress = False
 
+    schema, table = parse_table_name(table)
     
     args = {
         "url": url,
+        "schema": schema, 
         "table": table,
         "input": input_col,
         "output": output_col,
@@ -136,8 +156,11 @@ def search(
         text
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
@@ -167,8 +190,11 @@ def sql(
         limit
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
@@ -194,8 +220,11 @@ def instrument(
         verbose
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
@@ -217,8 +246,11 @@ def size(
         verbose
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,
@@ -241,8 +273,11 @@ def cleanup(
         verbose
 ):
 
+    schema, table = parse_table_name(table)
+
     args = {
         "url": url,
+        "schema": schema,
         "table": table,
         "source": input_col,
         "embedding": output_col,

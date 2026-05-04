@@ -17,7 +17,7 @@ from .common import (
 model = None
 
 
-def is_vector_column(pool, table_name, vector_column, vector_dim, verbose=False) -> bool:
+def is_vector_column(pool, schema_name, table_name, vector_column, vector_dim, verbose=False) -> bool:
     """Checks if the vector column exists and or the correct type/dimensionality.
 
     Args:
@@ -32,7 +32,7 @@ def is_vector_column(pool, table_name, vector_column, vector_dim, verbose=False)
 
     vector_column_ok = False
 
-    column_type = get_column_type(pool, table_name, vector_column)
+    column_type = get_column_type(pool, schema_name, table_name, vector_column)
 
     if column_type:
         if 'vector' not in column_type:
@@ -52,16 +52,19 @@ def is_vector_column(pool, table_name, vector_column, vector_dim, verbose=False)
 
 
 
-def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, verbose=False):
+def ensure_vector_column(pool, schema_name, table_name, pk, output_column, dry_run=False, verbose=False):
     sql = []
     vector_dim = model.embedding_dim()
 
-    if not is_vector_column(pool, table_name, output_column, vector_dim, verbose):
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
+    if not is_vector_column(pool, schema_name, table_name, output_column, vector_dim, verbose):
         sql.append(
             (
                 f"[INFO] Adding new column {output_column} VECTOR({vector_dim})",
                 f"""
-                    ALTER TABLE "{table_name}"
+                    ALTER TABLE {table_name}
                     ADD COLUMN "{output_column}" VECTOR({vector_dim})
                 """
             )
@@ -71,9 +74,9 @@ def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, ver
         (
             f"[INFO] Creating vector index",
             f'''
-            CREATE VECTOR INDEX IF NOT EXISTS "{table_name}_{output_column}_idx"
-            ON "{table_name}"("{output_column}" {model.embedding_index_opclass()})
-            WHERE "{output_column}" IS NOT NULL
+            CREATE VECTOR INDEX IF NOT EXISTS {output_column}_idx
+            ON {table_name} ({output_column} {model.embedding_index_opclass()})
+            WHERE {output_column} IS NOT NULL
             '''
         )
     )
@@ -81,8 +84,8 @@ def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, ver
         (
             f"[INFO] Creating index to accelerate locating rows with no embeddings",
             f'''
-                CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_null_idx"
-                ON "{table_name}"("{pk}" ASC)
+                CREATE INDEX IF NOT EXISTS {output_column}_{pk}_null_idx
+                ON {table_name} ("{pk}" ASC)
                 WHERE "{output_column}" IS NULL
             '''
         )
@@ -91,8 +94,8 @@ def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, ver
         (
             f"[INFO] Creating index to rows considered in vector searches",
             f'''
-                CREATE INDEX IF NOT EXISTS "{table_name}_{output_column}_{pk}_not_null_idx"
-                ON "{table_name}"("{pk}" ASC)
+                CREATE INDEX IF NOT EXISTS {output_column}_{pk}_not_null_idx
+                ON {table_name} ("{pk}" ASC)
                 WHERE "{output_column}" IS NOT NULL
             '''
         )
@@ -114,19 +117,23 @@ def ensure_vector_column(pool, table_name, pk, output_column, dry_run=False, ver
 
 
 def drop_vector_column(
-            pool, table_name, pk, output_column,
+            pool, schema_name, table_name, pk, output_column,
             green_idx=False, green_embed=False,
             dry_run=False, verbose=False
         ):
     sql = []
     vector_dim = model.embedding_dim()
 
+    table_name_orig = table_name
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
+
     if green_idx:
         sql.append(
             (
                 f"[INFO] Dropping vector index",
                 f'''
-                DROP INDEX IF EXISTS "{table_name}_{output_column}_idx"
+                DROP INDEX IF EXISTS {table_name}@{output_column}_idx
                 '''
             )
         )
@@ -134,7 +141,7 @@ def drop_vector_column(
             (
                 f"[INFO] Dropping index to accelerate locating rows with no embeddings",
                 f'''
-                    DROP INDEX IF EXISTS "{table_name}_{output_column}_{pk}_null_idx"
+                DROP INDEX IF EXISTS {table_name}@{output_column}_{pk}_null_idx
                 '''
             )
         )
@@ -142,18 +149,18 @@ def drop_vector_column(
             (
                 f"[INFO] Dropping index to rows considered in vector searches",
                 f'''
-                    DROP INDEX IF EXISTS "{table_name}_{output_column}_{pk}_not_null_idx"
+                DROP INDEX IF EXISTS {table_name}@{output_column}_{pk}_not_null_idx
                 '''
             )
         )
 
     if green_embed:
-        if is_vector_column(pool, table_name, output_column, vector_dim, verbose):
+        if is_vector_column(pool, schema_name, table_name_orig, output_column, vector_dim, verbose):
             sql.append(
                 (
                     f"[INFO] Dropping vector column {output_column} VECTOR({vector_dim})",
                     f"""
-                        ALTER TABLE "{table_name}" DROP COLUMN "{output_column}"
+                    ALTER TABLE {table_name} DROP COLUMN {output_column}
                     """
                 )
             )
@@ -181,9 +188,10 @@ def run_instrument(args: dict):
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['schema'], args['table'])
     ensure_vector_column(
         conn_pool,
+        args['schema'],
         args['table'],
         primary_key,
         args['embedding'],
@@ -191,10 +199,10 @@ def run_instrument(args: dict):
         args['verbose']
     )
 
-    trigger_config = read_trigger_function(conn_pool, args['table'])
+    trigger_config = read_trigger_function(conn_pool, args['schema'], args['table'])
 
-    config = update_trigger_func_add_column(trigger_config, args['table'], args['source'], args['embedding'])
-    trg_func_sql = update_trigger_sql(config, args['table'])
+    config = update_trigger_func_add_column(trigger_config, args['source'], args['embedding'])
+    trg_func_sql = update_trigger_sql(config, args['schema'], args['table'])
     install_trigger(conn_pool, trg_func_sql)
 
     return None
@@ -205,7 +213,7 @@ def run_cleanup(args: dict):
     global model
     model = importlib.import_module(f"models.{args['model']}")
 
-    green_idx, green_embed = cleanup_confirm(args['table'], args['source'], args['embedding'])
+    green_idx, green_embed = cleanup_confirm(args['schema'], args['table'], args['source'], args['embedding'])
 
     # TODO: check if the vector column exists. User may specify a non-existent column.
     #       Actually both, source and embedding.
@@ -213,15 +221,19 @@ def run_cleanup(args: dict):
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
 
-    trigger_config = read_trigger_function(conn_pool, args['table'])
-    config = update_trigger_func_drop_column(trigger_config, args['table'], args['source'], args['embedding'])
+    trigger_config = read_trigger_function(conn_pool, args['schema'], args['table'])
+    config = update_trigger_func_drop_column(
+                                                trigger_config,
+                                                args['source'], args['embedding']
+                                            )
     
-    trg_func_sql = update_trigger_sql(config, args['table'], drop=True)
+    trg_func_sql = update_trigger_sql(config, args['schema'], args['table'], drop=True)
     install_trigger(conn_pool, trg_func_sql)
 
-    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['table'])
+    primary_key, primary_key_type = get_primary_key_column(conn_pool, args['schema'], args['table'])
     drop_vector_column(
         conn_pool,
+        args['schema'],
         args['table'],
         primary_key,
         args['embedding'],
@@ -234,8 +246,11 @@ def run_cleanup(args: dict):
 
 
 
-def cleanup_confirm(table_name, source_col, vector_col):
+def cleanup_confirm(schema_name, table_name, source_col, vector_col):
     drop_indexes, drop_column = False, False
+
+    if schema_name is not None:
+        table_name = f"{schema_name}.{table_name}"
 
     prompt = textwrap.dedent(f"""
         You're about to remove the vector embeddings associated with {table_name}.{source_col}.
@@ -286,14 +301,21 @@ def install_trigger(pool, sql):
 
 
 
-def update_trigger_sql(config, table_name, drop = False):
+def update_trigger_sql(config, schema_name, table_name, drop = False):
+    if schema_name is not None:
+        trigger_name = f"clear_vector_on_update_{schema_name}_{table_name}"
+        table_name = f"{schema_name}.{table_name}"
+    else:
+        trigger_name = f"clear_vector_on_update_{table_name}"
+
+
     sql_tmpl = [
         """
             SELECT count(*) FROM pg_catalog.pg_trigger
-            WHERE tgname='clear_vector_on_update_{{ table_name }}'; 
+            WHERE tgname='{{ trigger_name }}'; 
         """,
         """
-            DROP TRIGGER IF EXISTS clear_vector_on_update_{{ table_name }}
+            DROP TRIGGER IF EXISTS {{ trigger_name }}
             ON {{ table_name }};
         """
     ]
@@ -301,7 +323,7 @@ def update_trigger_sql(config, table_name, drop = False):
     if config:
         sql_tmpl.append(
             """
-                CREATE OR REPLACE FUNCTION clear_vector_on_update_{{ table_name }}()
+                CREATE OR REPLACE FUNCTION {{ trigger_name }}()
                 RETURNS trigger
                 LANGUAGE plpgsql
                 AS $$
@@ -326,10 +348,10 @@ def update_trigger_sql(config, table_name, drop = False):
     if not drop:
         sql_tmpl.append(
             """
-                CREATE TRIGGER clear_vector_on_update_{{ table_name }}
+                CREATE TRIGGER {{ trigger_name }}
                 BEFORE UPDATE ON {{ table_name }}
                 FOR EACH ROW
-                EXECUTE FUNCTION clear_vector_on_update_{{ table_name }}();
+                EXECUTE FUNCTION {{ trigger_name }}();
             """
         )
     else:
@@ -343,6 +365,7 @@ def update_trigger_sql(config, table_name, drop = False):
             sql.append(
                 textwrap.dedent(
                     template.render(
+                        trigger_name=trigger_name,
                         table_name=table_name, 
                         config=config
                     )
@@ -356,7 +379,7 @@ def update_trigger_sql(config, table_name, drop = False):
 
 
 
-def update_trigger_func_add_column(config, table_name, source_column, vector_column):
+def update_trigger_func_add_column(config, source_column, vector_column):
     new_config = config
 
     match_source = [(i, c) for i, c in enumerate(config) if c['input'] == source_column]
@@ -381,7 +404,7 @@ def update_trigger_func_add_column(config, table_name, source_column, vector_col
 
 
 
-def update_trigger_func_drop_column(config, table_name, source_column, vector_column):
+def update_trigger_func_drop_column(config, source_column, vector_column):
     new_config = config
 
     match_source = [(i, c) for i, c in enumerate(config) if c['input'] == source_column]
@@ -402,7 +425,10 @@ def update_trigger_func_drop_column(config, table_name, source_column, vector_co
 
 
 
-def read_trigger_function(pool, table_name) -> dict:
+def read_trigger_function(pool, schema_name, table_name) -> dict:
+    if schema_name is not None:
+        table_name = f"{schema_name}_{table_name}"
+
     trg_func_name = f"clear_vector_on_update_{table_name}"
     trg_func_body = None
 
