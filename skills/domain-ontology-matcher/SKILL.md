@@ -35,7 +35,20 @@ Use WebSearch to gather comprehensive information about the company. Research th
 ### Step 4: Ask for Additional Information
 After completing your research, ask the user: "Do you have any additional context or information about this company that wasn't found in the research?" Wait for their response.
 
-### Step 5: Infer Knowledge Domain
-Based on the research findings and any additional information from the user, identify the knowledge domain(s) that apply to this company. Present your findings clearly, explaining why each domain is relevant.
+### Step 5: Save Research to Database
+Structure all research findings (from Step 3 and Step 4) as a single JSON object. Include:
+   - All information gathered from web search
+   - Any additional context provided by the user
+   - Use clear, descriptive keys for each piece of information
+
+Save the research to the database using:
+```bash
+echo '<json_object>' | python scripts/research.py -u "$CRDB_URL" save "<Company Name>"
+```
+
+Do not create temporary files. Use the Bash tool to pipe the JSON directly into the research.py script.
+
+### Step 6: Infer Knowledge Domain
+Based on the saved research findings, identify the knowledge domain(s) that apply to this company. Present your findings clearly, explaining why each domain is relevant.
 
 This is the final step. Stop here.
