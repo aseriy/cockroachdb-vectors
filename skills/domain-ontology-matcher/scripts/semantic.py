@@ -1,7 +1,6 @@
 import click
-import atexit
 import json
-from psycopg2.pool import SimpleConnectionPool
+import psycopg2
 from urllib.parse import urlparse, parse_qs
 from typing import Any
 
@@ -28,83 +27,73 @@ def build_conn_kwargs(db_url) -> dict[str, Any]:
     return connection_dict
 
 
-def main_get_conn(pool):
-    conn = pool.getconn()
-    conn.autocommit = True
-    return conn
-
-
 @click.group()
+def cli():
+    pass
+
+
+@cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
-@click.pass_context
-def cli(ctx, url):
-    ctx.ensure_object(dict)
-    ctx.obj['url'] = url
+def domains(url):
+    conn = psycopg2.connect(**build_conn_kwargs(url))
+    conn.autocommit = True
 
-
-@cli.command()
-@click.pass_context
-def domains(ctx):
-    url = ctx.obj['url']
-    conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(url))
-    atexit.register(conn_pool.closeall)
-
-    query = """
-        SELECT DISTINCT schema_name
-        FROM [SHOW TABLES]
-        ORDER BY schema_name
-    """
-
-    conn = main_get_conn(conn_pool)
-    with conn.cursor() as cur:
-        cur.execute(query)
-        result = cur.fetchall()
-
-    domains_list = [row[0] for row in result]
-    print(json.dumps(domains_list, indent=2))
-
-    conn_pool.putconn(conn)
-
-
-@cli.command()
-@click.argument("domain_name")
-@click.argument("ontology", required=False)
-@click.pass_context
-def domain(ctx, domain_name, ontology):
-    url = ctx.obj['url']
-    conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(url))
-    atexit.register(conn_pool.closeall)
-
-    conn = main_get_conn(conn_pool)
-
-    if ontology is None:
+    try:
         query = """
-            SELECT table_name
+            SELECT DISTINCT schema_name
             FROM [SHOW TABLES]
-            WHERE schema_name = %s
-            ORDER BY table_name
+            ORDER BY schema_name
         """
-        with conn.cursor() as cur:
-            cur.execute(query, (domain_name,))
-            result = cur.fetchall()
 
-        ontologies_list = [row[0] for row in result]
-        print(json.dumps(ontologies_list, indent=2))
-    else:
-        table_name = f"{domain_name}.{ontology}"
-        query = f"""
-            SELECT name, description
-            FROM {table_name}
-            ORDER BY name
-        """
         with conn.cursor() as cur:
             cur.execute(query)
             result = cur.fetchall()
 
-        terms_list = [{"name": row[0], "description": row[1]} for row in result]
-        print(json.dumps(terms_list, indent=2))
+        domains_list = [row[0] for row in result]
+        print(json.dumps(domains_list, indent=2))
 
-    conn_pool.putconn(conn)
+    finally:
+        conn.close()
+
+
+@cli.command()
+@click.option("-u", "--url", required=True, help="CockroachDB connection URL")
+@click.argument("domain_name")
+@click.argument("ontology", required=False)
+def domain(url, domain_name, ontology):
+    conn = psycopg2.connect(**build_conn_kwargs(url))
+    conn.autocommit = True
+
+    try:
+        if ontology is None:
+            query = """
+                SELECT table_name
+                FROM [SHOW TABLES]
+                WHERE schema_name = %s
+                ORDER BY table_name
+            """
+            with conn.cursor() as cur:
+                cur.execute(query, (domain_name,))
+                result = cur.fetchall()
+
+            ontologies_list = [row[0] for row in result]
+            print(json.dumps(ontologies_list, indent=2))
+        else:
+            table_name = f"{domain_name}.{ontology}"
+            query = f"""
+                SELECT name, description
+                FROM {table_name}
+                ORDER BY name
+            """
+            with conn.cursor() as cur:
+                cur.execute(query)
+                result = cur.fetchall()
+
+            terms_list = [{"name": row[0], "description": row[1]} for row in result]
+            print(json.dumps(terms_list, indent=2))
+
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":
