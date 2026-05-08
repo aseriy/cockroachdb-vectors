@@ -5,6 +5,8 @@ import psycopg2
 from urllib.parse import urlparse, parse_qs
 from typing import Any
 
+DATABASE = "research"
+
 
 def build_conn_kwargs(db_url) -> dict[str, Any]:
     parsed = urlparse(db_url)
@@ -26,6 +28,18 @@ def build_conn_kwargs(db_url) -> dict[str, Any]:
             connection_dict[key] = query_params[key][0]
 
     return connection_dict
+
+
+def ensure_database(conn, db_name):
+    """Check if database exists and switch to it."""
+    with conn.cursor() as cur:
+        cur.execute("SELECT database_name FROM [SHOW DATABASES] WHERE database_name = %s", (db_name,))
+        result = cur.fetchone()
+
+        if not result:
+            raise click.ClickException(f"Database '{db_name}' does not exist in the cluster")
+
+        cur.execute(f"USE {db_name}")
 
 
 @click.group()
@@ -50,6 +64,8 @@ def save(url, file, company_name):
     conn.autocommit = True
 
     try:
+        ensure_database(conn, DATABASE)
+
         # Create table if not exists
         create_table_query = """
             CREATE TABLE IF NOT EXISTS public.research (
