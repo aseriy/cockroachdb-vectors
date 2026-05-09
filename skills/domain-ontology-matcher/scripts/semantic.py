@@ -1,3 +1,10 @@
+# /// script
+# dependencies = [
+#   "click==8.3.1",
+#   "psycopg2-binary==2.9.10",
+# ]
+# ///
+
 import click
 import json
 import psycopg2

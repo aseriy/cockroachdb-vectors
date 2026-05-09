@@ -1,4 +1,96 @@
-# Session Notes - 2026-05-08
+# Session Notes - 2026-05-08 (Part 3)
+
+## Workflow Redesign and Testing
+
+### Workflow Changes
+User requested complete workflow redesign:
+1. Step 1: Get Database URL (unchanged)
+2. Step 2: Ask for Company Name (unchanged)
+3. Step 3: **List Research Criteria** (changed from conducting research)
+4. Step 4: **Ask for Additional Criteria** (changed from asking for additional context after research)
+5. Step 5: **Conduct Research** using combined criteria set, format as JSON (no temp files)
+6. Step 6: **Save Research** using research.py script
+7. **STOP** - Removed old "Infer Knowledge Domain" step entirely
+
+### Key Changes
+- Research criteria are now **presented** before asking user if they want to add more (Step 3-4)
+- Research is **conducted** after getting user input on criteria (Step 5)
+- All research must be formatted as JSON and piped directly (no temp files)
+- Workflow ends after saving to database (no domain inference)
+
+### Successful Test Run: Delta Airlines
+
+**Execution:**
+- Company: Delta Airlines
+- Research Date: 2026-05-08 20:26:17 UTC
+- Record ID: `a50a3975-83b4-4132-85ba-ef5899da5c1d`
+- Database: `research`
+
+**Research Coverage:**
+- Industry vertical: Commercial Aviation
+- Geographic presence: 64 countries, 325 destinations, 10 international hubs
+- Financial data: $63.36B revenue (2025), $14.2B Q1 2026
+- Stock: NYSE:DAL (public company)
+- Technology: AWS cloud (90% migrated), hybrid mainframe/cloud architecture
+- Partnerships: American Express ($8B/year), SkyTeam alliance (19 airlines)
+- Scale: 103,000 employees, 200M passengers/year
+- Challenges: Legacy systems, crew scheduling crisis (May 2026), CrowdStrike outage (2024)
+- Growth: 95 new aircraft orders including first A350-1000 in US
+
+**Technical Notes:**
+- Had to install psycopg2-binary via pip3 (not using uv run)
+- CRDB_URL environment variable doesn't persist between Bash calls - must export in same command
+- Successfully piped JSON directly to research.py without temp files
+
+### Status
+✅ Workflow redesign complete
+✅ SKILL.md updated with new workflow
+✅ Full end-to-end test successful with Delta Airlines
+✅ Research saved to database
+
+---
+
+# Session Notes - 2026-05-08 (Part 2)
+
+## CLI Refactoring
+
+### Issue: URL Position in Commands
+User requested moving `-u/--url` to precede subcommands for convenience (e.g., `cmd -u $URL subcmd` instead of `cmd subcmd -u $URL`).
+
+**Problem Discovered:**
+With required options at group level, `--help` doesn't work:
+```bash
+$ python3 semantic.py domain --help
+Error: Missing option '-u' / '--url'.
+```
+
+**Decision:**
+Reverted to command-level decorators. This allows `--help` to work without providing URL, which is more important than ergonomics.
+
+### Enhancements to research.py
+1. **Default days in list command:** Changed `-d/--days` from required to optional with default of 90 days
+2. **Company name normalization:** Added `normalize_company_name()` function that:
+   - Strips leading/trailing whitespace
+   - Collapses multiple spaces to single spaces
+   - Converts to title case (e.g., "cockroach  labs" → "Cockroach Labs")
+   - Applied to `save`, `list`, and `load` commands
+
+## Skill Testing
+
+### Test Run: TJX Companies
+- Successfully completed Steps 1-4 of workflow
+- Gathered comprehensive research on TJX (off-price retailer, $60B revenue, 377K employees)
+- **Issue:** Did not complete Step 5 (save research to database) - was waiting for user response to "additional context" question
+- User went offline before research could be saved
+
+### Next Session TODO:
+- Complete Step 5: Save TJX research to database
+- Complete Step 6: Infer knowledge domains based on research
+- Test full end-to-end workflow
+
+---
+
+# Session Notes - 2026-05-08 (Part 1)
 
 ## New Database Layout Plan
 

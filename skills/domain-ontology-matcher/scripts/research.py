@@ -1,3 +1,10 @@
+# /// script
+# dependencies = [
+#   "click==8.3.1",
+#   "psycopg2-binary==2.9.10",
+# ]
+# ///
+
 import click
 import json
 import sys
@@ -40,6 +47,14 @@ def ensure_database(conn, db_name):
             raise click.ClickException(f"Database '{db_name}' does not exist in the cluster")
 
         cur.execute(f"USE {db_name}")
+
+
+def normalize_company_name(name):
+    """Normalize company name: title case and collapse multiple spaces."""
+    # Strip leading/trailing whitespace and collapse multiple spaces
+    normalized = ' '.join(name.split())
+    # Convert to title case
+    return normalized.title()
 
 
 def create_research_table(conn):
@@ -90,6 +105,8 @@ def setup(url):
 @click.option('-f', '--file', type=click.Path(exists=True), help='JSON file path')
 @click.argument('company_name')
 def save(url, file, company_name):
+    company_name = normalize_company_name(company_name)
+
     # Read JSON from file or stdin
     if file:
         with open(file, 'r') as f:
@@ -129,10 +146,12 @@ def save(url, file, company_name):
 
 @cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
-@click.option('-d', '--days', type=int, required=True, help='Number of days to look back')
+@click.option('-d', '--days', type=int, default=90, help='Number of days to look back (default: 90)')
 @click.argument('company_name')
 def list(url, days, company_name):
     """List research results for a company from the last X days."""
+    company_name = normalize_company_name(company_name)
+
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
 
@@ -172,6 +191,8 @@ def list(url, days, company_name):
 @click.argument('company_name')
 def load(url, company_name):
     """Load the latest research for a company."""
+    company_name = normalize_company_name(company_name)
+
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
 

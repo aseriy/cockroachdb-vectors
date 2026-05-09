@@ -5,6 +5,11 @@ description: Research a company and select a representative knowledge domain and
 
 # Domain and Ontology Matcher
 
+## Available scripts
+
+- **`scripts/research.py`** — Saves, lists, and loads company research data to/from the database
+- **`scripts/semantic.py`** — Manages knowledge domains and ontologies in the database
+
 ## Workflow
 
 Follow these steps in order. Do not skip any step.
@@ -15,8 +20,8 @@ Check if the `CRDB_URL` environment variable is set. If it is not set, stop and 
 ### Step 2: Ask for Company Name
 Ask the user: "Which company would you like me to research?" Wait for their response before proceeding.
 
-### Step 3: Research Company
-Use WebSearch to gather comprehensive information about the company. Research these areas:
+### Step 3: List Research Criteria
+Present the criteria by which the company will be evaluated:
    - Industry vertical
    - Headquarters location and geographic presence/markets
    - Lines of business, products, and customer base
@@ -32,23 +37,22 @@ Use WebSearch to gather comprehensive information about the company. Research th
    - Known pain points or challenges (from blog posts, job postings, interviews, etc.)
    - Growth trajectory and scaling needs
 
-### Step 4: Ask for Additional Information
-After completing your research, ask the user: "Do you have any additional context or information about this company that wasn't found in the research?" Wait for their response.
+### Step 4: Ask for Additional Criteria
+Ask the user: "Would you like to add any other aspects or criteria for the research?"
 
-### Step 5: Save Research to Database
-Structure all research findings (from Step 3 and Step 4) as a single JSON object. Include:
-   - All information gathered from web search
-   - Any additional context provided by the user
-   - Use clear, descriptive keys for each piece of information
+**STOP HERE. End your response and wait for the user to answer. Do not proceed to Step 5 until the user provides their response (either additional criteria or confirmation they have none).**
 
+### Step 5: Conduct Research
+Use WebSearch to gather comprehensive information about the company based on the combined criteria set (pre-canned from Step 3 + any user-provided criteria from Step 4).
+
+Format all research findings as a single JSON object with clear, descriptive keys for each piece of information. Do NOT save the JSON to any temporary file.
+
+### Step 6: Save Research to Database
 Save the research to the database using:
 ```bash
-echo '<json_object>' | python scripts/research.py -u "$CRDB_URL" save "<Company Name>"
+echo '<json_object>' | uv run scripts/research.py save -u "$CRDB_URL" "<Company Name>"
 ```
 
-Do not create temporary files. Use the Bash tool to pipe the JSON directly into the research.py script.
-
-### Step 6: Infer Knowledge Domain
-Based on the saved research findings, identify the knowledge domain(s) that apply to this company. Present your findings clearly, explaining why each domain is relevant.
+Use the Bash tool to pipe the JSON directly into the research.py script.
 
 This is the final step. Stop here.
