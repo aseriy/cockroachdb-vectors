@@ -207,4 +207,9 @@ marimo/_lsp/
 __marimo__/
 
 
+# vectorize.py local configuration
 config.yaml
+
+
+# Claude for developing and testing the skill(s) in this project
+.claude/
