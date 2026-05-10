@@ -8,14 +8,20 @@
 import click
 import json
 import sys
+import os
 import psycopg2
 from urllib.parse import urlparse, parse_qs
 from typing import Any
 
 DATABASE = "research"
 EMBEDDING_MODEL = "hf_st_all_minilm_l6"
+VECTOR_COLUMN_SUFFIX = "_hf"
 SEARCH_LIMIT = 3
 DISTANCE_THRESHOLD = 0.25
+
+# Path to vectorize.py relative to this script
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+VECTORIZE_PATH = os.path.join(_SCRIPT_DIR, "..", "..", "..", "vectorize.py")
 
 
 def build_conn_kwargs(db_url) -> dict[str, Any]:
@@ -63,15 +69,10 @@ def normalize_company_name(name):
 def get_embedding(text: str, url: str) -> list[float]:
     """Generate embedding vector by calling vectorize.py."""
     import subprocess
-    import os
-
-    # Get path to vectorize.py relative to this script's location
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    vectorize_path = os.path.join(script_dir, "..", "..", "..", "vectorize.py")
 
     cmd = [
         sys.executable,
-        vectorize_path,
+        VECTORIZE_PATH,
         "input",
         "-u", url,
         "-m", EMBEDDING_MODEL,
@@ -85,8 +86,10 @@ def get_embedding(text: str, url: str) -> list[float]:
     return json.loads(result.stdout.strip())
 
 
-def create_research_table(conn):
+def create_research_table(conn, url):
     """Create research table and index if they don't exist."""
+    import subprocess
+
     create_table_query = """
         CREATE TABLE IF NOT EXISTS public.research (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -106,6 +109,24 @@ def create_research_table(conn):
     with conn.cursor() as cur:
         cur.execute(create_index_query)
 
+    # Add vector column and indexes via vectorize.py instrument
+    vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
+
+    cmd = [
+        sys.executable,
+        VECTORIZE_PATH,
+        "instrument",
+        "-u", url,
+        "-t", "research",
+        "-i", "company",
+        "-o", vector_column,
+        "-m", EMBEDDING_MODEL
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise click.ClickException(f"vectorize.py instrument failed: {result.stderr}")
+
 
 @click.group()
 def cli():
@@ -121,7 +142,7 @@ def setup(url):
 
     try:
         ensure_database(conn, DATABASE)
-        create_research_table(conn)
+        create_research_table(conn, url)
         print(json.dumps({"status": "research table created"}))
 
     finally:
@@ -147,9 +168,6 @@ def save(url, file, company_name):
     conn.autocommit = True
 
     try:
-        ensure_database(conn, DATABASE)
-        create_research_table(conn)
-
         # Insert the research data
         insert_query = """
             INSERT INTO public.research (company, info)
@@ -168,6 +186,8 @@ def save(url, file, company_name):
             "status": "saved"
         }, indent=2))
 
+    except psycopg2.Error as e:
+        raise click.ClickException(f"Database or table doesn't exist. Run 'research.py setup -u <url>' first. Error: {e}")
     finally:
         conn.close()
 
@@ -184,23 +204,22 @@ def list(url, days, company_name):
     conn.autocommit = True
 
     try:
-        ensure_database(conn, DATABASE)
-        create_research_table(conn)
-
         # Get embedding for input company name
         vector = get_embedding(company_name, url)
 
-        query = """
+        vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
+
+        query = f"""
             SELECT
                 company,
                 ARRAY_AGG(at ORDER BY at DESC) AS timestamps,
-                company_hf <=> %s::VECTOR(384) AS distance
+                {vector_column} <=> %s::VECTOR(384) AS distance
             FROM research
             AS OF SYSTEM TIME follower_read_timestamp()
-            WHERE company_hf IS NOT NULL
+            WHERE {vector_column} IS NOT NULL
             AND at > now() - interval '%s days'
-            GROUP BY company, company_hf
-            ORDER BY company_hf <=> %s::VECTOR(384)
+            GROUP BY company, {vector_column}
+            ORDER BY {vector_column} <=> %s::VECTOR(384)
             LIMIT %s
         """
 
@@ -221,6 +240,8 @@ def list(url, days, company_name):
 
         print(json.dumps(output, indent=2))
 
+    except psycopg2.Error as e:
+        raise click.ClickException(f"Database or table doesn't exist. Run 'research.py setup -u <url>' first. Error: {e}")
     finally:
         conn.close()
 
@@ -236,9 +257,6 @@ def load(url, company_name):
     conn.autocommit = True
 
     try:
-        ensure_database(conn, DATABASE)
-        create_research_table(conn)
-
         query = """
             SELECT id, at, company, info
             FROM public.research
@@ -262,6 +280,8 @@ def load(url, company_name):
         else:
             print(json.dumps({}))
 
+    except psycopg2.Error as e:
+        raise click.ClickException(f"Database or table doesn't exist. Run 'research.py setup -u <url>' first. Error: {e}")
     finally:
         conn.close()
 
