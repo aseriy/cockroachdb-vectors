@@ -5,6 +5,7 @@ from jinja2 import Template
 from psycopg2.pool import SimpleConnectionPool
 from .model import is_valid_model
 from .common import build_conn_kwargs, main_get_conn, get_primary_key_column
+import json
 
 model = None
 
@@ -140,4 +141,16 @@ def run_emit(args: dict):
     print(f"{query}\n")
     if not sample:
         print(f"{emit_note}\n")
+
+
+
+def run_input_encode(args: dict):
+    if not is_valid_model(args['model']):
+        raise RuntimeError(f"Invalid embedding model {args['model']}")
+
+    global model
+    model = importlib.import_module(f"models.{args['model']}")
+    vector = model.embedding_encode(args['text'], args['verbose'])
+
+    print(vector)
 

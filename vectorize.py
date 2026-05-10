@@ -7,7 +7,8 @@ from operations import (
     run_model_list, run_model_desc,
     run_instrument,
     run_size,
-    run_cleanup
+    run_cleanup,
+    run_input_encode
 )
 
 
@@ -55,12 +56,20 @@ def cli():
 
 
 
-def common_options(f):
+def url_option(f):
     f = click.option("-u", "--url", required=True, help="CockroachDB connection URL")(f)
+    return f
+
+def verbose_option(f):
+    f = click.option("-v", "--verbose", is_flag=True, help="Verbose output (used for debugging)")(f)
+    return f
+
+def common_options(f):
+    f = url_option(f)
     f = click.option("-t", "--table", required=True, help="Target table name")(f)
     f = click.option("-i", "--input", "input_col", required=True, help="Column containing input text")(f)
     f = click.option("-o", "--output", "output_col", required=True, help="Column to store the vector")(f)
-    f = click.option("-v", "--verbose", is_flag=True, help="Verbose output (used for debugging)")(f)
+    f = verbose_option(f)
     return f
 
 def model_options(f):
@@ -172,6 +181,28 @@ def search(
 
     run_search(args)
 
+
+
+@cli.command(name="input", short_help="Encode provided input text")
+@url_option
+@verbose_option
+@model_options
+@click.argument("text", required=True)
+def input_encode(
+        url,
+        model,
+        verbose,
+        text
+):
+
+    args = {
+        "url": url,
+        "model": model,
+        "verbose": verbose,
+        "text": text
+    }
+
+    run_input_encode(args)
 
 
 @cli.command(short_help="Emit SQL for integrations")

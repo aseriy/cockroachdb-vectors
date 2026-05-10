@@ -1,7 +1,7 @@
 # operations/__init__.py
 
 from .embed import run_embed
-from .search import run_search, run_emit
+from .search import run_search, run_emit, run_input_encode
 from .model import is_valid_model, run_model_list, run_model_desc
 from .instrument import run_instrument, run_cleanup
 from .size import run_size
@@ -16,5 +16,6 @@ __all__ = [
     "run_cleanup",
     "is_valid_model",
     "run_model_list",
-    "run_model_desc"
+    "run_model_desc",
+    "run_input_encode"
 ]

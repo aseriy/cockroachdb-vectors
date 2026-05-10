@@ -51,21 +51,6 @@ def worker_put_conn(conn):
 
 
 
-
-# def get_null_vector_row_count(pool, schema_name, table_name, output_column, primary_key):
-#     if schema_name is not None:
-#         table_name = f"{schema_name}.{table_name}"
-
-#     count = 0
-#     conn = main_get_conn(pool)
-#     with conn.cursor() as cur:
-#         cur.execute(f'SELECT COUNT({primary_key}) FROM "{table_name}" WHERE "{output_column}" IS NULL')
-#         count = cur.fetchone()[0]
-
-#     pool.putconn(conn)
-#     return count
-
-
 def fetch_null_vector_ids(pool, schema_name, table_name, output_column, primary_key, limit, verbose=False):
     max_retries = 10
     ids = None
