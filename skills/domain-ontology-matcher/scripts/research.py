@@ -13,6 +13,9 @@ from urllib.parse import urlparse, parse_qs
 from typing import Any
 
 DATABASE = "research"
+EMBEDDING_MODEL = "hf_st_all_minilm_l6"
+SEARCH_LIMIT = 3
+DISTANCE_THRESHOLD = 0.25
 
 
 def build_conn_kwargs(db_url) -> dict[str, Any]:
@@ -55,6 +58,31 @@ def normalize_company_name(name):
     normalized = ' '.join(name.split())
     # Convert to title case
     return normalized.title()
+
+
+def get_embedding(text: str, url: str) -> list[float]:
+    """Generate embedding vector by calling vectorize.py."""
+    import subprocess
+    import os
+
+    # Get path to vectorize.py relative to this script's location
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    vectorize_path = os.path.join(script_dir, "..", "..", "..", "vectorize.py")
+
+    cmd = [
+        sys.executable,
+        vectorize_path,
+        "input",
+        "-u", url,
+        "-m", EMBEDDING_MODEL,
+        text
+    ]
+
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        raise click.ClickException(f"vectorize.py failed: {result.stderr}")
+
+    return json.loads(result.stdout.strip())
 
 
 def create_research_table(conn):
@@ -159,25 +187,36 @@ def list(url, days, company_name):
         ensure_database(conn, DATABASE)
         create_research_table(conn)
 
+        # Get embedding for input company name
+        vector = get_embedding(company_name, url)
+
         query = """
-            SELECT id, at, company
-            FROM public.research
-            WHERE company = %s
+            SELECT
+                company,
+                ARRAY_AGG(at ORDER BY at DESC) AS timestamps,
+                company_hf <=> %s::VECTOR(384) AS distance
+            FROM research
+            AS OF SYSTEM TIME follower_read_timestamp()
+            WHERE company_hf IS NOT NULL
             AND at > now() - interval '%s days'
-            ORDER BY at DESC
+            GROUP BY company, company_hf
+            ORDER BY company_hf <=> %s::VECTOR(384)
+            LIMIT %s
         """
 
         with conn.cursor() as cur:
-            cur.execute(query, (company_name, days))
+            cur.execute(query, (vector, days, vector, SEARCH_LIMIT))
             results = cur.fetchall()
+
+        # Filter by distance threshold
+        filtered_results = [row for row in results if row[2] < DISTANCE_THRESHOLD]
 
         output = [
             {
-                "id": str(row[0]),
-                "at": row[1].isoformat(),
-                "company": row[2]
+                "company": row[0],
+                "timestamps": [ts.isoformat() for ts in row[1]]
             }
-            for row in results
+            for row in filtered_results
         ]
 
         print(json.dumps(output, indent=2))
