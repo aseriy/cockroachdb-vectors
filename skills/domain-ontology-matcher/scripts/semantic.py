@@ -2,6 +2,11 @@
 # dependencies = [
 #   "click==8.3.1",
 #   "psycopg2-binary==2.9.10",
+#   "click==8.3.1",
+#   "humanize==4.15.0",
+#   "Jinja2==3.1.6",
+#   "requests==2.32.4",
+#   "urllib3==2.5.0",
 # ]
 # ///
 

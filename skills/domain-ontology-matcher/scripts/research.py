@@ -12,6 +12,7 @@ import os
 import psycopg2
 from urllib.parse import urlparse, parse_qs
 from typing import Any
+import subprocess
 
 DATABASE = "research"
 EMBEDDING_MODEL = "hf_st_all_minilm_l6"
@@ -68,10 +69,9 @@ def normalize_company_name(name):
 
 def get_embedding(text: str, url: str) -> list[float]:
     """Generate embedding vector by calling vectorize.py."""
-    import subprocess
 
     cmd = [
-        sys.executable,
+        "python3",
         VECTORIZE_PATH,
         "input",
         "-u", url,
@@ -88,7 +88,6 @@ def get_embedding(text: str, url: str) -> list[float]:
 
 def create_research_table(conn, url):
     """Create research table and index if they don't exist."""
-    import subprocess
 
     create_table_query = """
         CREATE TABLE IF NOT EXISTS public.research (
@@ -113,7 +112,7 @@ def create_research_table(conn, url):
     vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
 
     cmd = [
-        sys.executable,
+        "python3",
         VECTORIZE_PATH,
         "instrument",
         "-u", url,
