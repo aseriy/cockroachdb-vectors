@@ -61,6 +61,7 @@ def cli():
 @cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
 def domains(url):
+    """List all knowledge domains"""
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
 
@@ -89,6 +90,7 @@ def domains(url):
 @click.argument("domain_name")
 @click.argument("ontology", required=False)
 def domain(url, domain_name, ontology):
+    """List ontologies in a domain, or terms in a specific ontology"""
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
 
