@@ -177,7 +177,7 @@ def embedding_index_operator() -> str:
 def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
     if exec_local:
         model = _MODEL_CACHE.get(huggingface_path)
-        embeddings = model.encode([input_text], batch_size=128, show_progress_bar=False)
+        embeddings = model.encode([input_text], batch_size=1, show_progress_bar=False)
         return embeddings[0].tolist()
 
     if 'nuclio' in model_settings:

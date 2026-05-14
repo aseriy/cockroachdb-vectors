@@ -15,7 +15,9 @@ description: Research a company and select a representative knowledge domain and
 Follow these steps in order.
 
 ### Step 1: Get Database URL
-Check if the `CRDB_URL` environment variable is set. If it is not set, stop and ask the user to provide it. Do not proceed until you have the URL.
+Check if the `CRDB_URL` environment variable is set.
+If it is not set or it is empty, stop and ask the user to provide it.
+DO NOT proceed until you have the URL!!!
 
 ### Step 2: Ask for Company Name
 Ask the user: "Which company would you like me to research?" Wait for their response before proceeding.
@@ -39,9 +41,17 @@ uv run scripts/research.py list -u "$CRDB_URL" "<company_name>"
 ### Step 4: Verify Company Name
 Use WebSearch to look up the company and gather basic identifying information (official name, industry, headquarters).
 
-Present the findings to the user and ask them to confirm the company name you should use for research.
+Present the findings as numbered options:
+1. Company name (official name, industry, headquarters)
+2. Company name (if multiple found)
+...
+[last company + 1]. Enter another company to research
+[last company + 2]. Exit
 
-Wait for user confirmation before proceeding.
+Wait for user selection.
+- If user selects a company (1, 2, etc.): Use that company's official name and continue to Step 5
+- If user selects "Enter another company": Go back to Step 2
+- If user selects "Exit": EXIT the workflow
 
 ### Step 5: List Research Criteria
 Present the criteria by which the company will be evaluated:

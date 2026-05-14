@@ -2,6 +2,9 @@
 # dependencies = [
 #   "click==8.3.1",
 #   "psycopg2-binary==2.9.10",
+#   "tqdm==4.67.1",
+#   "rich==15.0.0",
+#   "pyyaml"
 # ]
 # ///
 
@@ -18,7 +21,7 @@ DATABASE = "research"
 EMBEDDING_MODEL = "hf_st_all_minilm_l6"
 VECTOR_COLUMN_SUFFIX = "_hf"
 SEARCH_LIMIT = 3
-DISTANCE_THRESHOLD = 0.25
+DISTANCE_THRESHOLD = 0.5
 
 # Path to vectorize.py relative to this script
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,7 +74,7 @@ def get_embedding(text: str, url: str) -> list[float]:
     """Generate embedding vector by calling vectorize.py."""
 
     cmd = [
-        "python3",
+        sys.executable,
         VECTORIZE_PATH,
         "input",
         "-u", url,
@@ -112,7 +115,7 @@ def create_research_table(conn, url):
     vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
 
     cmd = [
-        "python3",
+        sys.executable,
         VECTORIZE_PATH,
         "instrument",
         "-u", url,
@@ -167,6 +170,7 @@ def save(url, file, company_name):
     conn.autocommit = True
 
     try:
+        ensure_database(conn, DATABASE)
         # Insert the research data
         insert_query = """
             INSERT INTO public.research (company, info)
@@ -203,6 +207,7 @@ def list(url, days, company_name):
     conn.autocommit = True
 
     try:
+        ensure_database(conn, DATABASE)
         # Get embedding for input company name
         vector = get_embedding(company_name, url)
 
@@ -256,6 +261,7 @@ def load(url, company_name):
     conn.autocommit = True
 
     try:
+        ensure_database(conn, DATABASE)
         query = """
             SELECT id, at, company, info
             FROM public.research

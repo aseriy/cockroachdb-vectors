@@ -237,6 +237,11 @@ def run_embed_follow(
     min_idle: int, max_idle: int,
     verbose: bool = False
 ):
+    # TODO: This is a temp hack - a new CLI option needs to be added for this!!!
+    #       This control how long the idle process can sleep for not to become
+    #       totally insensitive when max wait is long.
+    max_sleep = 60
+
     # Backoff state
     idle_wait = 0
     max_idle_secs = max_idle *  60
@@ -289,6 +294,8 @@ def run_embed_follow(
                 time.sleep(to_sleep)
                 idle_wait += to_sleep
                 to_sleep *= 2
+                if to_sleep > max_sleep:
+                    to_sleep = 1
 
 
 
