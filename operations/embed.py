@@ -104,7 +104,7 @@ def batch_embed(
         placeholders = ','.join(['%s'] * len(ids))
         cur.execute(
             f'''
-                SELECT {primary_key}, {input_column}
+                SELECT {primary_key}, {input_column}::TEXT
                 FROM {table_name}
                 WHERE {primary_key} IN ({placeholders})
             ''', ids)
@@ -119,7 +119,6 @@ def batch_embed(
         for i, (row_id, row_text) in enumerate(batch, 1):
             input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
             print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector {row_id}: '{input_column_text}'")
-
 
     values = model.embedding_encode_batch(batch_index, batch, verbose)
     return values

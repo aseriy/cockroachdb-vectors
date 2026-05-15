@@ -2,6 +2,10 @@
 # dependencies = [
 #   "click==8.3.1",
 #   "psycopg2-binary==2.9.10",
+#   "humanize==4.15.0",
+#   "Jinja2==3.1.6",
+#   "requests==2.32.4",
+#   "urllib3==2.5.0",
 #   "tqdm==4.67.1",
 #   "rich==15.0.0",
 #   "pyyaml"
@@ -199,6 +203,7 @@ def list(url, days, company_name):
         ensure_database(conn, DATABASE)
         # Get embedding for input company name
         vector = get_embedding(company_name, url)
+        dimension = len(vector)
 
         vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
 
@@ -206,13 +211,13 @@ def list(url, days, company_name):
             SELECT
                 company,
                 ARRAY_AGG(json_build_object('id', id, 'at', at) ORDER BY at DESC) AS research,
-                {vector_column} <=> %s::VECTOR(384) AS distance
+                {vector_column} <=> %s::VECTOR({dimension}) AS distance
             FROM research
             AS OF SYSTEM TIME follower_read_timestamp()
             WHERE {vector_column} IS NOT NULL
             AND at > now() - interval '%s days'
             GROUP BY company, {vector_column}
-            ORDER BY {vector_column} <=> %s::VECTOR(384)
+            ORDER BY {vector_column} <=> %s::VECTOR({dimension})
             LIMIT %s
         """
 
@@ -275,16 +280,17 @@ def load(url, company_name):
         else:
             # Load by company name using semantic search
             vector = get_embedding(company_name, url)
+            dimension = len(vector)
             vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
 
             # Find closest matching company using vector similarity
             match_query = f"""
                 SELECT
                     company,
-                    {vector_column} <=> %s::VECTOR(384) AS distance
+                    {vector_column} <=> %s::VECTOR({dimension}) AS distance
                 FROM research
                 WHERE {vector_column} IS NOT NULL
-                ORDER BY {vector_column} <=> %s::VECTOR(384)
+                ORDER BY {vector_column} <=> %s::VECTOR({dimension})
                 LIMIT 1
             """
 
