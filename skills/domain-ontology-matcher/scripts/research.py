@@ -12,6 +12,7 @@ import click
 import json
 import sys
 import os
+import re
 import psycopg2
 from urllib.parse import urlparse, parse_qs
 from typing import Any
@@ -60,14 +61,6 @@ def ensure_database(conn, db_name):
             raise click.ClickException(f"Database '{db_name}' does not exist in the cluster")
 
         cur.execute(f"USE {db_name}")
-
-
-def normalize_company_name(name):
-    """Normalize company name: title case and collapse multiple spaces."""
-    # Strip leading/trailing whitespace and collapse multiple spaces
-    normalized = ' '.join(name.split())
-    # Convert to title case
-    return normalized.title()
 
 
 def get_embedding(text: str, url: str) -> list[float]:
@@ -156,8 +149,6 @@ def setup(url):
 @click.option('-f', '--file', type=click.Path(exists=True), help='JSON file path')
 @click.argument('company_name')
 def save(url, file, company_name):
-    company_name = normalize_company_name(company_name)
-
     # Read JSON from file or stdin
     if file:
         with open(file, 'r') as f:
@@ -201,8 +192,6 @@ def save(url, file, company_name):
 @click.argument('company_name')
 def list(url, days, company_name):
     """List research results for a company from the last X days."""
-    company_name = normalize_company_name(company_name)
-
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
 
@@ -216,7 +205,7 @@ def list(url, days, company_name):
         query = f"""
             SELECT
                 company,
-                ARRAY_AGG(at ORDER BY at DESC) AS timestamps,
+                ARRAY_AGG(json_build_object('id', id, 'at', at) ORDER BY at DESC) AS research,
                 {vector_column} <=> %s::VECTOR(384) AS distance
             FROM research
             AS OF SYSTEM TIME follower_read_timestamp()
@@ -237,7 +226,13 @@ def list(url, days, company_name):
         output = [
             {
                 "company": row[0],
-                "timestamps": [ts.isoformat() for ts in row[1]]
+                "research": [
+                    {
+                        "id": str(r["id"]),
+                        "at": r["at"].isoformat() if hasattr(r["at"], 'isoformat') else r["at"]
+                    }
+                    for r in row[1]
+                ]
             }
             for row in filtered_results
         ]
@@ -254,25 +249,68 @@ def list(url, days, company_name):
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
 @click.argument('company_name')
 def load(url, company_name):
-    """Load the latest research for a company."""
-    company_name = normalize_company_name(company_name)
-
+    """Load research by company name (semantic search) or research ID (direct lookup)."""
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
 
     try:
         ensure_database(conn, DATABASE)
-        query = """
-            SELECT id, at, company, info
-            FROM public.research
-            WHERE company = %s
-            ORDER BY at DESC
-            LIMIT 1
-        """
 
-        with conn.cursor() as cur:
-            cur.execute(query, (company_name,))
-            result = cur.fetchone()
+        # Auto-detect if input is UUID
+        uuid_pattern = r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        is_uuid = re.match(uuid_pattern, company_name, re.IGNORECASE)
+
+        if is_uuid:
+            # Load by specific ID
+            query = """
+                SELECT id, at, company, info
+                FROM public.research
+                WHERE id = %s
+            """
+
+            with conn.cursor() as cur:
+                cur.execute(query, (company_name,))
+                result = cur.fetchone()
+
+        else:
+            # Load by company name using semantic search
+            vector = get_embedding(company_name, url)
+            vector_column = f"company{VECTOR_COLUMN_SUFFIX}"
+
+            # Find closest matching company using vector similarity
+            match_query = f"""
+                SELECT
+                    company,
+                    {vector_column} <=> %s::VECTOR(384) AS distance
+                FROM research
+                WHERE {vector_column} IS NOT NULL
+                ORDER BY {vector_column} <=> %s::VECTOR(384)
+                LIMIT 1
+            """
+
+            with conn.cursor() as cur:
+                cur.execute(match_query, (vector, vector))
+                match_result = cur.fetchone()
+
+            # Check if match is within distance threshold
+            if not match_result or match_result[1] >= DISTANCE_THRESHOLD:
+                print(json.dumps({}))
+                return
+
+            matched_company = match_result[0]
+
+            # Load latest research for the matched company
+            load_query = """
+                SELECT id, at, company, info
+                FROM public.research
+                WHERE company = %s
+                ORDER BY at DESC
+                LIMIT 1
+            """
+
+            with conn.cursor() as cur:
+                cur.execute(load_query, (matched_company,))
+                result = cur.fetchone()
 
         if result:
             output = {
