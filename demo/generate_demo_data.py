@@ -183,7 +183,7 @@ prompt_tmpl = """
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
-def run_domain(conn, client, domain_name, domain_def, target, batch_size, model):
+def run_domain(conn, client, domain_name, domain_def, target, model):
     logger.info(f"=== Domain: {domain_name} ===")
     setup_schema(conn, domain_name)
 
@@ -195,8 +195,6 @@ def run_domain(conn, client, domain_name, domain_def, target, batch_size, model)
         target = tdef['entry_count']
         logger.info(f"  Existing rows: {current} / {target}")
 
-        # while current < target:
-        # n = min(batch_size, target - current)
         n = tdef['entry_count']
         logger.info(f"  Generating {n} rows...")
 
@@ -222,7 +220,6 @@ def main():
     parser.add_argument("-d", "--domain", help=f"Domain name. Available: {list(DOMAINS.keys())}")
     parser.add_argument("--all", action="store_true", help="Run all domains")
     parser.add_argument("-t", "--target", type=int, default=10000, help="Target rows per table (default: 10000)")
-    parser.add_argument("-b", "--batch-size", type=int, default=1000, help="Rows per LLM call (default: 50)")
     parser.add_argument("--model", default="gpt-4o-mini", help="OpenAI model (default: gpt-4o-mini)")
     parser.add_argument("--api-key", help="OpenAI API key (or set OPENAI_API_KEY env var)")
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -248,7 +245,7 @@ def main():
         for name, defn in to_run.items():
             # print(f"name: {name}")
             # print(f"defn: {json.dumps(defn, indent=2)}")
-            run_domain(conn, client, name, defn, args.target, args.batch_size, args.model)
+            run_domain(conn, client, name, defn, args.target, args.model)
 
     logger.info("All done.")
 
