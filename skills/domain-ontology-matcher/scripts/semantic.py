@@ -161,10 +161,11 @@ def domain(url, domain_name, ontology):
 @cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
 @click.option("-s", "--vector-suffix", required=True, help="Vector column suffix (e.g., 'hf')")
-@click.option("-n", "--top-n", type=int, default=None, help="Number of top results (default: all below median)")
+@click.option("-t", "--threshold", type=float, default=0.8, help="Median distance threshold (default: 0.8)")
+@click.option("-k", "--skew", type=float, default=0.5, help="Skew extension ratio for term threshold (default: 0.5)")
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose progress logging")
 @click.argument('research_id')
-def match(url, vector_suffix, top_n, verbose, research_id):
+def match(url, vector_suffix, threshold, skew, verbose, research_id):
     """Match against knowledge domain ontologies using research ID (UUID) or text input."""
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
@@ -238,44 +239,78 @@ def match(url, vector_suffix, top_n, verbose, research_id):
                 for row in rows:
                     print(f"  {row[0]} | {row[2]:8.4f} | {row[1]}", file=sys.stderr)
 
-            distances = [row[2] for row in rows]
+            # Filter distances < 1 (exclude irrelevant/dissimilar vectors)
+            all_distances = [row[2] for row in rows]
+            distances = [d for d in all_distances if d < 1.0]
+
+            if verbose and all_distances:
+                filtered_count = len(all_distances) - len(distances)
+                if filtered_count > 0:
+                    print(f"  Filtered {filtered_count} distances >= 1.0", file=sys.stderr)
 
             if distances:
+                min_dist = min(distances)
                 median_dist = statistics.median(distances)
-                results.append((table, median_dist))
+                max_dist = max(distances)
+                results.append((table, min_dist, median_dist, max_dist, distances))
 
                 if verbose:
-                    print(f"  {table}: median={median_dist:.4f}", file=sys.stderr)
+                    print(f"  {table}: min={min_dist:.4f}, median={median_dist:.4f}, max={max_dist:.4f}", file=sys.stderr)
 
-        # Calculate median of all table medians
+        # Sort all results by median distance (ascending)
         if not results:
-            table_names = []
+            output = []
         else:
-            all_medians = [dist for _, dist in results]
-            median_of_medians = statistics.median(all_medians)
+            # Sort by median distance
+            results.sort(key=lambda x: x[2])  # x[2] is median_dist
 
             if verbose:
-                print(f"\nOverall median of medians: {median_of_medians:.4f}", file=sys.stderr)
+                print(f"\nTotal tables with distances < 1: {len(results)}", file=sys.stderr)
 
-            # Keep lower half: tables with median < overall median
-            lower_half = [(table, dist) for table, dist in results if dist < median_of_medians]
-            lower_half.sort(key=lambda x: x[1])
-
-            if verbose:
-                print(f"Lower half contains {len(lower_half)} tables", file=sys.stderr)
-
-            # Apply top-n limit if specified
-            if top_n is None:
-                top_results = lower_half
-            else:
-                top_results = lower_half[:top_n]
-
-            table_names = [table for table, _ in top_results]
+            # Filter by median threshold
+            results = [r for r in results if r[2] < threshold]  # r[2] is median_dist
 
             if verbose:
-                print(f"Returning {len(table_names)} results", file=sys.stderr)
+                print(f"Tables with median < {threshold}: {len(results)}", file=sys.stderr)
 
-        print(json.dumps(table_names, indent=2))
+            # Format output as tuples with term threshold and row count
+            output = []
+            for table, min_dist, median_dist, max_dist, distances in results:
+                # Calculate term threshold based on skew extension ratio
+                if (median_dist - min_dist) <= (max_dist - median_dist):
+                    # Median closer to min
+                    term_threshold = median_dist + (median_dist - min_dist) * skew
+                else:
+                    # Median closer to max
+                    term_threshold = median_dist + (max_dist - median_dist) * skew
+
+                # Count rows below term threshold
+                row_count = sum(1 for d in distances if d < term_threshold)
+
+                output.append([
+                    table,
+                    round(min_dist, 4),
+                    round(median_dist, 4),
+                    round(max_dist, 4),
+                    round(term_threshold, 4),
+                    row_count
+                ])
+
+            if verbose:
+                print(f"Returning {len(output)} results", file=sys.stderr)
+
+        # Print with each tuple on a single line
+        if output:
+            print("[")
+            for i, row in enumerate(output):
+                line = json.dumps(row)
+                if i < len(output) - 1:
+                    print(f"  {line},")
+                else:
+                    print(f"  {line}")
+            print("]")
+        else:
+            print("[]")
 
     except psycopg2.Error as e:
         raise click.ClickException(f"Database error: {e}")
