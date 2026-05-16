@@ -161,11 +161,10 @@ def domain(url, domain_name, ontology):
 @cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
 @click.option("-s", "--vector-suffix", required=True, help="Vector column suffix (e.g., 'hf')")
-@click.option("-n", "--top-n", type=int, required=True, help="Number of top results to return")
-@click.option("-t", "--threshold", type=float, required=True, help="Distance threshold (0.0-1.0)")
+@click.option("-n", "--top-n", type=int, default=None, help="Number of top results (default: all below median)")
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose progress logging")
 @click.argument('research_id')
-def match(url, vector_suffix, top_n, threshold, verbose, research_id):
+def match(url, vector_suffix, top_n, verbose, research_id):
     """Match against knowledge domain ontologies using research ID (UUID) or text input."""
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
@@ -248,20 +247,33 @@ def match(url, vector_suffix, top_n, threshold, verbose, research_id):
                 if verbose:
                     print(f"  {table}: median={median_dist:.4f}", file=sys.stderr)
 
-        # Filter by threshold, sort, and take top-N
-        filtered = [(table, dist) for table, dist in results if dist < threshold]
+        # Calculate median of all table medians
+        if not results:
+            table_names = []
+        else:
+            all_medians = [dist for _, dist in results]
+            median_of_medians = statistics.median(all_medians)
 
-        if verbose:
-            print(f"Filtered to {len(filtered)} tables below threshold {threshold}", file=sys.stderr)
+            if verbose:
+                print(f"\nOverall median of medians: {median_of_medians:.4f}", file=sys.stderr)
 
-        filtered.sort(key=lambda x: x[1])
-        top_results = filtered[:top_n]
+            # Keep lower half: tables with median < overall median
+            lower_half = [(table, dist) for table, dist in results if dist < median_of_medians]
+            lower_half.sort(key=lambda x: x[1])
 
-        # Extract just table names
-        table_names = [table for table, _ in top_results]
+            if verbose:
+                print(f"Lower half contains {len(lower_half)} tables", file=sys.stderr)
 
-        if verbose:
-            print(f"Returning top {len(table_names)} results", file=sys.stderr)
+            # Apply top-n limit if specified
+            if top_n is None:
+                top_results = lower_half
+            else:
+                top_results = lower_half[:top_n]
+
+            table_names = [table for table, _ in top_results]
+
+            if verbose:
+                print(f"Returning {len(table_names)} results", file=sys.stderr)
 
         print(json.dumps(table_names, indent=2))
 
