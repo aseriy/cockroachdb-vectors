@@ -75,6 +75,27 @@ YAML:
 {{ domain_yaml }}
 """
 
+llm_prompt_tmpl = """
+Generate research questions about the company, its lines of business, products,
+services, subsidiaries, leadership, philosophy, history, future direction,
+news headlines, etc. based on the below facts.
+
+{% for key, t in domain_yaml.items() %}
+Domain area: {{ t.concept_domain }}
+Scope: {{ t.domain_scope }}
+Cover these aspects: {{ t.concept_scope_examples }}
+Terminology: {{ t.terminology_domain }}
+Questions must be distinct in: {{ t.distinctness_criteria }}
+Do not ask about: {{ t.instance_exclusion_rules }}
+Avoid near-duplicate questions such as: {{ t.trivial_variant_example }}
+
+{% endfor %}
+
+Return valid JSON only.
+Format: {"title": "<Domain Title>", "criteria": ["question 1", "question 2", ...]}
+"""
+
+
 md_tmpl = """## {{ title }}
 
 {% for item in criteria -%}
@@ -88,14 +109,13 @@ md_tmpl = """## {{ title }}
 def run_domain(client, domain_name, domain_def, output_dir, model):
     logger.info(f"=== Domain: {domain_name} ===")
 
-    # Convert domain_def to YAML string
-    domain_yaml = yaml.dump({domain_name: domain_def["tables"]}, default_flow_style=False)
-
     # Render LLM prompt
     template = Template(llm_prompt_tmpl)
     prompt = textwrap.dedent(
-        template.render(domain_yaml=domain_yaml)
+        template.render(domain_yaml = domain_def["tables"])
     )
+
+    print(prompt)
 
     logger.info(f"  Generating research criteria...")
     criteria_data = generate_criteria(client, prompt, model)

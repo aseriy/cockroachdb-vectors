@@ -161,11 +161,13 @@ def domain(url, domain_name, ontology):
 @cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
 @click.option("-s", "--vector-suffix", required=True, help="Vector column suffix (e.g., 'hf')")
+@click.option("-d", "--domain", required=True, help="Primary domain name")
 @click.option("-t", "--threshold", type=float, default=0.8, help="Median distance threshold (default: 0.8)")
-@click.option("-k", "--skew", type=float, default=0.5, help="Skew extension ratio for term threshold (default: 0.5)")
+@click.option("-k1", "--primary-skew", type=float, default=0.5, help="Skew extension ratio for primary domain (default: 0.5)")
+@click.option("-k2", "--secondary-skew", type=float, default=0.0, help="Skew extension ratio for secondary domains (default: 0.0)")
 @click.option("-v", "--verbose", is_flag=True, help="Enable verbose progress logging")
 @click.argument('research_id')
-def match(url, vector_suffix, threshold, skew, verbose, research_id):
+def match(url, vector_suffix, domain, threshold, primary_skew, secondary_skew, verbose, research_id):
     """Match against knowledge domain ontologies using research ID (UUID) or text input."""
     conn = psycopg2.connect(**build_conn_kwargs(url))
     conn.autocommit = True
@@ -206,14 +208,14 @@ def match(url, vector_suffix, threshold, skew, verbose, research_id):
         ensure_database(conn, KNOWLEDGE_DATABASE)
 
         query = """
-            SELECT schema_name || '.' || table_name
+            SELECT schema_name, table_name
             FROM [SHOW TABLES]
             ORDER BY schema_name, table_name
         """
 
         with conn.cursor() as cur:
             cur.execute(query)
-            tables = [row[0] for row in cur.fetchall()]
+            tables = [(row[0], row[1]) for row in cur.fetchall()]
 
         if verbose:
             print(f"Found {len(tables)} ontology tables", file=sys.stderr)
@@ -221,7 +223,8 @@ def match(url, vector_suffix, threshold, skew, verbose, research_id):
         # Calculate median distance for each table
         results = []
 
-        for table in tables:
+        for schema_name, table_name in tables:
+            table = f"{schema_name}.{table_name}"
             desc_vector_col = f"description_{vector_suffix}"
 
             query = f"""
@@ -252,10 +255,12 @@ def match(url, vector_suffix, threshold, skew, verbose, research_id):
                 min_dist = min(distances)
                 median_dist = statistics.median(distances)
                 max_dist = max(distances)
-                results.append((table, min_dist, median_dist, max_dist, distances))
+                total_rows = len(all_distances)
+                results.append((table, min_dist, median_dist, max_dist, distances, schema_name, total_rows))
 
                 if verbose:
-                    print(f"  {table}: min={min_dist:.4f}, median={median_dist:.4f}, max={max_dist:.4f}", file=sys.stderr)
+                    domain_type = "PRIMARY" if schema_name == domain else "SECONDARY"
+                    print(f"  {table}: min={min_dist:.4f}, median={median_dist:.4f}, max={max_dist:.4f} [{domain_type}]", file=sys.stderr)
 
         # Sort all results by median distance (ascending)
         if not results:
@@ -275,7 +280,11 @@ def match(url, vector_suffix, threshold, skew, verbose, research_id):
 
             # Format output as tuples with term threshold and row count
             output = []
-            for table, min_dist, median_dist, max_dist, distances in results:
+            for table, min_dist, median_dist, max_dist, distances, schema_name, total_rows in results:
+                # Determine which skew to use based on domain
+                is_primary = (schema_name == domain)
+                skew = primary_skew if is_primary else secondary_skew
+
                 # Calculate term threshold based on skew extension ratio
                 if (median_dist - min_dist) <= (max_dist - median_dist):
                     # Median closer to min
@@ -287,13 +296,19 @@ def match(url, vector_suffix, threshold, skew, verbose, research_id):
                 # Count rows below term threshold
                 row_count = sum(1 for d in distances if d < term_threshold)
 
+                # Calculate survivor ratio
+                # total_rows is passed from results tuple (all rows with non-null vectors)
+                survivor_ratio = round(row_count / total_rows, 2) if total_rows > 0 else None
+
                 output.append([
                     table,
                     round(min_dist, 4),
                     round(median_dist, 4),
                     round(max_dist, 4),
                     round(term_threshold, 4),
-                    row_count
+                    row_count,
+                    total_rows,
+                    survivor_ratio
                 ])
 
             if verbose:

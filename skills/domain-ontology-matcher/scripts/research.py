@@ -93,8 +93,9 @@ def create_research_table(conn, url):
         CREATE TABLE IF NOT EXISTS public.research (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             at TIMESTAMPTZ DEFAULT now(),
-            company TEXT,
-            info JSONB
+            company TEXT NOT NULL,
+            domain TEXT NOT NULL,
+            info JSONB DEFAULT
         )
     """
 
