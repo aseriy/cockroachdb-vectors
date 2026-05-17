@@ -1,13 +1,12 @@
-
 ## Consumer Hospitality And Retail
 
-1. What are the different types of accommodation offerings available?
-2. How do booking and reservation types vary across channels?
-3. What profile characteristics define frequent travelers?
-4. What elements contribute to an engaging travel experience offering?
-5. How do guided workout classes differ in structure and delivery?
-6. What are the key components of a loyalty points program in hospitality?
-7. How are monetization events classified in the consumer hospitality sector?
-8. What operational incidents commonly disrupt consumer experiences?
-9. How are service appointments structured across different personal services?
-10. What factors influence the flow of consumer transactions in hospitality?
+1. What types of accommodation offerings does the company provide?
+2. What booking or reservation services are available through the company?
+3. How does the company segment and utilize customer profiles for its services?
+4. What consumer experience offerings are available for engagement and participation?
+5. What fitness or wellness services does the company offer to its consumers?
+6. What loyalty or rewards programs does the company implement to retain customers?
+7. What monetization events does the company recognize in its revenue model?
+8. What operational incidents can occur in the company's services, and how are they managed?
+9. What types of service appointments can consumers schedule through the company?
+10. What types of transactions are facilitated by the company for securing services?

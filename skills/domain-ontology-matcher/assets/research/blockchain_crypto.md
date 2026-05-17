@@ -1,13 +1,12 @@
-
 ## Blockchain And Crypto
 
-1. What are the key characteristics that distinguish different blockchain networks?
-2. How do various types of digital assets function and what are their use cases?
-3. What roles do governance mechanisms play in blockchain ecosystems?
-4. How do identity name services enhance user interactions with blockchain resources?
-5. What types of infrastructure services are critical for blockchain application development?
-6. How do protocol interactions facilitate decentralized financial activities?
-7. What are the common types of security events encountered in blockchain systems?
-8. How do smart contracts operate and what are their implications for asset management?
-9. What are the significant events in blockchain transactions and their lifecycle stages?
-10. What factors determine the functionality and security of blockchain wallets and accounts?
+1. What types of blockchain networks does the company operate or support?
+2. What digital assets does the company create, manage, or facilitate transactions for?
+3. What governance mechanisms does the company implement for its blockchain protocols?
+4. What identity naming services does the company provide for blockchain addresses?
+5. What infrastructure services does the company offer for application interactions with blockchain nodes?
+6. What types of protocol interactions does the company enable for decentralized finance activities?
+7. What security events does the company monitor or respond to within its blockchain systems?
+8. What smart contracts does the company deploy for managing digital tokens or assets?
+9. What transaction events does the company track or manage within its blockchain applications?
+10. What types of wallets or accounts does the company offer for digital asset management?

@@ -59,8 +59,14 @@ def generate_criteria(client: OpenAI, prompt: str, model: str) -> Dict:
 
 llm_prompt_tmpl = """
 Given the domain YAML below, generate a JSON object with:
-- "title": the domain display name with each word capitalized, using standard industry abbreviations where appropriate (e.g., EV, AI, IoT) inferred from the YAML content
-- "criteria": an array of strings, each string is one research question (one per table)
+- "title":
+    the value of the 'domain_name' field from the YAML tables,
+    converted to standard title case,
+    with common abbreviations uppercased (e.g., AI, EV, IoT, ERP, CRM, B2B, SaaS)
+- "criteria": an array of strings, each string is one research question
+    (one per entry in the YAML). Each question must ask about what the
+    company actually does, operates, or offers in that area — not about
+    abstract concepts or field definitions.
 
 Return valid JSON only.
 Format: {"title": "AI Customer Experience", "criteria": ["question 1", "question 2", ...]}
@@ -69,8 +75,7 @@ YAML:
 {{ domain_yaml }}
 """
 
-md_tmpl = """
-## {{ title }}
+md_tmpl = """## {{ title }}
 
 {% for item in criteria -%}
 {{ loop.index }}. {{ item }}

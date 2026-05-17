@@ -1,13 +1,12 @@
-
 ## Financial Services
 
-1. What are the distinct functions and structures of various financial accounts?
-2. What types of client requests are commonly made regarding account management and services?
-3. What are the key compliance policies related to KYC and AML within financial services?
-4. How do customer profiles classify demographic and identity attributes in financial interactions?
-5. What types of fraud risk events are monitored and how are they categorized?
-6. What are the different stages of the lending lifecycle and their impacts on loan agreements?
-7. What are the common types of operational incidents affecting payment processing?
-8. What are the lifecycle stages of payment events from initiation to settlement?
-9. How are financial product configurations defined in terms of interest rates and fees?
-10. What are the various types of financial transactions and their typical uses in the marketplace?
+1. What types of financial accounts do you offer, and how do they support customer needs?
+2. How do you handle client requests related to payment disputes and account inquiries?
+3. What compliance policies do you have in place for KYC and AML requirements?
+4. How do you utilize customer profiles to enhance service offerings and risk management?
+5. What measures are taken to identify and respond to fraud risk events in financial transactions?
+6. What are the critical stages in your lending lifecycle, and how do you manage each stage?
+7. How do you address operational incidents that disrupt financial services, such as system outages?
+8. What payment events are tracked in your payment processing systems, and how are they managed?
+9. How are product configurations determined for financial offerings like loans and accounts?
+10. What types of financial transactions do you facilitate, and how do they serve your customers?

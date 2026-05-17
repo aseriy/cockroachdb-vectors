@@ -1,13 +1,12 @@
-
 ## Cloud Infrastructure
 
-1. What are the best practices for implementing Identity and Access Control in cloud environments?
-2. How do different Compute Resource types impact application performance and deployment?
-3. What strategies can be employed to ensure Configuration State consistency in cloud deployments?
-4. How can Cost and Usage Records be optimized for better resource management in cloud infrastructure?
-5. What are the key factors influencing Deployment Events in continuous integration/continuous deployment pipelines?
-6. How do Networking Components influence application availability and performance in cloud architectures?
-7. What metrics are essential for Observability in cloud infrastructures, and how can they be effectively monitored?
-8. What are the common causes of Operational Incidents in cloud environments and their mitigation strategies?
-9. How can organizations effectively respond to Security Events in cloud infrastructures?
-10. What Storage Resource types are most suitable for different data access patterns in cloud storage solutions?
+1. How does the company implement identity and access control mechanisms for users and roles?
+2. What types of compute resources does the company offer for running applications and workloads?
+3. How does the company manage configuration states for its infrastructure and resources?
+4. What methods does the company use to track cost and usage of its cloud services?
+5. What types of deployment events does the company manage during resource provisioning and application deployment?
+6. How does the company configure and manage networking components such as load balancers and firewalls?
+7. What observability metrics does the company provide to monitor system performance and resource efficiency?
+8. How does the company handle operational incidents such as service outages and performance degradation?
+9. What security events does the company monitor and respond to in its infrastructure?
+10. What types of storage resources does the company provide for data management and archival use cases?

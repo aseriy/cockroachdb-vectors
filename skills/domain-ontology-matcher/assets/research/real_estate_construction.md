@@ -1,13 +1,12 @@
-
 ## Real Estate And Construction
 
-1. What are the key analytics metrics used in real estate and construction?
-2. What are the compliance regulations that impact real estate and construction projects?
-3. What types of construction materials are commonly used in the industry?
-4. What are the different types of construction projects in real estate?
-5. What roles do contractors and entities play in construction and real estate?
-6. What processes are involved in design and planning for construction?
-7. What are the common operational incidents that affect construction projects?
-8. What types of properties and assets are classified under real estate?
-9. What processes are involved in property management in real estate?
-10. What are the various transactions and leases that occur in real estate?
+1. What metrics do you use to evaluate property utilization in real estate and construction?
+2. How do you ensure compliance with zoning regulations and building codes in your projects?
+3. What types of construction materials do you offer for various building projects?
+4. Can you describe the lifecycle stages of construction projects you manage?
+5. What roles do different contractor entities play in your construction operations?
+6. How do you approach the design and planning process for your construction projects?
+7. What types of operational incidents have you encountered, and how do you manage them?
+8. What kinds of real estate properties or assets do you focus on within your business?
+9. How do you handle property management to ensure tenant satisfaction and operational efficiency?
+10. What processes are involved in transactions and leases within your real estate offerings?

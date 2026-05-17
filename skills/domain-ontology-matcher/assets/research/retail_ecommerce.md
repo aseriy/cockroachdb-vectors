@@ -1,13 +1,12 @@
-
 ## Retail And Ecommerce
 
-1. What are the key metrics used to evaluate retail performance?
-2. What compliance policies are essential for ensuring fair treatment in retail operations?
-3. How can customer profiles be segmented based on demographic and behavioral attributes?
-4. What processes are involved in the fulfillment and shipping of products in retail?
-5. How is inventory managed to ensure product availability and demand fulfillment?
-6. What strategies are effective for marketing campaigns in a retail context?
-7. What pricing strategies can influence customer engagement and sales in merchandising?
-8. What types of operational incidents can disrupt the retail experience?
-9. What are the various types of orders and transactions in retail operations?
-10. How is the product catalog structured to facilitate consumer purchasing?
+1. What metrics are used to evaluate sales effectiveness in retail and ecommerce?
+2. What are the compliance policies that ensure fair treatment of customers in retail?
+3. How are customer profiles utilized to target marketing and retention strategies in retail?
+4. What processes are involved in order fulfillment and shipping within the retail sector?
+5. How is inventory managed to ensure continuous product availability in retail operations?
+6. What types of marketing campaigns are most effective in engaging customers and driving sales in retail?
+7. What pricing strategies are implemented to increase sales and customer engagement in retail?
+8. What operational incidents can disrupt customer experience during the retail transaction process?
+9. What types of transactions occur in retail, and how do they support online retail operations?
+10. How is the product catalog structured to support consumer purchasing in the retail sector?

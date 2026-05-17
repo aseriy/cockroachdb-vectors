@@ -1,10 +1,9 @@
-
 ## Capital Markets
 
-1. What are the distinct types of client requests in capital markets?
-2. How do compliance policies impact trading practices in capital markets?
-3. What are the key characteristics of financial instruments in capital markets?
-4. What types of market events significantly influence capital markets?
-5. How do operational incidents affect trading and settlement processes?
-6. What insights can research commentary provide for investment strategies in capital markets?
-7. What are the stages involved in the trade lifecycle within capital markets?
+1. What types of client requests do you handle in the capital markets domain?
+2. How do your compliance policies ensure adherence to trading regulations?
+3. What kinds of financial instruments are available in your capital markets offerings?
+4. How do market events impact your operations and decision-making in capital markets?
+5. What processes are in place to manage operational incidents in capital markets?
+6. How does your research commentary provide insights into investment opportunities?
+7. What stages are involved in the trade lifecycle events that your systems manage?

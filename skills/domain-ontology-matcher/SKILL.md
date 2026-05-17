@@ -53,39 +53,49 @@ Wait for user selection.
 - If user selects "Enter another company": Go back to Step 2
 - If user selects "Exit": EXIT the workflow
 
-### Step 5: List Research Criteria
-Present the criteria by which the company will be evaluated:
-   - Industry vertical
-   - Headquarters location and geographic presence/markets
-   - Lines of business, products, and customer base
-   - If public: exchange and ticker symbol
-   - Technology stack and infrastructure
-   - Recent significant news or business direction changes
-   - Key use cases and problems they solve for customers
-   - Target customer segments (B2B, B2C, B2G, Enterprise, SMB, etc.)
-   - Regulatory/compliance requirements (HIPAA, PCI-DSS, SOX, etc.)
-   - Core technical challenges (real-time data, analytics, scale, global distribution, AI/ML)
-   - Partnerships and ecosystem integrations
-   - Company stage/scale (startup, growth, enterprise) and employee count
-   - Known pain points or challenges (from blog posts, job postings, interviews, etc.)
-   - Growth trajectory and scaling needs
+### Step 5: Classify Company Domains
+For each file in `assets/research/*.md`, read its ## heading. Use these headings as the available domain names.
 
-### Step 6: Ask for Additional Criteria
+Use the following shell command to extract the headings:
+
+```bash
+grep '^##' *.md
+```
+
+Based on the company information gathered in Step 4, identify which domains apply to this company. A company may match multiple domains.
+
+Match a domain ONLY if it reflects a core area of the company's primary business operations.
+Exclude domains where the overlap is incidental. For example,
+
+- being publicly traded does not qualify as Capital Markets
+- offering travel rewards does not qualify as Consumer Hospitality and Retail
+
+Present the matched domain headings to the user, then proceed to Step 6.
+
+### Step 6: Build Research Criteria
+For each matched domain, load the `assets/research/<domain>.md` content in full.
+Concatenate all loaded files in order into a single aggregated research criteria list.
+Present the resulting criteria before proceeding to Step 7.
+
+### Step 7: Ask for Additional Criteria
 Ask the user: "Would you like to add any other aspects or criteria for the research?"
 
 **STOP HERE. End your response and wait for the user to answer. Do not proceed to Step 7 until the user provides their response (either additional criteria or confirmation they have none).**
 
-### Step 7: Conduct Research
-Use WebSearch to gather comprehensive information about the company based on the combined criteria set (pre-canned from Step 5 + any user-provided criteria from Step 6).
+### Step 8: Conduct Research
+Use WebSearch to gather comprehensive information about the company based on the combined criteria set (pre-canned from Step 6 + any user-provided criteria from Step 7).
 
 Format all research findings as a single JSON object with clear, descriptive keys for each piece of information. Do NOT save the JSON to any temporary file.
 
-### Step 8: Save Research to Database
+### Step 9: Save Research to Database
 Save the research to the database using:
 ```bash
 echo '<json_object>' | uv run scripts/research.py save -u "$CRDB_URL" "<Company Name>"
 ```
 
 Use the Bash tool to pipe the JSON directly into the research.py script.
+
+
+### Step 10: 
 
 This is the final step. Stop here.

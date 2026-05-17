@@ -1,13 +1,12 @@
-
 ## Aerospace And Defense
 
-1. What are the compliance standards applicable to aerospace and defense systems?
-2. What types of components and subsystems are utilized in aerospace applications?
-3. What events are part of the maintenance lifecycle in aerospace systems?
-4. What processes are involved in aerospace manufacturing and assembly?
-5. What types of missions and operations are conducted in aerospace and defense?
-6. What incidents can affect operational integrity in aerospace platforms?
-7. What platforms and systems are categorized under aerospace and defense?
-8. What security threat events pose risks to aerospace systems?
-9. What entities are involved in the aerospace supply chain?
-10. What types of telemetry and sensor data are collected in aerospace operations?
+1. What compliance standards does the company adhere to for aerospace systems?
+2. What types of aerospace components or subsystems are manufactured by the company?
+3. What is the company's approach to scheduled maintenance lifecycle events for its products?
+4. What types of manufacturing and assembly processes does the company utilize in aerospace production?
+5. What missions or operations does the company conduct in the aerospace and defense sectors?
+6. What procedures does the company follow to manage operational incidents?
+7. What types of platforms or systems does the company develop for aerospace applications?
+8. What security threat events does the company monitor and how do they respond to them?
+9. What entities are part of the company's supply chain in the aerospace and defense industry?
+10. What types of telemetry or sensor data does the company collect and analyze?

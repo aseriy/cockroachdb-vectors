@@ -1,13 +1,12 @@
-
 ## AI Customer Experience
 
-1. What are the distinct functions and capabilities of AI models in customer experience?
-2. How do various customer experience metrics evaluate user interaction effectiveness?
-3. What role do automation workflows play in enhancing customer service interactions?
-4. How do compliance policies impact the management of customer data in AI environments?
-5. What factors define customer profiles and how do they influence engagement strategies?
-6. What are the characteristics of interaction channels that facilitate customer communication?
-7. How do interaction events contribute to understanding user engagement in customer service?
-8. What types of knowledge content are essential for supporting customer self-service?
-9. What defines operational incidents in AI systems and how do they affect service delivery?
-10. How does recommendation personalization improve customer experience through AI?
+1. What capabilities does the Intent Detection model provide in terms of understanding user input?
+2. How does the Response Time metric measure the efficiency of user interactions?
+3. What types of tasks are automated through the Escalation Workflow?
+4. What guidelines are outlined in the Data Privacy Policy regarding customer data usage?
+5. How are customer profiles segmented to support personalized engagement strategies?
+6. What functionalities do different interaction channels offer for customer communication?
+7. What types of activities are tracked as interaction events during user sessions?
+8. What kind of knowledge content is provided to assist users in finding answers to their questions?
+9. What incidents are categorized under operational incidents that affect customer interactions?
+10. How is the Recommendation Output tailored to individual user preferences based on behavior?
