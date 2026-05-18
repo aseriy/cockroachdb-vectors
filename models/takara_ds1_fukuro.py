@@ -4,57 +4,157 @@ from openai import OpenAI
 import tiktoken
 import yaml
 from pathlib import Path
+import os
+import json
 
 
-config_path = Path(__file__).resolve().parent.parent / "config.yaml"
-config = None
-with open(config_path, "r") as file:
-    config = yaml.safe_load(file)
+exec_local = True
+_client = None
+_MODEL = None
 
-model_settings = next(
-    item[Path(__file__).stem] 
-    for item in config['models'] 
-    if isinstance(item, dict) and Path(__file__).stem in item
-)
+if not os.getenv("NUCLIO"):
+    config_path = Path(__file__).resolve().parent.parent / "config.yaml"
+    config = None
+    with open(config_path, "r") as file:
+        config = yaml.safe_load(file)
 
-_client = OpenAI(
-                    api_key = model_settings['api_key'],
-                    base_url = model_settings['base_url']
-                )
-_MODEL = model_settings['model']
+    model_settings = next(
+        item[Path(__file__).stem] 
+        for item in config['models'] 
+        if isinstance(item, dict) and Path(__file__).stem in item
+    )
+
+    _client = OpenAI(
+                        api_key = model_settings['api_key'],
+                        base_url = model_settings['base_url']
+                    )
+
+    _MODEL = model_settings['model']
+
+    if 'nuclio' in model_settings:
+        exec_local = False
+
+else:
+    _client = OpenAI(
+                        api_key = "xxx",
+                        base_url = 'http://localhost:9090'
+                    )
+
+    _MODEL = 'ds1-fukuro'
+
+
+# enf if
+#
+
+
+
 
 
 def embedding_label() -> str:
-    return "Takara-DS1/ds1-fukuro"
+    if exec_local:
+        return "Takara-DS1/ds1-fukuro"
+
+    if 'nuclio' in model_settings:
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.text
+
 
 
 def embedding_description() -> str:
-    return textwrap.dedent(
-        """
-        Takara-DS1/ds1-fukuro
-        https://ds1.takara.ai/capabilities/text-embeddings.html
-        """
-    ).strip()
+    if exec_local:
+        return textwrap.dedent(
+            """
+            Takara-DS1/ds1-fukuro
+            https://ds1.takara.ai/capabilities/text-embeddings.html
+            """
+        ).strip()
+
+    if 'nuclio' in model_settings:
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.text
+
 
 
 def embedding_dim() -> int:
-    return 1024
+    if exec_local:
+        return 1024
+
+    if 'nuclio' in model_settings:
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.text
+
 
 
 def embedding_index_opclass() -> str:
-    return "vector_ip_ops"
+    if exec_local:
+        return "vector_ip_ops"
+
+    if 'nuclio' in model_settings:
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.text
+
 
 
 def embedding_index_operator() -> str:
-    return "<#>"
+    if exec_local:
+        return "<#>"
     
+    if 'nuclio' in model_settings:
+        response = requests.get(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"}
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.text
+
+
+
 
 def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
-    response = _client.embeddings.create(
-        model=_MODEL,
-        input=input_text
-    )
-    return response.data[0].embedding
+    if exec_local:
+        response = _client.embeddings.create(
+            model=_MODEL,
+            input=input_text
+        )
+        return response.data[0].embedding
+
+    if 'nuclio' in model_settings:
+        response = requests.post(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"},
+                        json = {"text": input_text}
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.json()
+
 
 
 
@@ -64,22 +164,125 @@ def embedding_encode_batch(
         verbose: bool = False
     ) -> List[Tuple[Any, List[float]]]:
 
-    texts = [row_text for _, row_text in batch]
+    if exec_local:
+        texts = [row_text for _, row_text in batch]
 
-    # We're within the token limits, go on...
-    row_ids = [row_id for row_id, _ in batch]
-    
-    if verbose:
-        for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
-            input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
+        # We're within the token limits, go on...
+        row_ids = [row_id for row_id, _ in batch]
+        
+        if verbose:
+            for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
+                input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
 
-    response = _client.embeddings.create(
-        model=_MODEL,
-        input=texts
-    )
+        response = _client.embeddings.create(
+            model=_MODEL,
+            input=texts
+        )
 
-    embeddings = [data.embedding for data in response.data]
-    
-    values = [(row_id, embedding) for row_id, embedding in zip(row_ids, embeddings)]
+        embeddings = [data.embedding for data in response.data]
+        
+        values = [(row_id, embedding) for row_id, embedding in zip(row_ids, embeddings)]
 
-    return values
+        return values
+
+    if 'nuclio' in model_settings:
+        response = requests.post(
+                        urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
+                        auth = model_settings['nuclio']['auth'],
+                        verify = False,
+                        headers = {"Host": "nuclio.local"},
+                        json = {
+                            "index": batch_index,
+                            "batch": [[row_id, row_text] for row_id, row_text in zip(row_ids, texts)]
+                        }
+                    )
+        response.raise_for_status()  # raises on non-200
+        return response.json()
+
+
+
+
+
+if os.getenv("NUCLIO"):
+    def handler(context, event):
+        path = event.path
+        method = event.method
+
+        if path == "/embedding_label" and method == "GET":
+            return context.Response(
+                body=embedding_label(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_description" and method == "GET":
+            return context.Response(
+                body=embedding_description(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_dim" and method == "GET":
+            return context.Response(
+                body=embedding_dim(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_index_opclass" and method == "GET":
+            return context.Response(
+                body=embedding_index_opclass(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_index_operator" and method == "GET":
+            return context.Response(
+                body=embedding_index_operator(),
+                headers={},
+                content_type="text/plain",
+                status_code=200
+            )
+
+        if path == "/embedding_encode" and method == "POST":
+            body = event.body
+            context.logger.info(f"event.body: {body}")
+
+            input_text = body["text"]
+            result = embedding_encode(input_text)
+
+            return context.Response(
+                body=json.dumps(result),
+                headers={},
+                content_type="application/json",
+                status_code=200
+            )
+
+
+        if path == "/embedding_encode_batch" and method == "POST":
+            body = event.body
+            context.logger.info(f"event.body: {body}")
+
+            batch_index = body['index']
+            batch = body["batch"]
+            result = embedding_encode_batch(batch_index, batch)
+
+            return context.Response(
+                body=json.dumps(result),
+                headers={},
+                content_type="application/json",
+                status_code=200
+            )
+
+
+        return context.Response(
+            body="not found",
+            headers={},
+            content_type="text/plain",
+            status_code=404
+        )
+
