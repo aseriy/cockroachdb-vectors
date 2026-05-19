@@ -8,10 +8,15 @@ models:
       verify: False
 
   - openai_text_embed:
-      api_key: OpenAI_API_Key
-      model: text-embedding-3-small | text-embedding-3-large
+    api_key: OpenAI_API_Key
+    model: text-embedding-3-small | text-embedding-3-large
 
   - takara_ds1_fukuro:
-      api_key: Your Takara API Key
-      base_url: Takara URL
-      model: ds1-fukuro
+    api_key: Your Takara API Key
+    base_url: Takara URL
+    model: ds1-fukuro
+    nuclio:
+      url: https://localhost:31458
+      username: <username>
+      password: <password>
+      verify: False
