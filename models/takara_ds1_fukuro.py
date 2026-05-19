@@ -6,6 +6,11 @@ import yaml
 from pathlib import Path
 import os
 import json
+import requests
+from urllib.parse import urljoin, urlparse
+from requests.auth import HTTPBasicAuth
+import urllib3
+import inspect
 
 
 exec_local = True
@@ -24,15 +29,32 @@ if not os.getenv("NUCLIO"):
         if isinstance(item, dict) and Path(__file__).stem in item
     )
 
-    _client = OpenAI(
-                        api_key = model_settings['api_key'],
-                        base_url = model_settings['base_url']
-                    )
-
-    _MODEL = model_settings['model']
-
     if 'nuclio' in model_settings:
         exec_local = False
+
+        url_parsed = urlparse(model_settings['nuclio']['url'])
+        if url_parsed.scheme == "https":
+            if model_settings['nuclio'].get('username') \
+                and model_settings['nuclio'].get('password'):
+
+                model_settings['nuclio']['auth'] = HTTPBasicAuth(
+                            model_settings['nuclio']['username'],
+                            model_settings['nuclio']['password']
+                        )
+
+                if not model_settings['nuclio'].get('verify'):
+                    model_settings['nuclio']['verify'] = False
+
+                if not model_settings['nuclio']['verify']:
+                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    else:
+        _client = OpenAI(
+                            api_key = model_settings['api_key'],
+                            base_url = model_settings['base_url']
+                        )
+        _MODEL = model_settings['model']
+
 
 else:
     _client = OpenAI(
@@ -59,7 +81,7 @@ def embedding_label() -> str:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -80,7 +102,7 @@ def embedding_description() -> str:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -96,7 +118,7 @@ def embedding_dim() -> int:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -112,7 +134,7 @@ def embedding_index_opclass() -> str:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -128,7 +150,7 @@ def embedding_index_operator() -> str:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -149,7 +171,7 @@ def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"},
+                        headers = {"Host": "nuclio.takara"},
                         json = {"text": input_text}
                     )
         response.raise_for_status()  # raises on non-200
@@ -164,25 +186,16 @@ def embedding_encode_batch(
         verbose: bool = False
     ) -> List[Tuple[Any, List[float]]]:
 
+    texts = [row_text for _, row_text in batch]
+    row_ids = [row_id for row_id, _ in batch]
+
     if exec_local:
-        texts = [row_text for _, row_text in batch]
-
-        # We're within the token limits, go on...
-        row_ids = [row_id for row_id, _ in batch]
-        
-        if verbose:
-            for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
-                input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
-
         response = _client.embeddings.create(
             model=_MODEL,
             input=texts
         )
-
         embeddings = [data.embedding for data in response.data]
-        
         values = [(row_id, embedding) for row_id, embedding in zip(row_ids, embeddings)]
-
         return values
 
     if 'nuclio' in model_settings:
@@ -190,7 +203,7 @@ def embedding_encode_batch(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"},
+                        headers = {"Host": "nuclio.takara"},
                         json = {
                             "index": batch_index,
                             "batch": [[row_id, row_text] for row_id, row_text in zip(row_ids, texts)]

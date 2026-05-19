@@ -205,11 +205,6 @@ def embedding_encode_batch(
     if exec_local:
         model = _MODEL_CACHE.get(huggingface_path)
 
-        # if verbose:
-        #     for i, (row_id, row_text) in enumerate(zip(row_ids, texts), 1):
-        #         input_column_text = row_text[:40].replace('\n', '').replace('\r', '')
-        #         print(f"[INFO] (batch {batch_index}, {i}/{len(batch)}) Updating vector for row id {row_id}: '{input_column_text}'")
-
         embeddings = model.encode(texts, batch_size=128, show_progress_bar=False)
         values = [[row_id, embedding.tolist()] for row_id, embedding in zip(row_ids, embeddings)]
         return values
