@@ -1,0 +1,31 @@
+apiVersion: "nuclio.io/v1"
+kind: NuclioFunction
+metadata:
+  name: takara_ds1_fukuro
+spec:
+  description: Takara-DS1/ds1-fukuro
+  image: takara_ds1_fukuro:latest
+  runtime: python:3.12
+  handler: takara_ds1_fukuro:handler
+  replicas: 5
+  minReplicas: 1
+  maxReplicas: 10
+  disableDefaultHTTPTrigger: false
+  build:
+    noBaseImagePull: true
+    baseImage: "localhost:5000/dev-ds1-fukuro:latest"
+    commands:
+    - apt-get update -y
+    - apt-get install -y python3 python3-pip
+    - ln -s /usr/bin/python3 /usr/bin/python
+    - rm -f /usr/lib/python3.13/EXTERNALLY-MANAGED
+    - mkdir -p /opt/nuclio/whl
+    - pip download msgpack --dest /opt/nuclio/whl --python-version 3.13 --only-binary ":all:"
+    - pip install requests openai tiktoken pyyaml
+    - echo '#!/bin/sh' > /entrypoint.sh
+    - echo 'text-embeddings-router --port 9090 --json-output &' >> /entrypoint.sh
+    - echo 'exec /usr/local/bin/processor "$@"' >> /entrypoint.sh
+    - chmod +x /entrypoint.sh
+  env:
+    - name: NUCLIO
+      value: 1
