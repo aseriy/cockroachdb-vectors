@@ -331,3 +331,60 @@ example_description: A data entity representing any element of an aerospace or d
 158. What divestitures or portfolio shaping has X executed?
 159. What is X's funded vs. unfunded backlog profile?
 160. What partnerships or strategic alliances define X's competitive position?
+
+
+
+```
+You are given a YAML block describing the semantic domain of a company X operating in a specific industry. The YAML contains the following fields:
+
+concept_domain
+concept_unit
+entry_count
+concept_scope_examples
+instance_exclusion_rules
+trivial_variant_example
+terminology_domain
+distinctness_criteria
+domain_name
+domain_scope
+example_name
+example_description
+
+Using this YAML as your only source, generate a numbered list of research questions about company X. The questions will be used to build a comprehensive profile of X — its lines of business, products, services, technology, operations, supply chain, regulatory environment, and challenges.
+
+Rules:
+- Ground every question in something explicitly referenced in the YAML — concept_scope_examples, domain_scope, terminology_domain, or distinctness_criteria
+- Never presuppose what X does — frame every question as open-ended discovery: "Does X...?", "Is X involved in...?", "What, if any, is X's role in...?"
+- Cover the full breadth of the domain — do not cluster questions in one area at the expense of others
+- No redundant questions — if two questions probe the same concept, collapse them into one
+- One question per line, numbered sequentially
+- No section headers, no bullets, no commentary — only the numbered questions
+- Generate as many non-redundant questions as the domain warrants
+
+YAML:
+[paste merged domain YAML here]
+```
+
+
+
+```
+You are given a YAML block describing the semantic domain of some company. The YAML is a merged entry representing multiple ontology domains, each covering a distinct operational concept within the domain.
+
+Your task: generate a comprehensive numbered list of research questions about company X — its lines of business, products, services, technology, operations, supply chain, regulatory environment, and challenges.
+
+Step 1 — Decompose: identify the distinct operational concepts embedded in concept_scope_examples and domain_scope. Treat each as a separate topic cluster.
+
+Step 2 — Generate questions per cluster: for each concept cluster, generate as many non-redundant questions as the cluster warrants.
+
+Step 3 — Add a second pass covering dimensions not in the YAML: customers and contracts, financial and strategic position, workforce, technology and innovation, competitive landscape.
+
+Rules:
+- Ground every question in something referenced in the YAML
+- Never presuppose what X does — frame every question as open-ended discovery: "Does the company ...?", "Is the company involved in...?", "What, if any, is the company's role in...?"
+- No redundant questions
+- One question per line, numbered sequentially
+- No section headers, no bullets, no commentary — only the numbered questions
+
+YAML:
+[paste merged domain YAML here]
+```
