@@ -13,8 +13,6 @@ spec:
   disableDefaultHTTPTrigger: false
   build:
     commands:
-      - apt-get update -y
-      - apt-get install -y python3 python3-pip
       - pip install sentence-transformers huggingface-hub requests
   env:
     - name: NUCLIO
