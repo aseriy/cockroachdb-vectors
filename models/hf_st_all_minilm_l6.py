@@ -26,7 +26,7 @@ if not os.getenv("NUCLIO"):
         if isinstance(item, dict) and 'hf_st_all_minilm_l6' in item
     )
 
-    if 'nuclio' in model_settings:
+    if model_settings is not None and 'nuclio' in model_settings:
         exec_local = False
 
         url_parsed = urlparse(model_settings['nuclio']['url'])
