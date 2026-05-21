@@ -1,6 +1,6 @@
 import click
 import json
-from operations import (
+from cockroachdb_vectors.operations import (
     run_embed,
     run_search,
     run_emit,
