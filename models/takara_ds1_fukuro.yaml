@@ -7,7 +7,7 @@ spec:
   image: takara_ds1_fukuro:latest
   runtime: python:3.12
   handler: takara_ds1_fukuro:handler
-  replicas: 5
+  replicas: 1
   minReplicas: 1
   maxReplicas: 10
   disableDefaultHTTPTrigger: false
