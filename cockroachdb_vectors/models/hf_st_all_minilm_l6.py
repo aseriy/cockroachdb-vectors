@@ -15,7 +15,8 @@ exec_local = True
 
 if not os.getenv("NUCLIO"):
     # Read the configuration
-    config_path = Path(__file__).resolve().parent.parent / "config.yaml"
+    config_path = Path.cwd().joinpath("config.yaml")
+
     config = None
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)

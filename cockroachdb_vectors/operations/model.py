@@ -1,5 +1,5 @@
 import pkgutil
-import cockroachdb_vectors.models
+import cockroachdb_vectors.models as models
 import importlib
 
 

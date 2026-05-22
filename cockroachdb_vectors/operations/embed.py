@@ -385,7 +385,6 @@ def run_embed_n_batches(
         print("[INFO] Embedding complete.")
 
     if (progress or verbose) and (warnings or errors):
-        from datetime import datetime
         print("\n[WARNINGS SUMMARY]", flush=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         log_filename = f"warnings_{timestamp}.log"
@@ -413,7 +412,10 @@ def run_embed(args):
         raise RuntimeError(f"Invalid embedding model {args['model']}")
 
     global model
-    model = importlib.import_module(f"models.{args['model']}")
+    model = importlib.import_module(
+                f"{__name__.split(".")[0]}.models.{args['model']}",
+                package = __name__.split(".")[0]
+            )
 
     executor = ProcessPoolExecutor(
         max_workers=min(args['workers'], multiprocessing.cpu_count()),
