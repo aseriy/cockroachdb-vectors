@@ -59,23 +59,28 @@ For each file in `assets/research/*.md`, read its ## heading. Use these headings
 Use the following shell command to extract the headings:
 
 ```bash
-grep '^##' *.md
+grep '^##' assets/research/*.md
 ```
 
-Based on the company information gathered in Step 4, identify which domains apply to this company. A company may match multiple domains.
+Based on the company information gathered in Step 4, identify the PRIMARY domain that best represents the company's core business operations.
 
-Match a domain ONLY if it reflects a core area of the company's primary business operations.
-Exclude domains where the overlap is incidental. For example,
+Select ONLY ONE domain. Match criteria:
+- The domain must reflect the company's primary business operations
+- Exclude domains where the overlap is incidental
 
+Examples of what NOT to match:
 - being publicly traded does not qualify as Capital Markets
 - offering travel rewards does not qualify as Consumer Hospitality and Retail
 
-Present the matched domain headings to the user, then proceed to Step 6.
+Extract the filename (without .md extension) from the matched domain file and store it for Step 9.
+
+Example: if the file is `financial_services.md`, the domain name is `financial_services`.
+
+Present the matched domain heading to the user, then proceed to Step 6.
 
 ### Step 6: Build Research Criteria
-For each matched domain, load the `assets/research/<domain>.md` content in full.
-Concatenate all loaded files in order into a single aggregated research criteria list.
-Present the resulting criteria before proceeding to Step 7.
+Load the `assets/research/<domain>.md` file for the matched domain.
+Present the research criteria before proceeding to Step 7.
 
 ### Step 7: Ask for Additional Criteria
 Ask the user: "Would you like to add any other aspects or criteria for the research?"
@@ -88,10 +93,12 @@ Use WebSearch to gather comprehensive information about the company based on the
 Format all research findings as a single JSON object with clear, descriptive keys for each piece of information. Do NOT save the JSON to any temporary file.
 
 ### Step 9: Save Research to Database
-Save the research to the database using:
+Save the research to the database using the domain filename from Step 5:
 ```bash
-echo '<json_object>' | uv run scripts/research.py save -u "$CRDB_URL" "<Company Name>"
+echo '<json_object>' | uv run scripts/research.py save -u "$CRDB_URL" -d "<domain>" "<Company Name>"
 ```
+
+Replace `<domain>` with the domain filename stored in Step 5 (e.g., `financial_services`, `aerospace_defense`).
 
 Use the Bash tool to pipe the JSON directly into the research.py script.
 

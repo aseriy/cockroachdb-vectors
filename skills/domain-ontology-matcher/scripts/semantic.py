@@ -161,7 +161,7 @@ def domain(url, domain_name, ontology):
 @cli.command()
 @click.option("-u", "--url", required=True, help="CockroachDB connection URL")
 @click.option("-s", "--vector-suffix", required=True, help="Vector column suffix (e.g., 'hf')")
-@click.option("-d", "--domain", required=True, help="Primary domain name")
+@click.option("-d", "--domain", required=False, help="Primary domain name (required for text input, optional for UUID)")
 @click.option("-t", "--threshold", type=float, default=0.8, help="Median distance threshold (default: 0.8)")
 @click.option("-k1", "--primary-skew", type=float, default=0.5, help="Skew extension ratio for primary domain (default: 0.5)")
 @click.option("-k2", "--secondary-skew", type=float, default=0.0, help="Skew extension ratio for secondary domains (default: 0.0)")
@@ -178,11 +178,11 @@ def match(url, vector_suffix, domain, threshold, primary_skew, secondary_skew, v
         is_uuid = re.match(uuid_pattern, research_id, re.IGNORECASE)
 
         if is_uuid:
-            # Load research vector from database
+            # Load research vector and domain from database
             ensure_database(conn, RESEARCH_DATABASE)
 
             vector_column = f"info_{vector_suffix}"
-            query = f"SELECT {vector_column} FROM {RESEARCH_TABLE} WHERE id = %s"
+            query = f"SELECT {vector_column}, domain FROM {RESEARCH_TABLE} WHERE id = %s"
 
             with conn.cursor() as cur:
                 cur.execute(query, (research_id,))
@@ -192,8 +192,14 @@ def match(url, vector_suffix, domain, threshold, primary_skew, secondary_skew, v
                 raise click.ClickException(f"Research ID '{research_id}' not found or has no {vector_column} vector")
 
             vector = json.loads(result[0])
+            # Use domain from database if not explicitly provided via CLI
+            if not domain:
+                domain = result[1]
         else:
             # Vectorize the input text
+            if not domain:
+                raise click.ClickException("Domain parameter (-d/--domain) is required when providing text input instead of UUID")
+
             vector = get_embedding(research_id, url)
 
         dimension = len(vector)
