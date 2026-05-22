@@ -18,8 +18,8 @@ _client = None
 _MODEL = None
 
 if not os.getenv("NUCLIO"):
-    config_path = Path(__file__).resolve().parent.parent / "config.yaml"
     config = None
+    config_path = Path.cwd().joinpath("config.yaml")
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
 
