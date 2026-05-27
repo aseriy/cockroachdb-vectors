@@ -1,5 +1,5 @@
 [project]
-name = "cockroachdb_vectors"
+name = "CockroachDB Vector Embedding Toolkit"
 version = "0.1.0"
 description = "The CockroachDB Vector Embedding Toolkit is a developer-focused set of tools for generating, storing, and querying vector embeddings directly within existing CockroachDB tables. It enables prototyping similarity search and AI-backed workflows without the need for a separate vector database or complex architectural changes."
 authors = [

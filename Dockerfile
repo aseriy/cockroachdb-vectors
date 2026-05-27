@@ -11,15 +11,12 @@ WORKDIR /app
 #     build-essential \
 #     && rm -rf /var/lib/apt/lists/*
 
-# Install Python deps first (better layer caching)
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+# 1. Copy the pre-built distribution wheel into the container
+COPY dist/*.whl .
 
-# Copy application code
-COPY vectorize.py .
-COPY operations ./operations
-COPY models ./models
+# 2. Install the wheel file using pip
+# (This automatically pulls down dependencies and sets up your 'vectorize' CLI)
+RUN pip install --no-cache-dir *.whl
 
 # Default command (override at runtime if needed)
-ENTRYPOINT ["/bin/sh", "-c","exec python vectorize.py embed -F \"$@\" >> /logs/vectorizer-$(date +%Y-%m-%dT%H-%M-%S).log 2>&1","--"]
+ENTRYPOINT ["/bin/sh", "-c","exec vectorize embed -F \"$@\" >> /logs/vectorizer-$(date +%Y-%m-%dT%H-%M-%S).log 2>&1","--"]
