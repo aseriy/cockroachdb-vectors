@@ -10,7 +10,7 @@ These tools show how CRDB supports vector-backed workflows inside an existing sy
 At the center of the toolkit is the vectorize.py script. It exposes a simple CLI with three subcommands that map directly to the core functions of the toolkit: embedding data, inspecting models, and running similarity search.
 
 >[!NOTE]
-> This toolkit is intended for experimentation and prototyping. It favors simplicity and transparency over production-grade automation.
+> This toolkit is intended for experimentation and prototyping. It favors simplicity and transparency over  production-grade automation.
 
 
 ### `instrument`
@@ -22,7 +22,7 @@ The `instrument` sub-command automates "instrumenting" the specified column to e
 3. Wires a trigger that resets the vector column to NULL when the source column is updated. This flags the row for the embedding generation process so the embedding will be regenerated.
 
 ```bash
-$ python3 vectorize.py instrument -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -v
+$ vectorize instrument -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -v
 ```
 
 Instrumentation is defined with the following scope and rules:
@@ -44,7 +44,7 @@ At a high level, it:
 
 
 ```bash
-$ python3 vectorize.py embed -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -b 10 -n 1 -w 2 -v
+$ vectorize embed -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -b 10 -n 1 -w 2 -v
 [INFO] Column passage_vector already exists
 [INFO] Run 1, Batch 1 starting (10 rows)
 [INFO] (batch 1, 1/5) Updating vector for row id 02e2e3af-821e-4a3e-8115-ccb9d7042df9: 'Since the most expensive collection acti'
@@ -74,14 +74,14 @@ It supports two operations:
 - `model desc <model>` describes a specific model in more detail, including properties such as embedding dimensionality
 
 ```bash
-$ python3 vectorize.py model list
+$ vectorize model list
 hf_st_all_minilm_l6   Hugging Face Sentence Transformer all-MiniLM-L6-v2
 openai_text_embed     OpenAI Text Embedding API
 takara_ds1_fukuro     Takara-DS1/ds1-fukuro
 ```
 
 ```bash
-$ python3 vectorize.py model desc hf_st_all_minilm_l6
+$ vectorize model desc hf_st_all_minilm_l6
 ------------------------------------------------------
 | Hugging Face Sentence Transformer all-MiniLM-L6-v2 |
 ------------------------------------------------------
@@ -203,7 +203,7 @@ Given an input text value, it:
 Similarity search runs entirely within the database and can be combined with standard SQL filtering and querying patterns.
 
 ```bash
-$ python3 vectorize.py search -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -l 10 -v "New York City is the financial capital of the world!"
+$ vectorize search -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6 -l 10 -v "New York City is the financial capital of the world!"
 [INFO] PK: id (uuid)
 
 0.5445506274700036 --> 01cef214-02ff-4648-91f4-ab55031d3223
@@ -272,7 +272,7 @@ def embedding_label() -> str
 A short description of the model. This is what `vectorize.py model list` will show:
 
 ```bash
-$ python3 vectorize.py model list
+$ vectorize model list
 hf_st_all_minilm_l6	Hugging Face Sentence Transformer all-MiniLM-L6-v2
 openai_text_embed	OpenAI Text Embedding API
 ```
@@ -284,7 +284,7 @@ def embedding_description() -> str
 A long description of the model, including the dimensionality and anything else that's important to the user to know. This is displayed by `vectorize.py model desc f_st_all_minilm_l6`:
 
 ```bash
-$ python3 vectorize.py model desc hf_st_all_minilm_l6
+$ vectorize model desc hf_st_all_minilm_l6
 ------------------------------------------------------
 | Hugging Face Sentence Transformer all-MiniLM-L6-v2 |
 ------------------------------------------------------
@@ -416,7 +416,7 @@ The sizing operation estimates the storage impact introduced by vectorization, b
 
 
 ```bash
-$ python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector
+$ vectorize size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector
 ```
 
 
@@ -452,7 +452,7 @@ It supports two modes:
 In both modes, the vector operator and embedding dimensionality are derived from the selected model. The query uses `AS OF SYSTEM TIME follower_read_timestamp()` to enable follower reads, reducing latency for read-heavy similarity search workloads.
 
 ```bash
-$ python3 vectorize.py size -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6
+$ vectorize sql -u postgresql://<user>:<pass>@<dbhost>:26257/<database>?sslmode=verify-full -t passage -i passage -o passage_vector -m hf_st_all_minilm_l6
 SELECT
     id,
     passage,

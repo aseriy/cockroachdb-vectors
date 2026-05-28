@@ -1,12 +1,13 @@
 [project]
-name = "CockroachDB Vector Embedding Toolkit"
-version = "0.1.0"
+name = "cockroachdb_vectors"
+version = "0.1.2"
 description = "The CockroachDB Vector Embedding Toolkit is a developer-focused set of tools for generating, storing, and querying vector embeddings directly within existing CockroachDB tables. It enables prototyping similarity search and AI-backed workflows without the need for a separate vector database or complex architectural changes."
 authors = [
-    {name = "Alex Seriy",email = "alex.m.seriy@gmail.com"}
+    {name = "Alex Seriy"}
 ]
-license = "LICENSE"
+license = "MIT"
 readme = "README.md"
+include = ["LICENSE"]
 requires-python = ">=3.12.3"
 dependencies = [
     "cachetools (==6.1.0)",
