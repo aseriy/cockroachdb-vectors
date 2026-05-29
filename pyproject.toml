@@ -1,0 +1,68 @@
+[project]
+name = "cockroachdb_vectors"
+version = "0.1.2"
+description = "The CockroachDB Vector Embedding Toolkit is a developer-focused set of tools for generating, storing, and querying vector embeddings directly within existing CockroachDB tables. It enables prototyping similarity search and AI-backed workflows without the need for a separate vector database or complex architectural changes."
+authors = [
+    {name = "Alex Seriy"}
+]
+license = "MIT"
+readme = "README.md"
+include = ["LICENSE"]
+requires-python = ">=3.12.3"
+dependencies = [
+    "cachetools (==6.1.0)",
+    "certifi (==2025.7.14)",
+    "charset-normalizer (==3.4.2)",
+    "click (==8.3.1)",
+    "filelock (==3.18.0)",
+    "fsspec (==2025.7.0)",
+    "greenlet (==3.2.4)",
+    "hf-xet (==1.1.5)",
+    "huggingface-hub (==0.33.4)",
+    "humanize (==4.15.0)",
+    "idna (==3.10)",
+    "jinja2 (==3.1.6)",
+    "joblib (==1.5.1)",
+    "mpmath (==1.3.0)",
+    "networkx (==3.5)",
+    "numpy (==2.3.1)",
+    "openai (==2.17.0)",
+    "packaging (==25.0)",
+    "pillow (==11.3.0)",
+    "protobuf (==6.32.0)",
+    "psycopg (==3.2.9)",
+    "psycopg-binary (==3.2.9)",
+    "psycopg2-binary (==2.9.10)",
+    "python-dateutil (==2.9.0.post0)",
+    "pytz (==2025.2)",
+    "regex (==2024.11.6)",
+    "requests (==2.32.4)",
+    "rich (==15.0.0)",
+    "safetensors (==0.5.3)",
+    "scikit-learn (==1.7.0)",
+    "scipy (==1.16.0)",
+    "sentence-transformers (==5.0.0)",
+    "setuptools (==80.9.0)",
+    "six (==1.17.0)",
+    "sqlalchemy (==2.0.43)",
+    "sympy (==1.14.0)",
+    "tiktoken (==0.12.0)",
+    "threadpoolctl (==3.6.0)",
+    "tokenizers (==0.21.2)",
+    "torch (==2.7.1)",
+    "tqdm (==4.67.1)",
+    "transformers (==4.53.2)",
+    "triton (==3.3.1)",
+    "typing-extensions (==4.14.1)",
+    "tzdata (==2025.2)",
+    "urllib3 (==2.5.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+vectorize = "cockroachdb_vectors.vectorize:cli"

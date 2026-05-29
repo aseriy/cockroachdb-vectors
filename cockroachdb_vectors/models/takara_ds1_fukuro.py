@@ -1,32 +1,35 @@
-import logging
-import contextlib
-import os, sys
-import textwrap, json
+import textwrap
 from typing import Iterable, List, Tuple, Any
-from pathlib import Path
+from openai import OpenAI
+import tiktoken
 import yaml
+from pathlib import Path
+import os
+import json
 import requests
 from urllib.parse import urljoin, urlparse
 from requests.auth import HTTPBasicAuth
 import urllib3
 import inspect
 
+
 exec_local = True
+_client = None
+_MODEL = None
 
 if not os.getenv("NUCLIO"):
-    # Read the configuration
-    config_path = Path(__file__).resolve().parent.parent / "config.yaml"
     config = None
+    config_path = Path.cwd().joinpath("config.yaml")
     with open(config_path, "r") as file:
         config = yaml.safe_load(file)
 
     model_settings = next(
         item[Path(__file__).stem] 
         for item in config['models'] 
-        if isinstance(item, dict) and 'hf_st_all_minilm_l6' in item
+        if isinstance(item, dict) and Path(__file__).stem in item
     )
 
-    if model_settings is not None and 'nuclio' in model_settings:
+    if 'nuclio' in model_settings:
         exec_local = False
 
         url_parsed = urlparse(model_settings['nuclio']['url'])
@@ -45,57 +48,40 @@ if not os.getenv("NUCLIO"):
                 if not model_settings['nuclio']['verify']:
                     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+    else:
+        _client = OpenAI(
+                            api_key = model_settings['api_key'],
+                            base_url = model_settings['base_url']
+                        )
+        _MODEL = model_settings['model']
+
+
+else:
+    _client = OpenAI(
+                        api_key = "xxx",
+                        base_url = 'http://localhost:9090'
+                    )
+
+    _MODEL = 'ds1-fukuro'
+
+
 # enf if
 #
 
-
-if exec_local:
-    from sentence_transformers import SentenceTransformer
-    from huggingface_hub import snapshot_download
-
-    _MODEL_CACHE = {}
-    huggingface_path = None
-
-    @contextlib.contextmanager
-    def silence_everything():
-        with open(os.devnull, "w") as fnull:
-            old_stdout = sys.stdout
-            old_stderr = sys.stderr
-            sys.stdout = fnull
-            sys.stderr = fnull
-            try:
-                yield
-            finally:
-                sys.stdout = old_stdout
-                sys.stderr = old_stderr
-
-    # Suppress huggingface_hub logger
-    logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
-
-    with silence_everything():
-        huggingface_path = snapshot_download("sentence-transformers/all-MiniLM-L6-v2")
-
-    m = _MODEL_CACHE.get(huggingface_path)
-    if m is None:
-        m = SentenceTransformer(huggingface_path)   # loads once per process
-        _MODEL_CACHE[huggingface_path] = m
-
-# end if
-#
 
 
 
 
 def embedding_label() -> str:
     if exec_local:
-        return "Hugging Face Sentence Transformer all-MiniLM-L6-v2"
+        return "Takara-DS1/ds1-fukuro"
 
     if 'nuclio' in model_settings:
         response = requests.get(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -106,11 +92,8 @@ def embedding_description() -> str:
     if exec_local:
         return textwrap.dedent(
             """
-            General-purpose English sentence embedding model
-            based on MiniLM. Optimized for semantic similarity,
-            clustering, and retrieval tasks. Produces 384-dimensional
-            float vectors. Not multilingual.
-            https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
+            Takara-DS1/ds1-fukuro
+            https://ds1.takara.ai/capabilities/text-embeddings.html
             """
         ).strip()
 
@@ -119,7 +102,7 @@ def embedding_description() -> str:
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -128,15 +111,14 @@ def embedding_description() -> str:
 
 def embedding_dim() -> int:
     if exec_local:
-        model = _MODEL_CACHE[huggingface_path]
-        return model.get_sentence_embedding_dimension()
+        return 1024
 
     if 'nuclio' in model_settings:
         response = requests.get(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
@@ -145,47 +127,51 @@ def embedding_dim() -> int:
 
 def embedding_index_opclass() -> str:
     if exec_local:
-        return "vector_cosine_ops"
+        return "vector_ip_ops"
 
     if 'nuclio' in model_settings:
         response = requests.get(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
+
 
 
 def embedding_index_operator() -> str:
     if exec_local:
-        return "<=>"
-
+        return "<#>"
+    
     if 'nuclio' in model_settings:
         response = requests.get(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"}
+                        headers = {"Host": "nuclio.takara"}
                     )
         response.raise_for_status()  # raises on non-200
         return response.text
+
 
 
 
 def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
     if exec_local:
-        model = _MODEL_CACHE.get(huggingface_path)
-        embeddings = model.encode([input_text], batch_size=128, show_progress_bar=False)
-        return embeddings[0].tolist()
+        response = _client.embeddings.create(
+            model=_MODEL,
+            input=input_text
+        )
+        return response.data[0].embedding
 
     if 'nuclio' in model_settings:
         response = requests.post(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"},
+                        headers = {"Host": "nuclio.takara"},
                         json = {"text": input_text}
                     )
         response.raise_for_status()  # raises on non-200
@@ -193,20 +179,23 @@ def embedding_encode(input_text: str, verbose: bool = False) -> List[float]:
 
 
 
+
 def embedding_encode_batch(
         batch_index: int,
         batch: Iterable[Tuple[Any, Any]],
         verbose: bool = False
-  ) -> List[Tuple[Any, List[float]]]:
-  
+    ) -> List[Tuple[Any, List[float]]]:
+
     texts = [row_text for _, row_text in batch]
     row_ids = [row_id for row_id, _ in batch]
 
     if exec_local:
-        model = _MODEL_CACHE.get(huggingface_path)
-
-        embeddings = model.encode(texts, batch_size=128, show_progress_bar=False)
-        values = [[row_id, embedding.tolist()] for row_id, embedding in zip(row_ids, embeddings)]
+        response = _client.embeddings.create(
+            model=_MODEL,
+            input=texts
+        )
+        embeddings = [data.embedding for data in response.data]
+        values = [(row_id, embedding) for row_id, embedding in zip(row_ids, embeddings)]
         return values
 
     if 'nuclio' in model_settings:
@@ -214,7 +203,7 @@ def embedding_encode_batch(
                         urljoin(model_settings['nuclio']['url'], inspect.currentframe().f_code.co_name),
                         auth = model_settings['nuclio']['auth'],
                         verify = False,
-                        headers = {"Host": "nuclio.local"},
+                        headers = {"Host": "nuclio.takara"},
                         json = {
                             "index": batch_index,
                             "batch": [[row_id, row_text] for row_id, row_text in zip(row_ids, texts)]
@@ -222,6 +211,7 @@ def embedding_encode_batch(
                     )
         response.raise_for_status()  # raises on non-200
         return response.json()
+
 
 
 
@@ -308,5 +298,4 @@ if os.getenv("NUCLIO"):
             content_type="text/plain",
             status_code=404
         )
-
 

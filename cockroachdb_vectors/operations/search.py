@@ -101,7 +101,7 @@ def run_emit(args: dict):
         raise RuntimeError(f"Invalid embedding model {args['model']}")
 
     global model
-    model = importlib.import_module(f"models.{args['model']}")
+    model = importlib.import_module(f"{__name__.split(".")[0]}.models.{args['model']}")
 
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)

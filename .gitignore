@@ -208,3 +208,7 @@ __marimo__/
 
 
 config.yaml
+
+.claude/
+update.bash
+
