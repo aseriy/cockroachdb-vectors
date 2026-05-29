@@ -1,5 +1,8 @@
 # CockroachDB Vector Embedding Toolkit
 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/cockroachdb_vectors)
+![PyPI - Version](https://img.shields.io/pypi/v/cockroachdb_vectors)
+
 This repository provides a developer-focused toolkit for adding and experimenting with vector embeddings directly inside existing CockroachDB tables. It shows how to generate, store, index, and query embeddings alongside relational data—without introducing a separate vector database or re-architecting your system. The tools are designed to let engineers and data practitioners prototype similarity search and vector-backed workflows on real application data using pluggable embedding models.
 
 These tools show how CRDB supports vector-backed workflows inside an existing system without architectural sprawl.
