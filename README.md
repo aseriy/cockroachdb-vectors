@@ -7,8 +7,16 @@ This repository provides a developer-focused toolkit for adding and experimentin
 
 These tools show how CRDB supports vector-backed workflows inside an existing system without architectural sprawl.
 
+## Getting Started
 
-## `vectorize.py`
+Requires Python 3.12.3 or higher. Install with Pip:
+
+```bash
+pip install cockroachdb_vectors
+```
+
+
+## `vectorize`
 
 At the center of the toolkit is the vectorize.py script. It exposes a simple CLI with three subcommands that map directly to the core functions of the toolkit: embedding data, inspecting models, and running similarity search.
 
