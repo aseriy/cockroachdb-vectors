@@ -183,7 +183,7 @@ def drop_vector_column(
 
 def run_instrument(args: dict):
     global model
-    model = importlib.import_module(f"models.{args['model']}")
+    model = importlib.import_module(f"{__package__.split('.')[0]}.models.{args['model']}")
 
     conn_pool = SimpleConnectionPool(minconn=1, maxconn=2, **build_conn_kwargs(args['url']))
     atexit.register(conn_pool.closeall)
@@ -211,7 +211,7 @@ def run_instrument(args: dict):
 
 def run_cleanup(args: dict):
     global model
-    model = importlib.import_module(f"models.{args['model']}")
+    model = importlib.import_module(f"{__package__.split('.')[0]}.models.{args['model']}")
 
     green_idx, green_embed = cleanup_confirm(args['schema'], args['table'], args['source'], args['embedding'])
 
