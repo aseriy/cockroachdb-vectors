@@ -342,7 +342,11 @@ def update_trigger_sql(config, schema_name, table_name, drop = False):
             """
         )
     else:
-        sql_tmpl.append(None)
+        sql_tmpl.append(
+            """
+                DROP FUNCTION IF EXISTS {{ trigger_name }}
+            """
+        )
 
     
     if not drop:
