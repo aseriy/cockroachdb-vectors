@@ -16,6 +16,7 @@ import inspect
 exec_local = True
 _client = None
 _MODEL = None
+MAX_BATCH_SIZE = 32
 
 if not os.getenv("NUCLIO"):
     config = None
@@ -190,13 +191,19 @@ def embedding_encode_batch(
     row_ids = [row_id for row_id, _ in batch]
 
     if exec_local:
-        response = _client.embeddings.create(
-            model=_MODEL,
-            input=texts
-        )
-        embeddings = [data.embedding for data in response.data]
-        values = [(row_id, embedding) for row_id, embedding in zip(row_ids, embeddings)]
+        values = []
+        for i in range(0, len(texts), MAX_BATCH_SIZE):
+            batch_texts = texts[i:i + MAX_BATCH_SIZE]
+            batch_row_ids = row_ids[i:i + MAX_BATCH_SIZE]
+            response = _client.embeddings.create(
+                model=_MODEL,
+                input=batch_texts
+            )
+            embeddings = [data.embedding for data in response.data]
+            values.extend([(row_id, embedding) for row_id, embedding in zip(batch_row_ids, embeddings)])
         return values
+
+
 
     if 'nuclio' in model_settings:
         response = requests.post(
